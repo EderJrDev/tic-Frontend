@@ -172,7 +172,7 @@ class DashboardV2 extends React.Component {
 					<li className="breadcrumb-item"><Link to="/dashboard/v2">Dashboard</Link></li>
 					<li className="breadcrumb-item active">Dashboard v2</li>
 				</ol>
-				<h1 className="page-header">Dashboard v2 <small>header small text goes here...</small></h1>
+				<h1 className="page-header">Painel Principal <small>header small text goes here...</small></h1>
 				<div className="row">
 					<div className="col-xl-3 col-md-6">
 						<div className="widget widget-stats bg-teal">

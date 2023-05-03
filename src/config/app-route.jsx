@@ -1,8 +1,8 @@
 import React from 'react';
 import App from './../app.jsx';
-import DashboardV2 from './../pages/dashboard/dashboard-v2.js';
-import PageBlank from './../pages/option/page-blank.js';
-import LoginV1 from './../pages/user/login-v1.js';
+import Dashboard from '../pages/Dashboard.jsx';
+import Produtos from '../pages/Produtos.jsx';
+import Login from '../pages/Login.jsx';
 
 const AppRoute = [
 	{
@@ -11,19 +11,19 @@ const AppRoute = [
 		children: [
 			{
 				path: '',
-				element: <DashboardV2 />
+				element: <Dashboard />
 			},
 			{
 				path: 'dashboard',
-				element: <DashboardV2 />
+				element: <Dashboard />
 			},
 			{
-				path: 'page-option',
-				element: <PageBlank />,
+				path: 'produtos',
+				element: <Produtos />,
 			},
 			{
 				path: 'user',
-				element: <LoginV1 />,
+				element: <Login />,
 			}
 		]
 	}

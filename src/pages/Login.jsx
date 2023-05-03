@@ -1,8 +1,8 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { AppSettings } from './../../config/app-settings.js';
+import { AppSettings } from '../config/app-settings.js';
 
-class LoginV1 extends React.Component {
+class Login extends React.Component {
 	static contextType = AppSettings;
 
 	constructor(props) {
@@ -44,9 +44,9 @@ class LoginV1 extends React.Component {
 					<div className="login-header">
 						<div className="brand">
 							<div className="d-flex align-items-center">
-								<span className="logo"></span> <b>Color</b> Admin
+								<span className="logo"></span> <b>System</b> Admin
 							</div>
-							<small>Bootstrap 5 Responsive Admin Template</small>
+							<small>Creche Nossa Senhora Da Conceição</small>
 						</div>
 						<div className="icon">
 							<i className="fa fa-lock"></i>
@@ -57,20 +57,20 @@ class LoginV1 extends React.Component {
 							<form onSubmit={this.handleSubmit}>
 								<div className="form-floating mb-20px">
 									<input type="email" className="form-control fs-13px h-45px" id="emailAddress" placeholder="Email Address" />
-									<label htmlFor="emailAddress" className="d-flex align-items-center py-0">Email Address</label>
+									<label htmlFor="emailAddress" className="d-flex align-items-center py-0">Email</label>
 								</div>
 								<div className="form-floating mb-20px">
 									<input type="password" className="form-control fs-13px h-45px" id="password" placeholder="Password" />
-									<label htmlFor="password" className="d-flex align-items-center py-0">Password</label>
+									<label htmlFor="password" className="d-flex align-items-center py-0">Senha</label>
 								</div>
 								<div className="form-check mb-20px">
 									<input className="form-check-input" type="checkbox" value="" id="rememberMe" />
 									<label className="form-check-label" htmlFor="rememberMe">
-										Remember Me
+										Lembre de Mim
 									</label>
 								</div>
 								<div className="login-buttons">
-									<button type="submit" className="btn h-45px btn-success d-block w-100 btn-lg">Sign me in</button>
+									<button type="submit" className="btn h-45px btn-success d-block w-100 btn-lg">Entrar</button>
 								</div>
 							</form>
 						</div>
@@ -81,4 +81,4 @@ class LoginV1 extends React.Component {
 	}
 }
 
-export default LoginV1;
+export default Login;

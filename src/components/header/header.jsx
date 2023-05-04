@@ -22,7 +22,7 @@ class Header extends React.Component {
 									<span className="icon-bar"></span>
 								</button>
 							)}
-							<Link to="/" className="navbar-brand"><span className="navbar-logo"></span> <b>Color</b> Admin</Link>
+							<Link to="/" className="navbar-brand"><span className="navbar-logo"></span> <b>System</b> Admin</Link>
 							
 							{appHeaderMegaMenu && (
 								<button type="button" className="navbar-mobile-toggler" data-bs-toggle="collapse" data-bs-target="#top-navbar">

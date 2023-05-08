@@ -1,3 +1,4 @@
+import React from 'react';
 import { Panel, PanelHeader, PanelBody } from '../components/panel/panel.jsx';
 import DataTable from 'react-data-table-component';
 
@@ -17,26 +18,29 @@ const data = [
 const rowPreDisabled = row => row.disabled;
 const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>;
 
-function Produtos() {
-	return (
-		<div>
-			<h1 className="page-header">Estoque de Produtos</h1>
-			<Panel>
-				<PanelHeader>
-					Produtos
-				</PanelHeader>
-				<PanelBody>
-					<DataTable
-						columns={columns}
-						data={data}
-						expandableRowDisabled={rowPreDisabled}
-						expandableRowsComponent={ExpandedComponent}
-						pagination />
-				</PanelBody>
+class Produtos extends React.Component {
 
-			</Panel>
-		</div>
-	)
+	render() {
+		return (
+			<div>
+				<h1 className="page-header">Estoque de Produtos</h1>
+				<Panel>
+					<PanelHeader>
+						Produtos
+					</PanelHeader>
+					<PanelBody>
+						<DataTable
+							columns={columns}
+							data={data}
+							expandableRowDisabled={rowPreDisabled}
+							expandableRowsComponent={ExpandedComponent}
+							pagination />
+					</PanelBody>
+
+				</Panel>
+			</div>
+		)
+	}
 }
 
 export default Produtos;

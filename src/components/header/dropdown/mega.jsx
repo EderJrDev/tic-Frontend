@@ -1,6 +1,6 @@
 import React from 'react';
 
-class DropdownMegaMenu extends React.Component {
+class 	DropdownMegaMenu extends React.Component {
 	render() {
 		return (
 			<div className="collapse d-md-block me-auto" id="top-navbar">

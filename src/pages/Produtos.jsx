@@ -1,42 +1,68 @@
-import { Panel, PanelHeader, PanelBody } from '../components/panel/panel.jsx';
-import DataTable from 'react-data-table-component';
-
-const columns = [
-	{ name: 'Nome', selector: row => row.name, sortable: true },
-	{ name: 'Uni. de Medida', selector: row => row.email, sortable: true },
-	{ name: 'Localização', selector: row => row.address, sortable: true },
-	{ name: 'Categoria', selector: row => row.categoria, sortable: true }
-];
+import { Panel, PanelHeader, PanelBody } from "../components/panel/panel.jsx";
+import DataTable from "react-data-table-component";
+import { useState, useEffect } from "react";
+import { api } from "../utils/api.js";
 
 const data = [
-	{ id: 1, name: 'Anne Nader', email: 'Rahul.Dare@hotmail.com', address: '4512 Nolan Brooks', categoria: 'Administrativo' },
-	{ id: 2, name: 'Amber Leffler', email: 'Mia58@gmail.com', address: '405 Emmy Radial', categoria: 'Administrativo' },
-	{ id: 3, name: 'Andres Bosco', email: 'Amir.Anderson@hotmail.com', address: '15853 Conroy Plains', categoria: 'Administrativo' },
-]
-
-const rowPreDisabled = row => row.disabled;
-const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>;
+  {
+    nome: "",
+    unid_medida: "",
+    localizacao: "",
+    categoria: "",
+  },
+];
 
 function Produtos() {
-	return (
-		<div>
-			<h1 className="page-header">Estoque de Produtos</h1>
-			<Panel>
-				<PanelHeader>
-					Produtos
-				</PanelHeader>
-				<PanelBody>
-					<DataTable
-						columns={columns}
-						data={data}
-						expandableRowDisabled={rowPreDisabled}
-						expandableRowsComponent={ExpandedComponent}
-						pagination />
-				</PanelBody>
+  const [tableData, setTableData] = useState([]);
+  const [tableColumns, setTableColumns] = useState([
+    // provavelmente não muda
+    { name: "Nome", selector: (row) => row.nome, sortable: true },
+    {
+      name: "Unidade de medida",
+      selector: (row) => row.unid_medida,
+      sortable: true,
+    },
+    { name: "Localização", selector: (row) => row.localizacao, sortable: true },
+    { name: "Categoria", selector: (row) => row.categoria, sortable: true },
+  ]);
 
-			</Panel>
-		</div>
-	)
+  async function getClients() {
+    const response = await api.get("/admin/product");
+    let dados = response.data;
+	
+    const data = dados.map(dado => ({
+      nome: dado.name,
+      unid_medida: dado.measure,
+      localizacao: dado.location,
+      categoria: dado.category.name,
+    }));
+
+    setTableData(data);
+  }
+
+  useEffect(() => {
+    getClients();
+  }, []);
+
+  return (
+    <div>
+      <h1 className="page-header">Estoque de Produtos</h1>
+      <Panel>
+        <PanelHeader>Produtos</PanelHeader>
+        <PanelBody>
+          <DataTable
+            columns={tableColumns}
+            data={tableData}
+            noHeader
+            defaultSortField="id"
+            defaultSortAsc={false}
+            pagination
+            highlightOnHover
+          />
+        </PanelBody>
+      </Panel>
+    </div>
+  );
 }
 
 export default Produtos;

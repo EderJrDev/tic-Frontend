@@ -3,18 +3,9 @@ import DataTable from "react-data-table-component";
 import { useState, useEffect } from "react";
 import { api } from "../utils/api.js";
 
-const data = [
-  {
-    nome: "",
-    unid_medida: "",
-    localizacao: "",
-    categoria: "",
-  },
-];
-
 function Produtos() {
   const [tableData, setTableData] = useState([]);
-  const [tableColumns, setTableColumns] = useState([
+  const [tableColumns] = useState([
     // provavelmente não muda
     { name: "Nome", selector: (row) => row.nome, sortable: true },
     {

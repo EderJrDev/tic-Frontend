@@ -4,9 +4,6 @@ const Menu = [
   {
     path: 'produtos', icon: 'fa fa-cogs', title: 'Produtos',
     
-  },
-  {
-    path: 'user', icon: 'fa fa-key', title: 'Login & Register',
   }
 ]
 

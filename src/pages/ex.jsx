@@ -1,63 +1,79 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Panel, PanelHeader, PanelBody } from './../../components/panel/panel.jsx';
+import React, { useEffect, useState } from 'react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { InputText } from 'primereact/inputtext';
+import { InputNumber } from 'primereact/inputnumber';
+import { Dropdown } from 'primereact/dropdown';
+import { Tag } from 'primereact/tag';
+import { ProductService } from './service/ProductService';
 
-import DataTable from "react-data-table-component";
-
-import { api } from "../../utils/api";
-
-const data = [{
-    conta: "",
-    nome: "",
-    qtdBoleto: "",
-    valorBoleto: "",
-    status: ""
-}];
-
-function TableClients() {
-    const [tableData, setTableData] = useState([]);
-    const [tableColumns, setTableColumns] = useState([ // provavelmente não muda
-        { name: 'Conta', selector: row => row.conta, sortable: true },
-        { name: 'Cliente', selector: row => row.nome, sortable: true },
-        { name: 'Boletos Pagos (QTD)', selector: row => row.qtdBoleto, sortable: true },
-        { name: 'Boletos Pagos (R$)', selector: row => row.valorBoleto, sortable: true },
-    ]);
-
-    function getClients() {
-        const response = api.get('client-acount-status');
-        let dados = response.data
-
-        const data = dados.map(dado => ({
-            conta: dado.idvenda,
-            nome: dado.nome_cli,
-            qtdBoleto: dado.num_parcelas,
-            valorBoleto: dado.valor_geral, 
-        }));
-
-        setTableData(data);
-    }
+export default function RowEditingDemo() {
+    const [products, setProducts] = useState(null);
+    const [statuses] = useState(['INSTOCK', 'LOWSTOCK', 'OUTOFSTOCK']);
 
     useEffect(() => {
-        getClients();
-    }, [])
+        ProductService.getProductsMini().then((data) => setProducts(data));
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const getSeverity = (value) => {
+        switch (value) {
+            case 'INSTOCK':
+                return 'success';
+
+            case 'LOWSTOCK':
+                return 'warning';
+
+            case 'OUTOFSTOCK':
+                return 'danger';
+
+            default:
+                return null;
+        }
+    };
+
+    const onRowEditComplete = (e) => {
+        let _products = [...products];
+        let { newData, index } = e;
+
+        _products[index] = newData;
+
+        setProducts(_products);
+    };
+
+    const textEditor = (options) => {
+        return <InputText type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
+    };
+
+    const statusEditor = (options) => {
+        return (
+            <Dropdown
+                value={options.value}
+                options={statuses}
+                onChange={(e) => options.editorCallback(e.value)}
+                placeholder="Select a Status"
+                itemTemplate={(option) => {
+                    return <Tag value={option} severity={getSeverity(option)}></Tag>;
+                }}
+            />
+        );
+    };
+
+    const priceEditor = (options) => {
+        return <InputNumber value={options.value} onValueChange={(e) => options.editorCallback(e.value)} mode="currency" currency="USD" locale="en-US" />;
+    };
+
+    const priceBodyTemplate = (rowData) => {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(rowData.price);
+    };
 
     return (
-        <div className="col-md-12">
-            <Panel>
-                <PanelHeader className="bg-teal-700 text-white">Clientes Ativos e Inativos</PanelHeader>
-                <PanelBody>
-                    <DataTable
-                        columns={tableColumns}
-                        data={tableData}
-                        noHeader
-                        defaultSortField="id"
-                        defaultSortAsc={false}
-                        pagination
-                        highlightOnHover
-                    />
-                </PanelBody>
-            </Panel>
+        <div className="card p-fluid">
+            <DataTable value={products} editMode="row" dataKey="id" onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }}>
+                <Column field="code" header="Code" editor={(options) => textEditor(options)} style={{ width: '20%' }}></Column>
+                <Column field="name" header="Name" editor={(options) => textEditor(options)} style={{ width: '20%' }}></Column>
+                <Column field="price" header="Price" body={priceBodyTemplate} editor={(options) => priceEditor(options)} style={{ width: '20%' }}></Column>
+                <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+            </DataTable>
         </div>
-    )
+    );
 }
-
-export default TableClients;

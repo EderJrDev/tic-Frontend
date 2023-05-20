@@ -2,6 +2,8 @@ import { api } from "../utils/api.js";
 import { Dialog } from 'primereact/dialog';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
+import { Dropdown } from 'primereact/dropdown';
+import { InputText } from 'primereact/inputtext';
 import { DataTable } from 'primereact/datatable';
 import React, { useState, useEffect } from "react";
 import { Panel, PanelHeader, PanelBody } from "../components/panel/panel.jsx";
@@ -10,20 +12,23 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 
 function Produtos() {
-  const [tableData, setTableData] = useState([]);
-  const [dialogVisible, setDialogVisible] = useState(false);
+  const [id, setId] = useState('');
   const [name, setNome] = useState('');
+  const [medida, setMedida] = useState([]);
+  const [clientes, setClientes] = useState([]);
+  const [tableData, setTableData] = useState([]);
+  const [category, setCategoria] = useState('');
   const [quantity, setQuantidade] = useState('');
-  const [unidadeMedida, setUnidadeMedida] = useState('');
   const [localizacao, setLocalizacao] = useState('');
-  const [categoria, setCategoria] = useState('');
+  const [unidadeMedida, setUnidadeMedida] = useState('');
+  const [dialogVisible, setDialogVisible] = useState(false);
 
   const tableColumns = [
     { field: 'name', header: 'Nome' },
-    { field: 'unid_medida', header: 'Unidade de medida' },
+    { field: 'measure', header: 'Unidade de medida' },
     { field: 'localizacao', header: 'Localização' },
     { field: 'quantity', header: 'Quantidade' },
-    { field: 'categoria', header: 'Categoria' }
+    { field: 'category', header: 'Categoria' }
   ];
 
   async function getClients() {
@@ -33,45 +38,96 @@ function Produtos() {
     const data = dados.map(dado => ({
       id: dado.id,
       name: dado.name,
-      unid_medida: dado.measure.unit_measure,
-      localizacao: dado.location,
       quantity: dado.quantity,
-      categoria: dado.category.name,
+      localizacao: dado.location,
+      category: dado.category.name,
+      measure: dado.measure.unit_measure,
     }))
     setTableData(data);
   }
 
+  async function getCategory() {
+    const response = await api.get("/admin/category");
+    const dados = response.data
+    const data = dados.map(dado => ({
+      value: dado.id, // valor do cliente
+      label: dado.name,  // rótulo do cliente
+    }));
+
+    setClientes(data);
+  }
+
+  async function getMedida() {
+    const response = await api.get("/admin/measure");
+    const dados = response.data
+    const data = dados.map(dado => ({
+      value: dado.id,
+      label: dado.unit_measure,
+    }));
+    setMedida(data);
+  }
+
   const handleEditar = (event, rowData) => {
-    console.log(rowData);
+    setId(rowData.id)
     setNome(rowData.name);
-    setUnidadeMedida(rowData.unid_medida);
+    setCategoria(rowData.category);
+    setQuantidade(rowData.quantity);
+    setUnidadeMedida(rowData.measure);
     setLocalizacao(rowData.localizacao);
-    setCategoria(rowData.categoria);
-    setQuantidade(rowData.quantity)
     setDialogVisible(true);
   };
   const handleAtualizar = async (e) => {
     e.preventDefault();
 
     const updatedData = {
+      id: id,
       name: name,
-      unid_medida: unidadeMedida,
-      localizacao: localizacao,
-      categoria: categoria,
-      quantity: quantity
+      category: category,
+      quantity: quantity,
+      measure: unidadeMedida,
+      localizacao: localizacao
     };
 
-    console.log(updatedData)
+    const response = await api.put(`/admin/product`, updatedData);
 
-    // const response = await api.put(`/admin/product/:id}`, updatedData);
-
-    // console.log(response);
-
+    console.log(response);
+    getClients();
     setDialogVisible(false); // Fecha a modal após a atualização
   };
 
+  // const handleDeletar = async (e, rowData) => {
+  //   e.preventDefault();
+  //   const updatedData = {
+  //     id: rowData.id,
+  //   };
+
+  //   const response = await api.delete(`/admin/product`, updatedData);
+
+  //   console.log(response);
+  //   getClients();  
+  // };
+
+
+  const handleDeletar = async (e, rowData) => {
+    e.preventDefault();
+    const updatedData = {
+      id: rowData.id,
+    };
+  
+    try {
+      const response = await api.delete('/admin/product', { data: updatedData });
+      console.log(response.data);
+      getClients();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  
   useEffect(() => {
     getClients();
+    getMedida();
+    getCategory();
   }, []);
 
   return (
@@ -97,7 +153,7 @@ function Produtos() {
                 return <Column key={field} field={field} header={header} style={{ width: '25%' }} />;
               })}
               <Column
-                header="Ações"
+                header="Editar"
                 body={(rowData) => (
                   <Button
                     label="Editar"
@@ -106,68 +162,90 @@ function Produtos() {
                   />
                 )}
               />
+              <Column
+                header="Deletar"
+                body={(rowData) => (
+                  <Button
+                    label="Deletar"
+                    onClick={(e) => handleDeletar(e, rowData)}
+                    className="btn btn-danger"
+                  />
+                )}
+              />
             </DataTable>
-            <Dialog
-              modal
-              maximizable
-              header="Editar Produtos"
-              visible={dialogVisible}
-              style={{ width: '75vw' }}
-              contentStyle={{ height: '300px' }}
-            >
-              <div className="row">
-                <div className='col-6'>
-                  <p className='m-auto pb-2'>Nome</p>
-                  <input className="form-control form-control" type="text" value={name}
-                    onChange={(e) => setNome(e.target.value)} />
+            <form action="put">
+              <Dialog
+                modal
+                maximizable
+                header="Editar Produtos"
+                visible={dialogVisible}
+                onHide={() => setDialogVisible(false)}
+                style={{ width: '75vw' }}
+                contentStyle={{ height: '300px' }}
+              >
+                <div className="row">
+                  <div className='col-4'>
+                    <p className='m-auto pb-2'>Nome</p>
+                    <InputText
+                      type="text"
+                      className="p-inputtext-sm"
+                      value={name}
+                      onChange={(e) => setNome(e.target.value)}
+                    />
+                  </div>
+                  <div className='col-4'>
+                    <p className='m-auto pb-2'>Localização</p>
+                    <InputText
+                      type="text"
+                      className="p-inputtext-sm"
+                      value={localizacao}
+                      onChange={(e) => setLocalizacao(e.target.value)}
+                    />
+                  </div>
+                  <div className='col-4'>
+                    <p className='m-auto pb-2'>Quantidade</p>
+                    <InputText
+                      type="number"
+                      className="p-inputtext-sm"
+                      value={quantity}
+                      onChange={(e) => setQuantidade(e.target.value)}
+                    />
+                  </div>
                 </div>
-                <div className='col-6'>
-                  <p className='m-auto pb-2'>Unidade de medida</p>
-                  <input
-                    className="form-control form-control"
-                    type="text"
-                    value={unidadeMedida}
-                    onChange={(e) => setUnidadeMedida(e.target.value)}
-                  />
+                <div className="row py-3">
+                  <div className='col-4'>
+                    <p className='m-auto pb-2'>Categoria</p>
+                    <Dropdown
+                      value={category}
+                      onChange={(e) => setCategoria(e.value)}
+                      options={clientes}
+                      filter
+                      placeholder={'Selecione uma Categoria'}
+                      className="p-inputtext-sm"
+                    />
+                  </div>
+                  <div className='col-4'>
+                    <p className='m-auto pb-2'>Unidade de medida</p>
+                    <Dropdown
+                      value={unidadeMedida}
+                      onChange={(e) => setUnidadeMedida(e.value)}
+                      options={medida}
+                      filter
+                      placeholder={'Selecione Unidade de Medida'}
+                      className="p-inputtext-sm"
+                    />
+                  </div>
+                  <div className='col-4'>
+                    <p className='m-auto pb-3'><b>Confirmar</b></p>
+                    <Button
+                      label="Atualizar"
+                      onClick={handleAtualizar}
+                      className="btn btn-info"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="row py-3">
-                <div className='col-6'>
-                  <p className='m-auto pb-2'>Localização</p>
-                  <input
-                    className="form-control form-control"
-                    type="text"
-                    value={localizacao}
-                    onChange={(e) => setLocalizacao(e.target.value)}
-                  />
-                </div>
-                <div className='col-6'>
-                  <p className='m-auto pb-2'>Categoria</p>
-                  <input
-                    className="form-control form-control"
-                    type="text"
-                    value={categoria}
-                    onChange={(e) => setCategoria(e.target.value)}
-                  />
-                </div>
-                <div className='col-6'>
-                  <p className='m-auto pb-2'>Quantidade</p>
-                  <input
-                    className="form-control form-control"
-                    type="text"
-                    value={quantity}
-                    onChange={(e) => setQuantidade(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="py-3 text-end">
-                <Button
-                  label="Atualizar"
-                  onClick={handleAtualizar} // Usa o novo manipulador de eventos
-                  className="btn btn-info"
-                />
-              </div>
-            </Dialog>
+              </Dialog>
+            </form>
           </div>
         </PanelBody>
       </Panel>

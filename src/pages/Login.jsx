@@ -17,7 +17,7 @@ function Login(props) {
 
 		try {
 			const body = { email, password };
-			const response = await api.post('/auth', body);
+			const response = await api.post('/admin/user/auth', body);
 			const token = response.data.token;
 
 			if (token) {

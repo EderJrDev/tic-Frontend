@@ -2,23 +2,59 @@
 // import React, { useState, useEffect } from "react";
 
 import Calendar from 'react-calendar';
+import { InputText } from 'primereact/inputtext';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { FilterMatchMode } from 'primereact/api';
+
 import { Panel, PanelHeader, PanelBody } from '../components/panel/panel.jsx';
 import { api } from '../utils/api.js';
 // import { AppSettings } from '../config/app-settings.js';;;;;;
 import 'react-calendar/dist/Calendar.css';
+import { downloadCSV } from "../utils/export.js";
 import { useState } from 'react';
 
 function Dashboard() {
-
 	const date = new Date();
-
 	const [products, Setproducts] = useState();
 	const [budget, Setbudget] = useState();
 	const [order, SetOrder] = useState();
 	const [category, SetCategory] = useState();
 
-	async function getClients() {
+	const onGlobalFilterChange = (e) => {
+		setGlobalFilterValue(e.target.value);
+	};
 
+	const [tableData, setTableData] = useState([]);
+	const [globalFilterValue, setGlobalFilterValue] = useState('');
+	const columns = [
+		{ field: 'produtos', header: 'Número de Produtos' },
+		{ field: 'status', header: 'Status' },
+		{ field: 'data', header: 'Data' }
+	];
+
+
+	async function getProducts() {
+		const response = await api.get("/admin/order/latest");
+		let dados = response.data;
+		let getOrders = dados.orders;
+
+		const data = getOrders.map(dado => ({
+			// id: dado.id
+			status: dado.status,
+			produtos: dado.quant,
+			data: new Date(dado.expected_date).toLocaleDateString('pt-BR')
+
+			// quantity: dado.quantity,
+			// location: dado.location,
+			// category: dado.category.name,
+			// measure: dado.measure.unit_measure,
+		}))
+		setTableData(data);
+	}
+	getProducts();
+
+	async function getClients() {
 		const getProducts = await api.get("/admin/product");
 		let products = getProducts.data
 		let productsCont = products.length
@@ -39,8 +75,7 @@ function Dashboard() {
 		let categoriesCont = category.length
 		SetCategory(categoriesCont)
 	}
-
-	getClients()
+	getClients();
 
 	return (
 		<div>
@@ -102,30 +137,52 @@ function Dashboard() {
 			<div className="row">
 				<div className="col-xl-8">
 					<Panel>
-						<PanelHeader>Ultimos Pedidos</PanelHeader>
+						<PanelHeader className="bg-teal-700 text-white">Ultimos Pedidos</PanelHeader>
 						<PanelBody>
-							<div className="table-responsive">
-								<table className="table table-striped mb-0">
-									<thead>
-										<tr>
-											<th>Produto</th>
-											<th>Status</th>
-											<th>Data</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td>Arroz</td>
-											<td>Aguardando</td>
-											<td>01-07-2022</td>
-										</tr>
-										<tr>
-											<td>Farinha</td>
-											<td>Atrasado</td>
-											<td>01-07-2022</td>
-										</tr>
-									</tbody>
-								</table>
+							<div>
+								<div className="d-flex justify-content-end px-2 py-3">
+									<span className="p-input-icon-left mx-2">
+										<i className="bi bi-search"></i>
+										<InputText
+											value={globalFilterValue}
+											onChange={onGlobalFilterChange}
+											placeholder="Pesquisar"
+										/>
+									</span>
+									<button
+										className="btn btn-info"
+										onClick={() => downloadCSV(tableData)}>
+										<i className="bi bi-arrow-bar-up"></i>
+										Exportar
+									</button>
+								</div>
+								<div className="card">
+									<DataTable
+										paginator
+										stripedRows
+										showGridlines
+										filterMode="global"
+										sortMode="multiple"
+										selectionMode="single"
+										rows={10}
+										rowsPerPageOptions={[10, 25, 50]}
+										value={tableData}
+										// totalRecords={tableData.length}
+										globalFilter={globalFilterValue}
+										tableStyle={{ minWidth: '1rem', fontSize: '0.8rem' }}
+										paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+									>
+										{columns.map((col, i) => (
+											<Column
+												sortable
+												key={col.field}
+												field={col.field}
+												header={col.header}
+												filterMatchMode={FilterMatchMode.CONTAINS}
+											/>
+										))}
+									</DataTable>
+								</div>
 							</div>
 						</PanelBody>
 					</Panel>

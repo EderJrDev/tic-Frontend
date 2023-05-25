@@ -10,6 +10,7 @@ import { addNotification } from "../utils/notifications.js";
 import React, { useState, useEffect } from "react";
 import { ReactNotifications } from 'react-notifications-component';
 import { Panel, PanelHeader, PanelBody } from "../components/panel/panel.jsx";
+import { getClients } from "./Products/getDataTable.jsx";
 
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -30,8 +31,8 @@ function Produtos() {
 
   const [createName, setCreateName] = useState('');
 
-  const [createMeasure, setCreateMeasure] = useState([]);
-  const [createCategory, setCreateCategory] = useState([]);
+  const [createMeasure, setCreateMeasure] = useState(null);
+  const [createCategory, setCreateCategory] = useState(null);
 
   const [createQuantity, setcreateQuantity] = useState('');
   const [createLocation, setCreateLocation] = useState('');
@@ -43,21 +44,6 @@ function Produtos() {
     { field: 'quantity', header: 'Quantidade' },
     { field: 'category', header: 'Categoria' }
   ];
-
-  async function getClients() {
-    const response = await api.get("/admin/product");
-    let dados = response.data;
-
-    const data = dados.map(dado => ({
-      id: dado.id,
-      name: dado.name,
-      quantity: dado.quantity,
-      location: dado.location,
-      category: dado.category.name,
-      measure: dado.measure.unit_measure,
-    }))
-    setTableData(data);
-  }
 
   async function getCategory() {
     const response = await api.get("/admin/category");
@@ -88,9 +74,9 @@ function Produtos() {
     try {
       const newData = {
         name: createName,
-        category: createCategory,
+        category: category ? category : '',
         quantity: createQuantity,
-        measure: createMeasure,
+        measure: unidadeMedida ? unidadeMedida : '',
         location: createLocation
       };
 
@@ -99,7 +85,14 @@ function Produtos() {
       const response = await api.post(`/admin/product`, newData);
 
       console.log(response);
-      setCreateVisible(false); // Fecha a modal após a atualização
+      getClients();
+      setCreateVisible(false);
+      addNotification(
+        'success',
+        'Produto Adicionado!',
+        'Produto cadastrado com sucesso.',
+        'top-right'
+      ); // Fecha a modal após a atualização
     } catch (error) {
       addNotification(
         'danger',
@@ -110,7 +103,6 @@ function Produtos() {
       console.log(error);
     }
   };
-
 
   const handleEditar = (event, rowData) => {
     setId(rowData.id)
@@ -123,10 +115,8 @@ function Produtos() {
   };
 
   const handleCriarProduct = () => {
-
     setCreateVisible(true);
   };
-
 
   const handleAtualizar = async (e) => {
     e.preventDefault();
@@ -168,7 +158,13 @@ function Produtos() {
   };
 
   useEffect(() => {
-    getClients();
+    async function fetchData() {
+      const data = await getClients();
+      setTableData(data);
+    }
+
+    fetchData();
+    
     getMedida();
     getCategory();
   }, []);

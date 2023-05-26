@@ -1,6 +1,6 @@
 import { api } from "../../utils/api";
 
-export async function getClients() {
+export async function getTable() {
   const response = await api.get('/admin/product');
   let dados = response.data;
 

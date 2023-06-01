@@ -69,7 +69,6 @@ function EditarProdutoModal({ handleAtualizar, clientes, medida }) {
               required
               onChange={(e) => setCategoria(e.value)}
               options={clientes}
-              filter
               placeholder={'Selecione uma Categoria'}
               className="p-inputtext-sm"
             />
@@ -81,7 +80,6 @@ function EditarProdutoModal({ handleAtualizar, clientes, medida }) {
               required
               onChange={(e) => setUnidadeMedida(e.value)}
               options={medida}
-              filter
               placeholder={'Selecione Unidade de Medida'}
               className="p-inputtext-sm"
             />

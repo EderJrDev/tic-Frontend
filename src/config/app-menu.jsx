@@ -4,6 +4,10 @@ const Menu = [
   {
     path: 'produtos', icon: 'fa fa-cogs', title: 'Produtos',
     
+  },
+  {
+    path: 'pedidos', icon: 'fa fa-folder', title: 'Pedidos',
+    
   }
 ]
 

@@ -46,11 +46,11 @@ class SidebarProfile extends React.Component {
 								<div className="menu-profile-info">
 									<div className="d-flex align-items-center">
 										<div className="flex-grow-1">
-											Sean Ngu
+											Administrador
 										</div>
 										<div className="menu-caret ms-auto"></div>
 									</div>
-									<small>Front end developer</small>
+									<small> Configurações</small>
 								</div>
 							</Link>
 						</div>

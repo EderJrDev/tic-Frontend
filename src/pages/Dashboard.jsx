@@ -33,7 +33,6 @@ function Dashboard() {
 		{ field: 'data', header: 'Data' }
 	];
 
-
 	async function getProducts() {
 		const response = await api.get("/admin/order/latest");
 		let dados = response.data;

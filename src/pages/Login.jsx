@@ -66,9 +66,9 @@ function Login(props) {
 					<div className="login-header">
 						<div className="brand">
 							<div className="d-flex align-items-center">
-								<span className="logo"></span> <b>Wallet </b> IB
+								<span className="logo"></span> <b>System </b> Admin
 							</div>
-							<small>Sistema Administrativo da IB System</small>
+							<small>Sistema Administrativo da Creche Nossa Senhora da Conceição</small>
 						</div>
 						<div className="icon">
 							<i className="fa fa-lock"></i>

@@ -3,10 +3,6 @@ const Menu = [
 
   {
     path: 'produtos', icon: 'fa fa-cogs', title: 'Produtos',
-    
-  },
-  {
-    path: 'usuarios', icon:'fa fa-user', title: 'Usuários',
   }
 ]
 

@@ -7,19 +7,19 @@ function CustomerOrder(props) {
   const [posMobileSidebarToggled, setPosMobileSidebarToggled] = useState(false);
   const context = useContext(AppSettings);
 
-  useEffect(() => {
-    context.handleSetAppSidebarNone(true);
-    context.handleSetAppHeaderNone(true);
-    context.handleSetAppContentFullHeight(true);
-    context.handleSetAppContentClass('p-0');
+  // useEffect(() => {
+  //   context.handleSetAppSidebarNone(true);
+  //   context.handleSetAppHeaderNone(true);
+  //   context.handleSetAppContentFullHeight(true);
+  //   context.handleSetAppContentClass('p-0');
 
-    return () => {
-      context.handleSetAppSidebarNone(false);
-      context.handleSetAppHeaderNone(false);
-      context.handleSetAppContentFullHeight(false);
-      context.handleSetAppContentClass('');
-    };
-  }, []);
+  //   return () => {
+  //     context.handleSetAppSidebarNone(false);
+  //     context.handleSetAppHeaderNone(false);
+  //     context.handleSetAppContentFullHeight(false);
+  //     context.handleSetAppContentClass('');
+  //   };
+  // }, []);
 
   const togglePosMobileSidebar = () => {
     setPosMobileSidebarToggled(!posMobileSidebarToggled);
@@ -28,7 +28,7 @@ function CustomerOrder(props) {
   return (
     <div className="vh-100">
       <div className={'pos pos-customer ' + (posMobileSidebarToggled ? 'pos-mobile-sidebar-toggled' : '')} id="pos-customer">
-        <div className="pos-menu">
+        {/* <div className="pos-menu">
           <div className="logo">
             <Link to="/">
               <div className="logo-text"><i class="bi bi-arrow-left-circle"></i> Voltar</div>
@@ -55,7 +55,7 @@ function CustomerOrder(props) {
               </ul>
             </PerfectScrollbar>
           </div>
-        </div>
+        </div> */}
         <div className="pos-content">
           <PerfectScrollbar className="pos-content-container" options={{ suppressScrollX: true }}>
             <div className="product-row">
@@ -70,19 +70,6 @@ function CustomerOrder(props) {
                       <div className="desc">Categoria: Alimento</div>
                       <div className="price">Quantidade: 12</div>
                       <div className="desc">Status: Aguardando</div>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-              <div className='col-lg-4'>
-                <div className="container" data-type="meat">
-                  <Link to="/pos/customer-order" className="product" data-bs-toggle="modal" data-bs-target="#modalPosItem">
-                    <div className="text">
-                      <div className="title">Arrroz</div>
-                      <div className="desc">Quantidade em Estoque</div>
-                      <div className="price">12</div>
-                      <div className="desc">Status</div>
-                      <div className="title">Aguardando</div>
                     </div>
                   </Link>
                 </div>

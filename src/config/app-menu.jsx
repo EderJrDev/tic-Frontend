@@ -3,12 +3,14 @@ const Menu = [
 
   {
     path: 'produtos', icon: 'fa fa-cogs', title: 'Produtos',
-    
   },
   {
-    path: 'pedidos', icon: 'fa fa-folder', title: 'Pedidos',
-    
-  }
+    path: 'usuarios', icon: 'fa fa-user', title: 'Usuários',
+  },
+  {
+    path: 'pedidos', icon: 'fa fa-shopping-cart', title: 'Pedidos',
+  },
+
 ]
 
 export default Menu;

@@ -9,7 +9,9 @@ export async function createProduct(
   createQuantity,
   unidadeMedida,
   createLocation,
-  setTableData
+  setTableData,
+  purchase_allowed,
+  originCityHall
 ) {
 
   try {
@@ -18,6 +20,8 @@ export async function createProduct(
       category: category ? category : '',
       quantity: createQuantity,
       measure: unidadeMedida ? unidadeMedida : '',
+      purchase_allowed: purchase_allowed,
+      originCityHall: originCityHall,
       location: createLocation
     };
 

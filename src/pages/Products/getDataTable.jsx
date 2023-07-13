@@ -4,6 +4,8 @@ export async function getTable() {
   const response = await api.get('/admin/product');
   let dados = response.data;
 
+  console.log(dados);
+
   const data = dados.map((dado) => ({
     id: dado.id,
     name: dado.name,

@@ -36,6 +36,9 @@ function Produtos() {
   const [createVisible, setCreateVisible] = useState(false);
   const [createCategory, setCreateCategory] = useState(null);
 
+  const [purchase_allowed, setPurchase_allowed] = useState(null);
+  const [originCityHall, setOriginCityHall] = useState(null);
+
   const tableColumns = [
     { field: 'name', header: 'Nome' },
     { field: 'category', header: 'Categoria' },
@@ -43,6 +46,8 @@ function Produtos() {
     { field: 'quantity', header: 'Quantidade' },
     { field: 'measure', header: 'Unidade de medida' }
   ];
+
+
 
   const handleEditar = (event, rowData) => {
     setId(rowData.id)
@@ -60,7 +65,7 @@ function Produtos() {
 
   async function sendProduct() {
     updateTableData(setTableData);
-    createProduct(setCreateVisible, createName, category, createQuantity, unidadeMedida, createLocation, setTableData);
+    createProduct(setCreateVisible, createName, category, createQuantity, unidadeMedida, createLocation, setTableData, purchase_allowed, originCityHall);
     setCreateName('');
     setCategoria(null);
     setcreateQuantity('');
@@ -83,6 +88,16 @@ function Produtos() {
     getMedida(setMedida, setCreateMeasure);
     getCategory(setClientes, setCreateCategory);
   }, []);
+
+  const purchase = [
+    { value: true, label: 'Sim' },
+    { value: false, label: 'Não' },
+  ];
+
+  const origin = [
+    { value: true, label: 'Sim' },
+    { value: false, label: 'Não' },
+  ];
 
   return (
     <div>
@@ -287,6 +302,28 @@ function Produtos() {
                       required
                       onChange={(e) => setUnidadeMedida(e.value)}
                       options={createMeasure}
+                      placeholder={'Selecione Unidade de Medida'}
+                      className="p-inputtext-sm w-100"
+                    />
+                  </div>
+                  <div className='col-lg-2'>
+                    <p className='m-auto pb-2'>Compra aprovada ?</p>
+                    <Dropdown
+                      value={purchase_allowed}
+                      required
+                      onChange={(e) => setPurchase_allowed(e.value)}
+                      options={purchase}
+                      placeholder={'Selecione Unidade de Medida'}
+                      className="p-inputtext-sm w-100"
+                    />
+                  </div>
+                  <div className='col-lg-2'>
+                    <p className='m-auto pb-2'>Vem da Prefeitura ?</p>
+                    <Dropdown
+                      value={originCityHall}
+                      required
+                      onChange={(e) => setOriginCityHall(e.value)}
+                      options={origin}
                       placeholder={'Selecione Unidade de Medida'}
                       className="p-inputtext-sm w-100"
                     />

@@ -44,10 +44,10 @@ function Produtos() {
     { field: 'category', header: 'Categoria' },
     { field: 'location', header: 'Localização' },
     { field: 'quantity', header: 'Quantidade' },
-    { field: 'measure', header: 'Unidade de medida' }
+    { field: 'measure', header: 'Unidade de medida' },
+    { field: 'purchase_allowed', header: 'Compra Aprovada' },
+    { field: 'originCityHall', header: 'Vem da Prefeitura' }
   ];
-
-
 
   const handleEditar = (event, rowData) => {
     setId(rowData.id)
@@ -56,6 +56,8 @@ function Produtos() {
     setQuantidade(rowData.quantity);
     setUnidadeMedida(rowData.measure);
     setLocalizacao(rowData.location);
+    setOriginCityHall(rowData);
+    setPurchase_allowed(rowData);
     setDialogVisible(true);
   };
 
@@ -71,12 +73,12 @@ function Produtos() {
     setcreateQuantity('');
     setUnidadeMedida(null);
     setCreateLocation('');
-  }
+  };
 
   async function updateProduct() {
     updateTableData(setTableData);
-    updatedProduct(id, name, category, quantity, unidadeMedida, location, setTableData, setDialogVisible);
-  }
+    updatedProduct(id, name, category, quantity, unidadeMedida, location, setTableData, setDialogVisible, purchase_allowed, originCityHall);
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -184,63 +186,111 @@ function Produtos() {
                 header="Editar Produtos"
                 visible={dialogVisible}
                 onHide={() => setDialogVisible(false)}
-                style={{ width: '75vw' }}
-                contentStyle={{ height: '300px' }}
+                style={{ width: '70vw' }}
+                contentStyle={{ height: '360px' }}
               >
-                <div className="row mt-5 m-auto">
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Nome</p>
-                    <InputText
-                      type="text"
-                      className="p-inputtext-sm w-100"
-                      value={name}
-                      onChange={(e) => setNome(e.target.value)}
-                    />
+                <div className="row">
+                  <div className="col-lg-4">
+                    <div className="d-flex flex-column m-1">
+                      <label>Nome</label>
+                      <InputText
+                        type="text"
+                        value={name}
+                        className="p-inputtext-sm"
+                        placeholder="Nome do produto"
+                        onChange={(e) => setNome(e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Localização</p>
-                    <InputText
-                      type="text"
-                      className="p-inputtext-sm w-100"
-                      value={location}
-                      onChange={(e) => setLocalizacao(e.target.value)}
-                    />
+
+                  <div className="col-lg-4">
+                    <div className="d-flex flex-column m-1">
+                      <label>Localização</label>
+                      <InputText
+                        type="text"
+                        value={location}
+                        className="p-inputtext-sm"
+                        placeholder="Nome do produto"
+                        onChange={(e) => setLocalizacao(e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Quantidade</p>
-                    <InputText
-                      type="number"
-                      className="p-inputtext-sm w-100"
-                      value={quantity}
-                      onChange={(e) => setQuantidade(e.target.value)}
-                    />
+
+                  <div className="col-lg-4">
+                    <div className="d-flex flex-column m-1">
+                      <label>Quantidade</label>
+                      <InputText
+                        type="text"
+                        value={quantity}
+                        className="p-inputtext-sm"
+                        placeholder="Nome do produto"
+                        onChange={(e) => setQuantidade(e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Categoria</p>
-                    <Dropdown
-                      value={category}
-                      required
-                      onChange={(e) => setCategoria(e.value)}
-                      options={clientes}
-                      placeholder={'Selecione uma Categoria'}
-                      className="p-inputtext-sm w-100"
-                    />
+
+                  <div className="col-lg-4 mt-3">
+                    <div className="d-flex flex-column m-1">
+                      <label>Categoria</label>
+                      <Dropdown
+                        value={category}
+                        required
+                        onChange={(e) => setCategoria(e.value)}
+                        options={clientes}
+                        placeholder={'Selecione uma Categoria'}
+                        className="p-inputtext-sm w-100"
+                      />
+                    </div>
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Unidade de medida</p>
-                    <Dropdown
-                      value={unidadeMedida}
-                      required
-                      onChange={(e) => setUnidadeMedida(e.value)}
-                      options={medida}
-                      placeholder={'Selecione Unidade de Medida'}
-                      className="p-inputtext-sm w-100"
-                    />
+
+                  <div className="col-lg-4 mt-3">
+                    <div className="d-flex flex-column m-1">
+                      <label>Unidade de medida</label>
+                      <Dropdown
+                        value={unidadeMedida}
+                        required
+                        onChange={(e) => setUnidadeMedida(e.value)}
+                        options={medida}
+                        placeholder={'Selecione Unidade de Medida'}
+                        className="p-inputtext-sm w-100"
+                      />
+                    </div>
                   </div>
-                  <div className='col-lg-2'>
-                    <div className='pt-4 mt-3'>
-                      <button className="btn btn-info btn-btn-sm" onClick={updateProduct}>
-                        <i className="bi bi-check-circle-fill"></i> Atualizar
+
+                  <div className="col-lg-4 mt-3">
+                    <div className="d-flex flex-column m-1">
+                      <label>Compra aprovada</label>
+                      <Dropdown
+                        value={purchase_allowed}
+                        required
+                        onChange={(e) => setPurchase_allowed(e.value)}
+                        options={purchase}
+                        placeholder={'Selecione Unidade de Medida'}
+                        className="p-inputtext-sm w-100"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-lg-4 mt-3">
+                    <div className="d-flex flex-column m-1">
+                      <label>Vem da Prefeitura</label>
+                      <Dropdown
+                        value={originCityHall}
+                        required
+                        onChange={(e) => setOriginCityHall(e.value)}
+                        options={origin}
+                        placeholder={'Selecione Unidade de Medida'}
+                        className="p-inputtext-sm w-100"
+                      />
+                    </div>
+                  </div>
+
+                  <div className='col-lg-12 pt-3 mt-3'>
+                    <div className='text-center'>
+                      <button
+                        className="btn btn-info btn-btn-sm"
+                        onClick={updateProduct}>
+                        Atualizar <i className="bi bi-check-circle-fill"></i>
                       </button>
                     </div>
                   </div>
@@ -253,85 +303,112 @@ function Produtos() {
                 header="Adicionar um novo produto"
                 visible={createVisible}
                 onHide={() => setCreateVisible(false)}
-                style={{ width: '75vw' }}
-                contentStyle={{ height: '300px' }}
+                style={{ width: '70vw' }}
+                contentStyle={{ height: '350px' }}
               >
-                <div className="row mt-5 m-auto">
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Nome</p>
-                    <InputText
-                      type="text"
-                      className="p-inputtext-sm w-100"
-                      value={createName}
-                      onChange={(e) => setCreateName(e.target.value)}
-                    />
+                <div className="row">
+                  <div className="col-lg-4">
+                    <div className="d-flex flex-column m-1">
+                      <label>Nome</label>
+                      <InputText
+                        type="text"
+                        value={createName}
+                        className="p-inputtext-sm"
+                        placeholder="Nome do produto"
+                        onChange={(e) => setCreateName(e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Localização</p>
-                    <InputText
-                      type="text"
-                      className="p-inputtext-sm w-100"
-                      value={createLocation}
-                      onChange={(e) => setCreateLocation(e.target.value)}
-                    />
+
+                  <div className="col-lg-4">
+                    <div className="d-flex flex-column m-1">
+                      <label>Localização</label>
+                      <InputText
+                        type="text"
+                        value={createLocation}
+                        className="p-inputtext-sm"
+                        placeholder="Exemplo: Cozinha"
+                        onChange={(e) => setCreateLocation(e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Quantidade</p>
-                    <InputText
-                      type="number"
-                      className="p-inputtext-sm w-100"
-                      value={createQuantity}
-                      onChange={(e) => setcreateQuantity(e.target.value)}
-                    />
+
+                  <div className="col-lg-4">
+                    <div className="d-flex flex-column m-1">
+                      <label>Quantidade</label>
+                      <InputText
+                        type="number"
+                        value={createQuantity}
+                        className="p-inputtext-sm"
+                        placeholder="0"
+                        onChange={(e) => setcreateQuantity(e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Categoria</p>
-                    <Dropdown
-                      value={category}
-                      required
-                      onChange={(e) => setCategoria(e.value)}
-                      options={createCategory}
-                      placeholder={'Selecione uma Categoria'}
-                      className="p-inputtext-sm w-100"
-                    />
+
+                  <div className="col-lg-4">
+                    <div className="d-flex flex-column m-1">
+                      <label>Categoria</label>
+                      <Dropdown
+                        value={category}
+                        required
+                        onChange={(e) => setCategoria(e.value)}
+                        options={createCategory}
+                        placeholder={'Selecione uma Categoria'}
+                        className="p-inputtext-sm w-100"
+                      />
+                    </div>
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Unidade de medida</p>
-                    <Dropdown
-                      value={unidadeMedida}
-                      required
-                      onChange={(e) => setUnidadeMedida(e.value)}
-                      options={createMeasure}
-                      placeholder={'Selecione Unidade de Medida'}
-                      className="p-inputtext-sm w-100"
-                    />
+
+                  <div className="col-lg-4">
+                    <div className="d-flex flex-column m-1">
+                      <label>Unidade de medida</label>
+                      <Dropdown
+                        value={unidadeMedida}
+                        required
+                        onChange={(e) => setUnidadeMedida(e.value)}
+                        options={createMeasure}
+                        placeholder={'Selecione Unidade de Medida'}
+                        className="p-inputtext-sm w-100"
+                      />
+                    </div>
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Compra aprovada ?</p>
-                    <Dropdown
-                      value={purchase_allowed}
-                      required
-                      onChange={(e) => setPurchase_allowed(e.value)}
-                      options={purchase}
-                      placeholder={'Selecione Unidade de Medida'}
-                      className="p-inputtext-sm w-100"
-                    />
+
+                  <div className="col-lg-4">
+                    <div className="d-flex flex-column m-1">
+                      <label>Compra aprovada</label>
+                      <Dropdown
+                        value={purchase_allowed}
+                        required
+                        onChange={(e) => setPurchase_allowed(e.value)}
+                        options={purchase}
+                        placeholder={'Selecione Unidade de Medida'}
+                        className="p-inputtext-sm w-100"
+                      />
+                    </div>
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Vem da Prefeitura ?</p>
-                    <Dropdown
-                      value={originCityHall}
-                      required
-                      onChange={(e) => setOriginCityHall(e.value)}
-                      options={origin}
-                      placeholder={'Selecione Unidade de Medida'}
-                      className="p-inputtext-sm w-100"
-                    />
+
+                  <div className="col-lg-4">
+                    <div className="d-flex flex-column m-1">
+                      <label>Vem da Prefeitura</label>
+                      <Dropdown
+                        value={originCityHall}
+                        required
+                        onChange={(e) => setOriginCityHall(e.value)}
+                        options={origin}
+                        placeholder={'Selecione Unidade de Medida'}
+                        className="p-inputtext-sm w-100"
+                      />
+                    </div>
                   </div>
-                  <div className='col-lg-2'>
-                    <div className='pt-4 mt-3'>
-                      <button className="btn btn-info btn-btn-sm" onClick={sendProduct}>
-                        <i className="bi bi-check-circle-fill"></i> Criar
+                  <div className='col-lg-12 pt-3 mt-2'>
+                    <div className='text-center'>
+                      <button
+                        onClick={sendProduct}
+                        className="btn btn-info btn-btn-sm"
+                      >
+                        Cadastrar <i className="bi bi-check-circle-fill"></i>
+
                       </button>
                     </div>
                   </div>

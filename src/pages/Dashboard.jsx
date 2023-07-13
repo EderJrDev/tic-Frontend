@@ -169,7 +169,7 @@ function Dashboard() {
 										// totalRecords={tableData.length}
 										globalFilter={globalFilterValue}
 										tableStyle={{ minWidth: '1rem', fontSize: '0.8rem' }}
-										paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+										emptyMessage="Nenhuma informação encontrada."
 									>
 										{columns.map((col, i) => (
 											<Column

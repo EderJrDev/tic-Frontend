@@ -18,8 +18,7 @@ export async function createUser(
       password: createPassword,
       isAdmin: createIsAdmin,
     };
-
-    console.log(newData)
+    // console.log(newData);
 
     await api.post(`/admin/user`, newData);
 

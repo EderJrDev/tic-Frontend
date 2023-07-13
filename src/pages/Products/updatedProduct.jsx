@@ -2,7 +2,7 @@ import { api } from "../../utils/api";
 import { addNotification } from "../../utils/notifications";
 import updateTableData from "./updatedTable";
 
-export async function updatedProduct(id, name, category, quantity, unidadeMedida, location, setTableData, setDialogVisible) {
+export async function updatedProduct(id, name, category, quantity, unidadeMedida, location, setTableData, setDialogVisible, purchase_allowed, originCityHall) {
   try {
     const updatedData = {
       id: id,
@@ -10,10 +10,12 @@ export async function updatedProduct(id, name, category, quantity, unidadeMedida
       category: category,
       quantity: quantity,
       measure: unidadeMedida,
-      location: location
+      location: location,
+      purchase_allowed: purchase_allowed,
+      originCityHall: originCityHall
     };
 
-     await api.put(`/admin/product`, updatedData);
+    await api.put(`/admin/product`, updatedData);
 
     addNotification(
       'success',

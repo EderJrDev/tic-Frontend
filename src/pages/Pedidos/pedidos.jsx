@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import { AppSettings } from './../../config/app-settings.js';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-
 import { api } from "../../utils/api";
+import { Link } from 'react-router-dom';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
+import { AppSettings } from './../../config/app-settings.js';
 
-
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
 function CustomerOrder() {
   const [posMobileSidebarToggled, setPosMobileSidebarToggled] = useState(false);
@@ -34,9 +32,9 @@ function CustomerOrder() {
       quantity: selectedQuantityToAdd
     });
     setOrders(updatedOrders);
+    setShowModal(false);
+    setSelectedQuantityToAdd(0);
   };
-  
-
 
   useEffect(() => {
     async function getCategory() {
@@ -46,6 +44,43 @@ function CustomerOrder() {
     }
     getCategory();
   }, []);
+
+  useEffect(() => {
+    async function sendOrder() {
+
+      const response = await api.get("/admin/product");
+      const dados = response.data
+      setCli(dados);
+    }
+    sendOrder();
+  }, []);
+
+  const [pedidoQuantidade, setPedidoQuantidade] = useState(0);
+  const [estoqueQuantidade, setEstoqueQuantidade] = useState(0);
+
+  const calcularTotais = () => {
+    let totalPedidoQuantidade = 0;
+    let totalEstoqueQuantidade = 0;
+
+    orders.forEach((order) => {
+      totalPedidoQuantidade += parseFloat(order.quantity);
+      // Adicione aqui qualquer lógica adicional para calcular o total de itens em estoque, se necessário
+    });
+
+    setPedidoQuantidade(totalPedidoQuantidade);
+    setEstoqueQuantidade(totalEstoqueQuantidade);
+  };
+
+  useEffect(() => {
+    calcularTotais();
+  }, [orders]); // Recalcula os totais sempre que o array 'orders' for alterado
+
+  const handleSubmit = (event) => {
+
+    event.preventDefault();
+    console.log('Quantidade do Pedido:', pedidoQuantidade);
+    console.log('Quantidade em Estoque:', estoqueQuantidade);
+  };
 
   return (
     <div className="vh-100">
@@ -73,32 +108,32 @@ function CustomerOrder() {
             <Dialog
               modal
               maximizable
-              header="Editar Produtos"
+              header="Novo Pedido"
               visible={showModal}
               onHide={() => setShowModal(false)}
-              style={{ width: '75vw' }}
-              contentStyle={{ height: '300px' }}
+              style={{ width: '50vw' }}
+            // contentStyle={{ height: '300px' }}
             >
-              <div className="row mt-5 m-auto">
-                <div className='col-lg-2'>
+              <div className="row">
+                <div className='col-lg-6'>
                   <p className='m-auto pb-2'>Quantidade em Estoque:</p>
                   <InputText
-                    type="text"
+                    type="number"
                     className="p-inputtext-sm w-100"
                     value={selectedCardQuantity}
                   />
                 </div>
-                <div className='col-lg-2'>
+                <div className='col-lg-6'>
                   <p className='m-auto pb-2'>Quantidade a Ser Adicionada:</p>
                   <InputText
-                    type="text"
-                    className="p-inputtext-sm w-100"
+                    type="number"
                     value={selectedQuantityToAdd}
+                    className="p-inputtext-sm w-100"
                     onChange={(e) => setSelectedQuantityToAdd(e.target.value)}
                   />
                 </div>
-                <div className='col-lg-2'>
-                  <div className='pt-4 mt-3'>
+                <div className='col-lg-12 pt-4'>
+                  <div className='text-center'>
                     <button className="btn btn-info btn-btn-sm" onClick={updateProduct}>
                       <i className="bi bi-check-circle-fill"></i> Atualizar
                     </button>
@@ -112,7 +147,7 @@ function CustomerOrder() {
           <div className="pos-sidebar-nav">
             <ul className="nav nav-tabs nav-fill">
               <li className="nav-item">
-                <Link to="/pos/customer-order" className="nav-link active">Novo Pedido (5)</Link>
+                <Link to="/pos/customer-order" className="nav-link active">Novo Pedido</Link>
               </li>
             </ul>
           </div>
@@ -131,21 +166,32 @@ function CustomerOrder() {
                     <div className="col-3 total-price">Qtd: {order.quantity}</div>
                   </div>
                 ))}
-
               </div>
             </div>
           </div>
           <div className="pos-sidebar-footer">
             <div className="subtotal">
               <div className="text">Total em quantidade:</div>
-              <div className="price">30</div>
+              <div className="price">{pedidoQuantidade}</div>
             </div>
-            <div className="total">
+            <div className="subtotal">
               <div className="text">Quantidade de Itens:</div>
-              <div className="price">5</div>
+              <div className="price">{estoqueQuantidade}</div>
             </div>
+
             <div className="btn-row">
-              <Link to="/pos/customer-order" className="btn btn-success"><i className="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido</Link>
+              {/* <Link
+                to="/pos/customer-order"
+                className="btn btn-success">
+                <i className="fa fa-check fa-fw fa-lg">
+                </i> Finalizar Pedido
+              </Link> */}
+              <form  onSubmit={handleSubmit}>
+                <button type="submit" className="btn btn-success">
+                  <i className="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido
+                </button>
+              </form>
+
             </div>
           </div>
         </div>

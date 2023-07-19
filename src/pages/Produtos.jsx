@@ -144,7 +144,7 @@ function Produtos() {
               value={tableData}
               totalRecords={tableData.length}
               tableStyle={{ minWidth: '1rem', fontSize: '0.8rem' }}
-              paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+              emptyMessage="Nenhuma informação encontrada."
             >
               {tableColumns.map(({ field, header }) => {
                 return <Column

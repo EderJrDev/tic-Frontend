@@ -122,7 +122,7 @@ function User() {
               value={tableData}
               totalRecords={tableData.length}
               tableStyle={{ minWidth: '1rem', fontSize: '0.8rem' }}
-              paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+              emptyMessage="Nenhuma informação encontrada."
             >
               {tableColumns.map(({ field, header }) => {
                 return <Column
@@ -219,55 +219,54 @@ function User() {
               <Dialog
                 modal
                 maximizable
-                header="Adicionar um novo produto"
+                header="Adicionar um novo Usuário"
                 visible={createVisible}
                 onHide={() => setCreateVisible(false)}
-                style={{ width: '75vw' }}
-                contentStyle={{ height: '300px' }}
+                style={{ width: '50vw' }}
               >
-                <div className="row mt-5 m-auto">
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Nome</p>
+                <div className="row">
+                  <div className='col-lg-3'>
+                    <span>Nome</span>
                     <InputText
                       type="text"
-                      className="p-inputtext-sm w-100"
+                      className="p-inputtext-sm"
                       value={createName}
                       onChange={(e) => setCreateName(e.target.value)}
                     />
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Email</p>
+                  <div className='col-lg-3'>
+                    <span>Email</span>
                     <InputText
                       type="text"
-                      className="p-inputtext-sm w-100"
+                      className="p-inputtext-sm"
                       value={createEmail}
                       onChange={(e) => setCreateEmail(e.target.value)}
                     />
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Password</p>
+                  <div className='col-lg-3'>
+                    <span>Password</span>
                     <InputText
                       type="password"
-                      className="p-inputtext-sm w-100"
+                      className="p-inputtext-sm"
                       value={createPassword}
                       onChange={(e) => setCreatePassword(e.target.value)}
                     />
                   </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>é Adminitrador?</p>
+                  <div className='col-lg-3'>
+                    <span>Adminitrador?</span>
                     <Dropdown
-                      value={createIsAdmin}
                       required
-                      onChange={(e) => setCreateIsAdmin(e.value)}
+                      value={createIsAdmin}
                       options={adminOption}
                       placeholder={'Selecione uma opção'}
                       className="p-inputtext-sm w-100"
+                      onChange={(e) => setCreateIsAdmin(e.value)}
                     />
                   </div>
-                  <div className='col-lg-2'>
-                    <div className='pt-4 mt-3'>
+                  <div className='col-lg-12'>
+                    <div className='text-center pt-5'>
                       <button className="btn btn-info btn-btn-sm" onClick={sendUser}>
-                        <i className="bi bi-check-circle-fill"></i> Criar
+                        <i className="bi bi-check-circle-fill"></i> Salvar
                       </button>
                     </div>
                   </div>

@@ -408,7 +408,6 @@ function Produtos() {
                         className="btn btn-info btn-btn-sm"
                       >
                         Cadastrar <i className="bi bi-check-circle-fill"></i>
-
                       </button>
                     </div>
                   </div>

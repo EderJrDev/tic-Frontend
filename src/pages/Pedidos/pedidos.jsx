@@ -1,39 +1,47 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from "../../utils/api";
 import { Link } from 'react-router-dom';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
-import { AppSettings } from './../../config/app-settings.js';
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 function CustomerOrder() {
   const [posMobileSidebarToggled, setPosMobileSidebarToggled] = useState(false);
-  const context = useContext(AppSettings);
 
   const [cli, setCli] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [selectedQuantityToAdd, setSelectedQuantityToAdd] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectedCardQuantity, setSelectedCardQuantity] = useState('');
-  const [pedido, setPedido] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState(null); // novo estado para armazenar o produto selecionado
+  const [quantityToAdd, setQuantityToAdd] = useState(0);
+  // const [selectedProduct, setSelectedProduct] = useState(null); // novo estado para armazenar o produto selecionado
+
+  const [selectedProduct, setSelectedProduct] = useState({
+    id: null,
+    name: '',
+    quantity: 0,
+    quantityToAdd: 0,
+  });
 
   const handleCardClick = (item) => {
     setSelectedCardQuantity(item.quantity);
     setShowModal(true);
-    setSelectedProduct(item); // armazena o produto selecionado no estado
+    setSelectedProduct({ ...item, quantityToAdd: '' }); // Add the quantityToAdd property
   };
 
   const updateProduct = () => {
+    console.log(selectedProduct)
+
     const updatedOrders = [...orders];
     updatedOrders.push({
+      id: selectedProduct.id,
       product: selectedProduct.name,
-      quantity: selectedQuantityToAdd
+      quantityInStock: selectedCardQuantity, // Use selectedCardQuantity instead of selectedQuantityToAdd
+      newQuantity: quantityToAdd, // Use selectedCardQuantity instead of selectedQuantityToAdd
     });
     setOrders(updatedOrders);
     setShowModal(false);
-    setSelectedQuantityToAdd(0);
+    setSelectedProduct({ ...selectedProduct, quantityToAdd: '' }); // Reset the quantityToAdd property
   };
 
   useEffect(() => {
@@ -62,9 +70,14 @@ function CustomerOrder() {
     let totalPedidoQuantidade = 0;
     let totalEstoqueQuantidade = 0;
 
+    console.log(orders);
+
     orders.forEach((order) => {
-      totalPedidoQuantidade += parseFloat(order.quantity);
+      totalPedidoQuantidade += order.quantity;
       // Adicione aqui qualquer lógica adicional para calcular o total de itens em estoque, se necessário
+
+      // Exemplo de cálculo da quantidade em estoque:
+      totalEstoqueQuantidade += quantityToAdd;
     });
 
     setPedidoQuantidade(totalPedidoQuantidade);
@@ -75,11 +88,35 @@ function CustomerOrder() {
     calcularTotais();
   }, [orders]); // Recalcula os totais sempre que o array 'orders' for alterado
 
-  const handleSubmit = (event) => {
 
+  const handleSubmit = (event) => {
     event.preventDefault();
-    console.log('Quantidade do Pedido:', pedidoQuantidade);
-    console.log('Quantidade em Estoque:', estoqueQuantidade);
+
+    console.log(orders);
+
+    // Prepare the data in the required JSON format
+    const orderData = {
+      status: 'pendente',
+      expected_date: '07/21/2023',
+      items: orders.map((order) => ({
+        productId: order.id,
+        quantityInStock: parseFloat(order.quantityInStock),
+        newQuantity: parseFloat(order.newQuantity),
+      })),
+    };
+
+    console.log(orderData);
+    // Send the data to the backend API using the appropriate method (POST or PUT)
+    // Here, I'll assume you are using POST method to create a new order
+    api.post('/admin/order', orderData)
+      .then((response) => {
+        console.log('Order submitted successfully!', response.data);
+        // Add any necessary logic to handle the successful submission
+      })
+      .catch((error) => {
+        console.error('Failed to submit order:', error);
+        // Add any necessary error handling logic
+      });
   };
 
   return (
@@ -115,25 +152,27 @@ function CustomerOrder() {
             // contentStyle={{ height: '300px' }}
             >
               <div className="row">
-                <div className='col-lg-6'>
-                  <p className='m-auto pb-2'>Quantidade em Estoque:</p>
+                <div className="col-lg-6">
+                  <p className="m-auto pb-2">Quantidade em Estoque:</p>
                   <InputText
                     type="number"
                     className="p-inputtext-sm w-100"
-                    value={selectedCardQuantity}
+                    value={selectedProduct ? selectedProduct.quantity : ''}
                   />
                 </div>
-                <div className='col-lg-6'>
-                  <p className='m-auto pb-2'>Quantidade a Ser Adicionada:</p>
+                <div className="col-lg-6">
+                  <p className="m-auto pb-2">Quantidade a Ser Adicionada:</p>
                   <InputText
                     type="number"
-                    value={selectedQuantityToAdd}
+                    value={quantityToAdd}
                     className="p-inputtext-sm w-100"
-                    onChange={(e) => setSelectedQuantityToAdd(e.target.value)}
+                    onChange={(e) =>
+                      setQuantityToAdd(e.target.value)
+                    }
                   />
                 </div>
-                <div className='col-lg-12 pt-4'>
-                  <div className='text-center'>
+                <div className="col-lg-12 pt-4">
+                  <div className="text-center">
                     <button className="btn btn-info btn-btn-sm" onClick={updateProduct}>
                       <i className="bi bi-check-circle-fill"></i> Atualizar
                     </button>
@@ -156,14 +195,22 @@ function CustomerOrder() {
               <div className="pos-table">
                 {orders.map((order, index) => (
                   <div className="row pos-table-row" key={index}>
-                    <div className="col-9">
+                    <div className="col-2">
+                      <div className="pos-product-thumb">
+                        <div className="info">
+                          <div className="title">ID: {order.id}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-5">
                       <div className="pos-product-thumb">
                         <div className="info">
                           <div className="title">{order.product}</div>
                         </div>
                       </div>
                     </div>
-                    <div className="col-3 total-price">Qtd: {order.quantity}</div>
+                    <div className="col-3 total-price">Qtd: {order.quantityInStock}</div>
+                    <div className="col-3 total-price">New QTd: {order.newQuantity}</div>
                   </div>
                 ))}
               </div>
@@ -180,13 +227,7 @@ function CustomerOrder() {
             </div>
 
             <div className="btn-row">
-              {/* <Link
-                to="/pos/customer-order"
-                className="btn btn-success">
-                <i className="fa fa-check fa-fw fa-lg">
-                </i> Finalizar Pedido
-              </Link> */}
-              <form  onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit}>
                 <button type="submit" className="btn btn-success">
                   <i className="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido
                 </button>

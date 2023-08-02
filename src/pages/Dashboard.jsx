@@ -142,7 +142,6 @@ function Dashboard() {
 										paginator
 										stripedRows
 										showGridlines
-										filterMode="global"
 										sortMode="multiple"
 										selectionMode="single"
 										rows={10}

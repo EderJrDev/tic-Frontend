@@ -76,8 +76,8 @@ function Produtos() {
   };
 
   async function updateProduct() {
-    updateTableData(setTableData);
     updatedProduct(id, name, category, quantity, unidadeMedida, location, setTableData, setDialogVisible, purchase_allowed, originCityHall);
+    updateTableData(setTableData);
   };
 
   useEffect(() => {

@@ -3,6 +3,7 @@ import { api } from "../../utils/api";
 import { Link } from 'react-router-dom';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
+import { format } from 'date-fns'
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
@@ -30,7 +31,7 @@ function CustomerOrder() {
   };
 
   const updateProduct = () => {
-    console.log(selectedProduct)
+    console.log(selectedProduct);
 
     const updatedOrders = [...orders];
     updatedOrders.push({
@@ -41,6 +42,8 @@ function CustomerOrder() {
     });
     setOrders(updatedOrders);
     setShowModal(false);
+    setQuantityToAdd('');
+
     setSelectedProduct({ ...selectedProduct, quantityToAdd: '' }); // Reset the quantityToAdd property
   };
 
@@ -94,10 +97,16 @@ function CustomerOrder() {
 
     console.log(orders);
 
+
+    const date = new Date();
+    const today = format(date, 'MM/dd/yyyy')
+
+
+
     // Prepare the data in the required JSON format
     const orderData = {
       status: 'pendente',
-      expected_date: '07/21/2023',
+      expected_date: today,
       items: orders.map((order) => ({
         productId: order.id,
         quantityInStock: parseFloat(order.quantityInStock),
@@ -232,7 +241,6 @@ function CustomerOrder() {
                   <i className="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido
                 </button>
               </form>
-
             </div>
           </div>
         </div>

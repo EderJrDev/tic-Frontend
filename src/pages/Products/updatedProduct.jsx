@@ -15,7 +15,6 @@ export async function updatedProduct(id, name, category, quantity, unidadeMedida
       originCityHall: originCityHall
     };
 
-
     await api.put(`/admin/product/${id}`, updatedData);
 
     addNotification(

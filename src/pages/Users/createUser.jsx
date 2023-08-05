@@ -1,5 +1,6 @@
 import { api } from "../../utils/api";
 import { addNotification } from "../../utils/notifications";
+import { getTable } from "./getDataTable";
 import updateTableData from "./updatedTable";
 
 export async function createUser(
@@ -24,6 +25,8 @@ export async function createUser(
 
     await updateTableData(setTableData);
     setCreateVisible(false);
+    getTable();
+
     addNotification(
       'success',
       'Usuário Adicionado!',

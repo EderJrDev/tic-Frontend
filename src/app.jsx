@@ -4,15 +4,19 @@ import { slideToggle } from './composables/slideToggle.js';
 
 import Header from './components/header/header.jsx';
 import Sidebar from './components/sidebar/sidebar.jsx';
-import SidebarRight from './components/sidebar-right/sidebar-right.jsx';
 import TopMenu from './components/top-menu/top-menu.jsx';
 import Content from './components/content/content.jsx';
 import ThemePanel from './components/theme-panel/theme-panel.jsx';
+import SidebarRight from './components/sidebar-right/sidebar-right.jsx';
+
+import "primereact/resources/themes/lara-light-indigo/theme.css";
+import "primereact/resources/primereact.min.css";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 class App extends React.Component {
 	constructor(props) {
 		super(props);
-		
+
 		this.toggleAppSidebarMinify = (e) => {
 			e.preventDefault();
 			this.setState(state => ({
@@ -83,7 +87,7 @@ class App extends React.Component {
 				localStorage.appSidebarGrid = value;
 			}
 		}
-		
+
 		this.toggleAppSidebarEnd = (e) => {
 			e.preventDefault();
 			this.setState(state => ({
@@ -101,7 +105,7 @@ class App extends React.Component {
 				appSidebarEnd: value
 			}));
 		}
-		
+
 		this.handleSetAppContentNone = (value) => {
 			this.setState(state => ({
 				appContentNone: value
@@ -117,7 +121,7 @@ class App extends React.Component {
 				appContentFullHeight: value
 			}));
 		}
-		
+
 		this.handleSetAppHeaderNone = (value) => {
 			this.setState(state => ({
 				appHeaderNone: value
@@ -158,7 +162,7 @@ class App extends React.Component {
 				appHeaderLanguageBar: value
 			}));
 		}
-		
+
 		this.handleSetAppTopMenu = (value) => {
 			this.setState(state => ({
 				appTopMenu: value
@@ -166,7 +170,7 @@ class App extends React.Component {
 		}
 		this.toggleAppTopMenuMobile = (e) => {
 			e.preventDefault();
-			
+
 			slideToggle(document.querySelector('.app-top-menu'));
 		}
 		this.handleSetAppSidebarTwo = (value) => {
@@ -283,17 +287,17 @@ class App extends React.Component {
 				}
 			}
 			document.body.classList.add(newTheme);
-			
+
 			if (localStorage && value) {
 				localStorage.appTheme = value;
 			}
 		}
-		
+
 		this.state = {
 			appTheme: '',
 			appDarkMode: false,
 			appGradientEnabled: false,
-			
+
 			appHeaderNone: false,
 			appHeaderFixed: true,
 			appHeaderInverse: false,
@@ -305,7 +309,7 @@ class App extends React.Component {
 			handleSetAppHeaderLanguageBar: this.handleSetAppHeaderLanguageBar,
 			handleSetAppHeaderMegaMenu: this.handleSetAppHeaderMegaMenu,
 			handleSetAppHeaderFixed: this.handleSetAppHeaderFixed,
-			
+
 			appSidebarNone: false,
 			appSidebarWide: false,
 			appSidebarLight: false,
@@ -325,36 +329,36 @@ class App extends React.Component {
 			handleSetAppSidebarGrid: this.handleSetAppSidebarGrid,
 			toggleAppSidebarMinify: this.toggleAppSidebarMinify,
 			toggleAppSidebarMobile: this.toggleAppSidebarMobile,
-			
+
 			appContentNone: false,
 			appContentClass: '',
 			appContentFullHeight: false,
 			handleSetAppContentNone: this.handleSetAppContentNone,
 			handleSetAppContentClass: this.handleSetAppContentClass,
 			handleSetAppContentFullHeight: this.handleSetAppContentFullHeight,
-			
+
 			appTopMenu: false,
 			appTopMenuMobileToggled: false,
 			toggleAppTopMenuMobile: this.toggleAppTopMenuMobile,
 			handleSetAppTopMenu: this.handleSetAppTopMenu,
-			
+
 			appSidebarTwo: false,
 			handleSetAppSidebarTwo: this.handleSetAppSidebarTwo,
-			
+
 			appSidebarEnd: false,
 			appSidebarEndToggled: false,
 			appSidebarEndMobileToggled: false,
 			toggleAppSidebarEnd: this.toggleAppSidebarEnd,
 			toggleAppSidebarEndMobile: this.toggleAppSidebarEndMobile,
 			handleSetAppSidebarEnd: this.handleSetAppSidebarEnd,
-			
+
 			handleSetAppBoxedLayout: this.handleSetAppBoxedLayout,
 			handleSetAppDarkMode: this.handleSetAppDarkMode,
 			handleSetAppGradientEnabled: this.handleSetAppGradientEnabled,
 			handleSetAppTheme: this.handleSetAppTheme,
-			
+
 			handleSetColor: this.handleSetColor,
-			
+
 			font: {
 				family: window.getComputedStyle(document.body).getPropertyValue('--bs-body-font-family').trim(),
 				size: window.getComputedStyle(document.body).getPropertyValue('--bs-body-font-size').trim(),
@@ -420,7 +424,7 @@ class App extends React.Component {
 			}
 		};
 	}
-	
+
 	componentDidMount() {
 		this.handleSetColor();
 		this.handleSetFont();
@@ -428,11 +432,11 @@ class App extends React.Component {
 		if (this.state.appDarkMode) {
 			this.handleSetAppDarkMode(true);
 		}
-    window.addEventListener('scroll', this.handleScroll);
-    
+		window.addEventListener('scroll', this.handleScroll);
+
 		if (localStorage) {
 			if (typeof localStorage.appTheme !== 'undefined') {
-				document.body.classList.add('theme-'+ localStorage.appTheme);
+				document.body.classList.add('theme-' + localStorage.appTheme);
 			}
 			if (typeof localStorage.appDarkMode !== 'undefined') {
 				this.handleSetAppDarkMode((localStorage.appDarkMode === 'true') ? true : false);
@@ -456,48 +460,48 @@ class App extends React.Component {
 				this.handleSetAppHeaderFixed((localStorage.appHeaderFixed === 'true') ? true : false);
 			}
 		}
-  }
+	}
 
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll)
-  }
-  
-  handleScroll = () => {
-  	if (window.scrollY > 0) {
-  		this.setState(state => ({
+	componentWillUnmount() {
+		window.removeEventListener('scroll', this.handleScroll)
+	}
+
+	handleScroll = () => {
+		if (window.scrollY > 0) {
+			this.setState(state => ({
 				hasScroll: true
 			}));
-  	} else {
-  		this.setState(state => ({
+		} else {
+			this.setState(state => ({
 				hasScroll: false
 			}));
-  	}
-  	var elm = document.getElementsByClassName('nvtooltip');
-  	for (var i = 0; i < elm.length; i++) {
-  		elm[i].classList.add('d-none');
-  	}
-  }
-	
+		}
+		var elm = document.getElementsByClassName('nvtooltip');
+		for (var i = 0; i < elm.length; i++) {
+			elm[i].classList.add('d-none');
+		}
+	}
+
 	render() {
 		return (
 			<AppSettings.Provider value={this.state}>
 				<div className={
 					'app ' +
-					(this.state.appGradientEnabled ? 'app-gradient-enabled ' : '') + 
-					(this.state.appHeaderNone ? 'app-without-header ' : '') + 
-					(this.state.appHeaderFixed && !this.state.appHeaderNone ? 'app-header-fixed ' : '') + 
+					(this.state.appGradientEnabled ? 'app-gradient-enabled ' : '') +
+					(this.state.appHeaderNone ? 'app-without-header ' : '') +
+					(this.state.appHeaderFixed && !this.state.appHeaderNone ? 'app-header-fixed ' : '') +
 					(this.state.appSidebarFixed ? 'app-sidebar-fixed ' : '') +
-					(this.state.appSidebarNone ? 'app-without-sidebar ' : '') + 
+					(this.state.appSidebarNone ? 'app-without-sidebar ' : '') +
 					(this.state.appSidebarEnd ? 'app-with-end-sidebar ' : '') +
 					(this.state.appSidebarWide ? 'app-with-wide-sidebar ' : '') +
 					(this.state.appSidebarLight ? 'app-with-light-sidebar ' : '') +
-					(this.state.appSidebarMinify ? 'app-sidebar-minified ' : '') + 
-					(this.state.appSidebarMobileToggled ? 'app-sidebar-mobile-toggled ' : '') + 
-					(this.state.appTopMenu ? 'app-with-top-menu ' : '') + 
-					(this.state.appContentFullHeight ? 'app-content-full-height ' : '') + 
-					(this.state.appSidebarTwo ? 'app-with-two-sidebar ' : '') + 
-					(this.state.appSidebarEndToggled ? 'app-sidebar-end-toggled ' : '') + 
-					(this.state.appSidebarEndMobileToggled ? 'app-sidebar-end-mobile-toggled ' : '') + 
+					(this.state.appSidebarMinify ? 'app-sidebar-minified ' : '') +
+					(this.state.appSidebarMobileToggled ? 'app-sidebar-mobile-toggled ' : '') +
+					(this.state.appTopMenu ? 'app-with-top-menu ' : '') +
+					(this.state.appContentFullHeight ? 'app-content-full-height ' : '') +
+					(this.state.appSidebarTwo ? 'app-with-two-sidebar ' : '') +
+					(this.state.appSidebarEndToggled ? 'app-sidebar-end-toggled ' : '') +
+					(this.state.appSidebarEndMobileToggled ? 'app-sidebar-end-mobile-toggled ' : '') +
 					(this.state.hasScroll ? 'has-scroll ' : '')
 				}>
 					{!this.state.appHeaderNone && (<Header />)}

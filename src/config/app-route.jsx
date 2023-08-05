@@ -13,7 +13,7 @@ const AppRoute = [
 		children: [
 			{
 				path: '',
-				element: <Dashboard />
+				element: <User />
 			},
 			{
 				path: 'dashboard',

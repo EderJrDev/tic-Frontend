@@ -10,7 +10,7 @@ export async function deleteProduct(e, rowData, setTableData) {
 
   try {
     await api.delete('/admin/product', { data: updatedData });
-    
+
     await updateTableData(setTableData);
     addNotification(
       'success',
@@ -19,6 +19,12 @@ export async function deleteProduct(e, rowData, setTableData) {
       'top-right'
     );
   } catch (error) {
+    addNotification(
+      'danger',
+      'Falha ao Deletar!',
+      'Por favor, varifique sua conexão com a internet.',
+      'top-right'
+    );
     console.log(error);
   }
 }

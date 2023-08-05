@@ -1,5 +1,5 @@
 const Menu = [
-  { path: 'dashboard', icon: 'fa fa-sitemap', title: 'Dashboard' },
+  { path: 'dashboard', icon: 'fa fa-sitemap', title: 'Painel Geral' },
 
   {
     path: 'produtos', icon: 'fa fa-cogs', title: 'Produtos',

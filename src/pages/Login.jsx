@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { AppSettings } from '../config/app-settings.js';
 import { Modal, Button } from 'react-bootstrap';
 
-function Login(props) {
+function Login() {
 	const context = useContext(AppSettings);
 
 	const [redirect, setRedirect] = useState(false);

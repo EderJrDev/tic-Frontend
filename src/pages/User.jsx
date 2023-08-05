@@ -12,18 +12,13 @@ import { ReactNotifications } from 'react-notifications-component';
 import { Panel, PanelHeader, PanelBody } from "../components/panel/panel.jsx";
 import updateTableData from "./Users/updatedTable.jsx";
 
-import "primereact/resources/themes/lara-light-indigo/theme.css";
-import "primereact/resources/primereact.min.css";
-import 'bootstrap-icons/font/bootstrap-icons.css';
-
 function User() {
-
   //Atributos do user
   const [id, setId] = useState('');
-  const [name, setNome] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState([]);
+  const [password, setPassword] = useState('');
   const [tableData, setTableData] = useState([]);
 
   //Creates
@@ -45,14 +40,19 @@ function User() {
     { value: 'false', label: 'Não' },
   ];
 
-  const handleEditar = (event, rowData) => {
+  const [objEdit, setObjetEdit] = useState(null);
+
+  const handleEditar = (e, rowData) => {
+    setObjetEdit(rowData);
     setId(rowData.id)
-    setNome(rowData.name);
-    setEmail(rowData.email);
-    setPassword(rowData.password);
-    setIsAdmin(rowData.isAdmin);
+    setName(rowData.name);
     setDialogVisible(true);
+    setEmail(rowData.email);
+    setIsAdmin(rowData.isAdmin);
+    setPassword(rowData.password);
   };
+
+  console.log(objEdit);
 
   const handleCriarUser = () => {
     setCreateVisible(true);
@@ -62,8 +62,9 @@ function User() {
     createUser(setCreateVisible, createName, createEmail, createPassword, createIsAdmin, setTableData);
     setCreateName('');
     setCreateEmail('');
-    setCreatePassword('');
     setCreateIsAdmin([]);
+    setCreatePassword('');
+    getTable();
   }
 
   async function updateUser() {
@@ -96,184 +97,170 @@ function User() {
       <Panel>
         <PanelHeader className="bg-teal-700 text-white">Usuários</PanelHeader>
         <PanelBody>
-          <div className="d-flex justify-content-end pb-3 flex-grow-1">
-            <div className="p-input-icon-left mx-2 mt-1">
-              <input
-                type="text"
-                className="form-control form-control-sm"
-                placeholder="Pesquisar"
-              />
-            </div>
-            <div>
-              <button className="btn btn-info btn-btn-sm">
-                <i className="bi bi-file-earmark-medical"></i>
-              </button>
-            </div>
-          </div>
-          <div className="card">
-            <DataTable
-              paginator
-              stripedRows
-              showGridlines
-              sortMode="multiple"
-              selectionMode="single"
-              rows={10}
-              rowsPerPageOptions={[10, 25, 50]}
-              value={tableData}
-              totalRecords={tableData.length}
-              tableStyle={{ minWidth: '1rem', fontSize: '0.8rem' }}
-              emptyMessage="Nenhuma informação encontrada."
-            >
-              {tableColumns.map(({ field, header }) => {
-                return <Column
-                  key={field}
-                  field={field} header={header}
-                  style={{ width: '25%' }} />;
-              })}
-              <Column
-                header="Editar"
-                body={(rowData) => (
-                  <button className="btn btn-info btn-btn-sm" onClick={(e) => handleEditar(e, rowData)}>
-                    <i className="bi bi-pencil-square"></i>
-                  </button>
-                  // <Button
-                  //   label="Editar"
-                  //   onClick={(e) => handleEditar(e, rowData)}
-                  //   className="btn btn-info"
-                  // />
-                )}
-              />
-              <Column
-                header="Deletar"
-                body={(rowData) => (
-                  <button className="btn btn-danger btn-btn-sm" onClick={(e) => deleteUser(e, rowData, setTableData)}>
-                    <i className="bi bi-trash"></i>
-                  </button>
-                  // <Button
-                  //   label="Deletar"
-                  //   onClick={(e) => deleteUser(e, rowData, setTableData)}
-                  //   className="btn btn-danger"
-                  // />
-                )}
-              />
-            </DataTable>
-            <form action="put">
-              <Dialog
-                modal
-                maximizable
-                header="Editar Usuários"
-                visible={dialogVisible}
-                onHide={() => setDialogVisible(false)}
-                style={{ width: '75vw' }}
-                contentStyle={{ height: '300px' }}
-              >
-                <div className="row mt-5 m-auto">
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Nome</p>
-                    <InputText
-                      type="text"
-                      className="p-inputtext-sm w-100"
-                      value={name}
-                      onChange={(e) => setNome(e.target.value)}
-                    />
-                  </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Email</p>
-                    <InputText
-                      type="text"
-                      className="p-inputtext-sm w-100"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>Password</p>
-                    <InputText
-                      type="password"
-                      className="p-inputtext-sm w-100"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </div>
-                  <div className='col-lg-2'>
-                    <p className='m-auto pb-2'>É administrador ?</p>
-                    <Dropdown
-                      value={isAdmin}
-                      required
-                      onChange={(e) => setIsAdmin(e.value)}
-                      options={adminOption}
-                      placeholder={'Selecione uma opção'}
-                      className="p-inputtext-sm w-100"
-                    />
-                  </div>
-                  <div className='col-lg-2'>
-                    <div className='pt-4 mt-3'>
-                      <button className="btn btn-info btn-btn-sm" onClick={updateUser}>
-                        <i className="bi bi-check-circle-fill"></i> Atualizar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Dialog>
 
-              <Dialog
-                modal
-                maximizable
-                header="Adicionar um novo Usuário"
-                visible={createVisible}
-                onHide={() => setCreateVisible(false)}
-                style={{ width: '50vw' }}
-              >
-                <div className="row">
-                  <div className='col-lg-3'>
-                    <span>Nome</span>
-                    <InputText
-                      type="text"
-                      className="p-inputtext-sm"
-                      value={createName}
-                      onChange={(e) => setCreateName(e.target.value)}
-                    />
-                  </div>
-                  <div className='col-lg-3'>
-                    <span>Email</span>
-                    <InputText
-                      type="text"
-                      className="p-inputtext-sm"
-                      value={createEmail}
-                      onChange={(e) => setCreateEmail(e.target.value)}
-                    />
-                  </div>
-                  <div className='col-lg-3'>
-                    <span>Password</span>
-                    <InputText
-                      type="password"
-                      className="p-inputtext-sm"
-                      value={createPassword}
-                      onChange={(e) => setCreatePassword(e.target.value)}
-                    />
-                  </div>
-                  <div className='col-lg-3'>
-                    <span>Adminitrador?</span>
-                    <Dropdown
-                      required
-                      value={createIsAdmin}
-                      options={adminOption}
-                      placeholder={'Selecione uma opção'}
-                      className="p-inputtext-sm w-100"
-                      onChange={(e) => setCreateIsAdmin(e.value)}
-                    />
-                  </div>
-                  <div className='col-lg-12'>
-                    <div className='text-center pt-5'>
-                      <button className="btn btn-info btn-btn-sm" onClick={sendUser}>
-                        <i className="bi bi-check-circle-fill"></i> Salvar
-                      </button>
-                    </div>
+          <DataTable
+            rows={10}
+            paginator
+            stripedRows
+            showGridlines
+            value={tableData}
+            sortMode="multiple"
+            selectionMode="single"
+            totalRecords={tableData.length}
+            rowsPerPageOptions={[10, 25, 50]}
+            emptyMessage="Nenhuma informação encontrada."
+            tableStyle={{ minWidth: '1rem', fontSize: '0.8rem' }}
+          >
+            {tableColumns.map(({ field, header }) => {
+              return <Column
+                key={field}
+                field={field} header={header}
+                style={{ width: '25%' }} />;
+            })}
+            <Column
+              header="Editar"
+              body={(rowData) => (
+                <button className="btn btn-info btn-btn-sm" onClick={(e) => handleEditar(e, rowData)}>
+                  <i className="bi bi-pencil-square"></i>
+                </button>
+                // <Button
+                //   label="Editar"
+                //   onClick={(e) => handleEditar(e, rowData)}
+                //   className="btn btn-info"
+                // />
+              )}
+            />
+            <Column
+              header="Deletar"
+              body={(rowData) => (
+                <button className="btn btn-danger btn-btn-sm" onClick={(e) => deleteUser(e, rowData, setTableData)}>
+                  <i className="bi bi-trash"></i>
+                </button>
+                // <Button
+                //   label="Deletar"
+                //   onClick={(e) => deleteUser(e, rowData, setTableData)}
+                //   className="btn btn-danger"
+                // />
+              )}
+            />
+          </DataTable>
+
+          <form action="put">
+            <Dialog
+              modal
+              maximizable
+              header="Editar Usuário"
+              visible={dialogVisible}
+              style={{ width: '65vw' }}
+              onHide={() => setDialogVisible(false)}
+            >
+              <div className="row">
+                <div className='col-lg-3'>
+                  <span>Nome</span>
+                  <InputText
+                    type="text"
+                    value={name}
+                    className="p-inputtext-sm w-100"
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+                <div className='col-lg-3'>
+                  <span>Email</span>
+                  <InputText
+                    type="text"
+                    value={email}
+                    className="p-inputtext-sm w-100"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <div className='col-lg-3'>
+                  <span>Senha</span>
+                  <InputText
+                    type="password"
+                    value={password}
+                    className="p-inputtext-sm w-100"
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+                <div className='col-lg-3'>
+                  <span>É administrador?</span>
+                  <Dropdown
+                    required
+                    value={isAdmin}
+                    options={adminOption}
+                    className="p-inputtext-sm w-100"
+                    placeholder={'Selecione uma Opção'}
+                    onChange={(e) => setIsAdmin(e.value)}
+                  />
+                </div>
+                <div className='col-lg-12'>
+                  <div className='pt-4 mt-3 text-center'>
+                    <button className="btn btn-info btn-btn-sm" onClick={updateUser}>
+                      <i className="bi bi-check-circle-fill"></i> Atualizar
+                    </button>
                   </div>
                 </div>
-              </Dialog>
-            </form>
-          </div>
+              </div>
+            </Dialog>
+
+            <Dialog
+              modal
+              maximizable
+              header="Adicionar um novo Usuário"
+              visible={createVisible}
+              onHide={() => setCreateVisible(false)}
+              style={{ width: '65vw' }}
+            >
+              <div className="row">
+                <div className='col-lg-3'>
+                  <span>Nome</span>
+                  <InputText
+                    type="text"
+                    className="p-inputtext-sm"
+                    value={createName}
+                    onChange={(e) => setCreateName(e.target.value)}
+                  />
+                </div>
+                <div className='col-lg-3'>
+                  <span>Email</span>
+                  <InputText
+                    type="text"
+                    className="p-inputtext-sm"
+                    value={createEmail}
+                    onChange={(e) => setCreateEmail(e.target.value)}
+                  />
+                </div>
+                <div className='col-lg-3'>
+                  <span>Password</span>
+                  <InputText
+                    type="password"
+                    className="p-inputtext-sm"
+                    value={createPassword}
+                    onChange={(e) => setCreatePassword(e.target.value)}
+                  />
+                </div>
+                <div className='col-lg-3'>
+                  <span>Adminitrador?</span>
+                  <Dropdown
+                    required
+                    value={createIsAdmin}
+                    options={adminOption}
+                    placeholder={'Selecione uma Opção'}
+                    className="p-inputtext-sm w-100"
+                    onChange={(e) => setCreateIsAdmin(e.value)}
+                  />
+                </div>
+                <div className='col-lg-12'>
+                  <div className='text-center pt-5'>
+                    <button className="btn btn-info btn-btn-sm" onClick={sendUser}>
+                      <i className="bi bi-check-circle-fill"></i> Salvar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Dialog>
+
+          </form>
         </PanelBody>
       </Panel>
     </div >

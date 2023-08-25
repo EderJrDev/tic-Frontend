@@ -144,7 +144,7 @@ function Produtos() {
             selectionMode="single"
             rowsPerPageOptions={[10, 25, 50]}
             value={tableData}
-            totalRecords={tableData.length}
+            // totalRecords={tableData.length}
             tableStyle={{ minWidth: '1rem', fontSize: '0.8rem' }}
             emptyMessage="Nenhuma informação encontrada."
           >
@@ -416,7 +416,7 @@ function Produtos() {
                 </div>
               </div>
             </Dialog>
-            
+
           </form>
         </PanelBody>
       </Panel>

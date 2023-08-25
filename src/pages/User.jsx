@@ -106,7 +106,7 @@ function User() {
             value={tableData}
             sortMode="multiple"
             selectionMode="single"
-            totalRecords={tableData.length}
+            // totalRecords={tableData.length}
             rowsPerPageOptions={[10, 25, 50]}
             emptyMessage="Nenhuma informação encontrada."
             tableStyle={{ minWidth: '1rem', fontSize: '0.8rem' }}

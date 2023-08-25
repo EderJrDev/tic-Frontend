@@ -9,7 +9,7 @@ export function Card(props) {
         </div>
         <div className="stats-content">
           <div className="stats-title">{props.title}</div>
-          <div className="stats-number">{props.content}</div>
+          <div className="stats-number">{props.content ? props.content : 0}</div>
           <div className="stats-progress progress">
             <div className="progress-bar" style={{ width: '70.1%' }}></div>
           </div>

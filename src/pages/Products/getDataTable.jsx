@@ -5,7 +5,7 @@ export async function getTable() {
   try {
     const response = await api.get('/admin/product');
     let dados = response.data;
-    // console.log(dados);
+    console.log(dados);
 
     const validit = (value) => {
       if (value === true) {
@@ -16,12 +16,12 @@ export async function getTable() {
     }
 
     const data = dados.map((dado) => ({
-      id: dado.id,
+      id: dado.categoryId,
       name: dado.name,
       quantity: dado.quantity,
       location: dado.location,
       category: dado.category.name,
-      measure: dado.measure.unit_measure,
+      measure: dado.unit_measure.unit_measure,
       purchase_allowed: validit(dado.purchase_allowed),
       originCityHall: validit(dado.originCityHall)
     }));

@@ -16,9 +16,9 @@ export async function createUser(
       name: createName,
       email: createEmail,
       password: createPassword,
-      isAdmin: createIsAdmin,
+      isAdmin: JSON.parse(createIsAdmin),
     };
-    // console.log(newData);
+    console.log(newData);
 
     await api.post(`/admin/user`, newData);
 
@@ -32,7 +32,7 @@ export async function createUser(
     );
   } catch (error) {
     addNotification(
-      'danger',
+      'danger', 
       'Atualize todos os dados!',
       'Por favor, preencha todos os campos para criar um usuário.',
       'top-right'

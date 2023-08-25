@@ -9,6 +9,10 @@ import TopMenu from './components/top-menu/top-menu.jsx';
 import Content from './components/content/content.jsx';
 import ThemePanel from './components/theme-panel/theme-panel.jsx';
 
+import "primereact/resources/themes/lara-light-indigo/theme.css";
+import "primereact/resources/primereact.min.css";
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 class App extends React.Component {
 	constructor(props) {
 		super(props);

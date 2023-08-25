@@ -5,7 +5,7 @@ import updateTableData from "./updatedTable";
 export async function updatedProduct(id, name, category, quantity, unidadeMedida, location, setTableData, setDialogVisible, purchase_allowed, originCityHall) {
   try {
     const updatedData = {
-      id: id,
+      // id: id,
       name: name,
       category: category,
       quantity: quantity,
@@ -15,7 +15,7 @@ export async function updatedProduct(id, name, category, quantity, unidadeMedida
       originCityHall: originCityHall
     };
 
-    await api.put(`/admin/product`, updatedData);
+    await api.put(`/admin/product/${id}`, updatedData);
 
     addNotification(
       'success',

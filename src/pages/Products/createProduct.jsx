@@ -18,12 +18,14 @@ export async function createProduct(
     const newData = {
       name: createName,
       category: category ? category : '',
-      quantity: createQuantity,
+      quantity: JSON.parse(createQuantity),
       measure: unidadeMedida ? unidadeMedida : '',
       purchase_allowed: purchase_allowed,
       originCityHall: originCityHall,
       location: createLocation
     };
+
+    console.log(newData);
 
     await api.post(`/admin/product`, newData);
 

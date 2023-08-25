@@ -18,7 +18,7 @@
 			left: 0;
 			right: 0;
 			z-index: $app-header-zindex;
-			overflow: scroll;
+			// overflow: scroll;
 			align-items: center;
 		}
 		
@@ -124,7 +124,7 @@
 		flex: 1;
 		
 		@include media-breakpoint-up(lg) {
-			overflow: scroll;
+			// overflow: scroll;
 		}
 		@include media-breakpoint-down(lg) {
 			padding-top: rem(95px);
@@ -380,7 +380,7 @@
 		& .pos-sidebar-body {
 			padding: 0;
 			margin: 0;
-			overflow: scroll;
+			// overflow: scroll;
 			flex: 1;
 		
 			& .pos-table {

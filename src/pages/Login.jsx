@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { AppSettings } from '../config/app-settings.js';
 import { Modal, Button } from 'react-bootstrap';
 
-function Login(props) {
+function Login() {
 	const context = useContext(AppSettings);
 
 	const [redirect, setRedirect] = useState(false);
@@ -12,11 +12,12 @@ function Login(props) {
 	const [password, setPassword] = useState('');
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	const handleSubmit = async (event) => {
-		event.preventDefault();
 
+	async function handleSubmit(event) {
+		event.preventDefault();
 		try {
 			const body = { email, password };
+			console.log(body)
 			const response = await api.post('/admin/user/auth', body);
 			const token = response.data.token;
 
@@ -44,16 +45,7 @@ function Login(props) {
 			context.handleSetAppHeaderNone(false);
 			context.handleSetAppContentClass('');
 		};
-	}, [context]);
-
-	
-	const handleChangeEmail = (event) => {
-		setEmail(event.target.value);
-	};
-
-	const handleChangePassword = (event) => {
-		setPassword(event.target.value);
-	};
+	}, []);
 
 	if (redirect) {
 		return <Navigate to="/dashboard" />;
@@ -78,11 +70,11 @@ function Login(props) {
 						<div className="login-content fs-13px">
 							<form onSubmit={handleSubmit}>
 								<div className="form-floating mb-20px">
-									<input type="email" className="form-control fs-13px h-45px" id="emailAddress" placeholder="Email Address" onChange={handleChangeEmail} value={email} />
+									<input type="email" className="form-control fs-13px h-45px" id="emailAddress" placeholder="Email Address" onChange={(e) => setEmail(e.target.value)} />
 									<label htmlFor="emailAddress" className="d-flex align-items-center py-0">Email</label>
 								</div>
 								<div className="form-floating mb-20px">
-									<input type="password" className="form-control fs-13px h-45px" id="password" placeholder="Password" onChange={handleChangePassword} value={password} />
+									<input type="password" className="form-control fs-13px h-45px" id="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
 									<label htmlFor="password" className="d-flex align-items-center py-0">Senha</label>
 								</div>
 								<div className="form-check mb-20px">

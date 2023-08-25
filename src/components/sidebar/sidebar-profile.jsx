@@ -50,11 +50,11 @@ class SidebarProfile extends React.Component {
 										</div>
 										<div className="menu-caret ms-auto"></div>
 									</div>
-									<small> Configurações</small>
+									{/* <small> Configurações</small> */}
 								</div>
 							</Link>
 						</div>
-						<div id="appSidebarProfileMenu" className="collapse">
+						{/* <div id="appSidebarProfileMenu" className="collapse">
 							<div className="menu-item pt-5px">
 								<Link to="/" className="menu-link">
 									<div className="menu-icon"><i className="fa fa-cog"></i></div>
@@ -74,7 +74,7 @@ class SidebarProfile extends React.Component {
 								</Link>
 							</div>
 							<div className="menu-divider m-0"></div>
-						</div>
+						</div> */}
 					</div>
 				)}
 			</AppSettings.Consumer>

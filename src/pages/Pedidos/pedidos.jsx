@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
+import { format } from 'date-fns'
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { addNotification } from '../../utils/notifications';
@@ -13,6 +14,7 @@ function CustomerOrder() {
   const [posMobileSidebarToggled, setPosMobileSidebarToggled] = useState(false);
 
   const [cli, setCli] = useState([]);
+  const [order, setOrder] = useState([]);
   const [orders, setOrders] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [quantityToAdd, setQuantityToAdd] = useState('');
@@ -56,6 +58,8 @@ function CustomerOrder() {
     });
     setOrders(updatedOrders);
     setShowModal(false);
+    setQuantityToAdd('');
+
     setSelectedProduct({ ...selectedProduct, quantityToAdd: '' }); // Reset the quantityToAdd property
     setQuantityToAdd('');
   };
@@ -67,6 +71,16 @@ function CustomerOrder() {
       setCli(dados);
     }
     getCategory();
+  }, []);
+
+  useEffect(() => {
+    async function getOrder() {
+      const response = await api.get("/admin/order");
+      const dados = response.data
+      console.log(response);
+      setOrder(dados);
+    }
+    getOrder();
   }, []);
 
   useEffect(() => {
@@ -103,13 +117,15 @@ function CustomerOrder() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    // console.log(orders);
 
-    console.log(orders);
+    const date = new Date();
+    const today = format(date, 'MM/dd/yyyy')
 
     // Prepare the data in the required JSON format
     const orderData = {
       status: 'pendente',
-      expected_date: '07/21/2023',
+      expected_date: today,
       items: orders.map((order) => ({
         productId: order.id,
         quantityInStock: parseFloat(order.quantityInStock),
@@ -140,7 +156,6 @@ function CustomerOrder() {
   };
 
   return (
-
     <div className="vh-100">
       <Toast ref={toast} />
       <div className={`pos pos-customer ${posMobileSidebarToggled ? 'pos-mobile-sidebar-toggled' : ''}`} id="pos-customer">
@@ -148,22 +163,53 @@ function CustomerOrder() {
           <PerfectScrollbar className="pos-content-container" options={{ suppressScrollX: true }}>
             <div className="product-row">
               <div className='col-lg-12'>
-                <h1 className="page-header">Itens</h1>
-              </div>
-              {cli.map(item => (
-                <div className='col-lg-4 pb-3' key={item.id}>
-                  <div className="container" data-type="meat">
-                    <Link className="product" data-bs-target="#" onClick={() => handleCardClick(item)}>
-                      <div className="text">
-                        <div className="title">{item.name}</div>
-                        <div className="desc">Categoria: {item.location}</div>
-                        <div className="price">Quantidade: {item.quantity}</div>
+
+                <ul className="nav nav-tabs">
+                  <li className="nav-item">
+                    <a href="#default-tab-1" data-bs-toggle="tab" className="nav-link active">
+                      <span className="d-sm-none">Itens</span>
+                      <span className="d-sm-block d-none">Itens</span>
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a href="#default-tab-2" data-bs-toggle="tab" className="nav-link">
+                      <span className="d-sm-none">Pedidos</span>
+                      <span className="d-sm-block d-none">Pedidos</span>
+                    </a>
+                  </li>
+                </ul>
+
+                <div className="tab-content panel rounded-0 p-3 m-0">
+                  <div className="tab-pane fade active show" id="default-tab-1">
+                    <div className="invoice-header">
+                      <div className="invoice-from">
+                        <div className='d-flex row'>
+
+                          {cli.map(item => (
+                            <div className='col-lg-4 pb-3' key={item.id}>
+                              <div className="container" data-type="meat">
+                                <Link className="product bg-gray-100" data-bs-target="#" onClick={() => handleCardClick(item)}>
+                                  <div className="text">
+                                    <div className="title">{item.name}</div>
+                                    <div className="desc">Categoria: {item.location}</div>
+                                    <div className="price">Quantidade: {item.quantity}</div>
+                                  </div>
+                                </Link>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </Link>
+                      {/* </div> */}
+                    </div>
+                  </div>
+                  <div className='tab-pane fade' id='default-tab-2'>
+                    <h1 className="page-header">order</h1>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
+
             <Dialog
               modal
               maximizable
@@ -203,6 +249,7 @@ function CustomerOrder() {
                 </div>
               </div>
             </Dialog>
+
           </PerfectScrollbar>
         </div>
         <div className="pos-sidebar" id="pos-sidebar">
@@ -237,28 +284,43 @@ function CustomerOrder() {
                     </div>
                     <div className="col-2 total-price d-none">{order.quantityInStock}</div>
                     <div className="col-6 total-price">Nova Quantidade: {order.newQuantity}</div>
+                    <div className="row pos-table-row" key={index}>
+                      <div className='row'>
+                        <div className="pos-product-thumb">
+                          <div className="info">
+                            <div className="title d-none">{`${order.id}`}</div>
+                            <div className="title pb-1">{`Produto: ${order.product}`}</div>
+                          </div>
+                        </div>
+                        <div className="pos-product-thumb">
+                          <div className="info">
+                            <div className="title pb-1"> Quantidade em Estoque: {order.quantityInStock}</div>
+                            <div className="title">Nova Quantidade: <span className='font-weight-bold text-success'>{order.newQuantity}</span> </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-          <div className="pos-sidebar-footer">
-            {/* <div className="subtotal">
+            <div className="pos-sidebar-footer">
+              {/* <div className="subtotal">
               <div className="text">Total em quantidade:</div>
               <div className="price">{pedidoQuantidade}</div>
             </div> */}
-            <div className="subtotal">
-              <div className="text">Quantidade de Itens:</div>
-              <div className="price">{estoqueQuantidade}</div>
-            </div>
+              <div className="subtotal">
+                <div className="text">Quantidade de Itens:</div>
+                <div className="price">{estoqueQuantidade}</div>
+              </div>
 
-            <div className="btn-row">
-              <form onSubmit={handleSubmit}>
-                <button type="submit" className="btn btn-success">
-                  <i className="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido
-                </button>
-              </form>
-
+              <div className="btn-row">
+                <form onSubmit={handleSubmit}>
+                  <button type="submit" className="btn btn-success">
+                    <i className="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>

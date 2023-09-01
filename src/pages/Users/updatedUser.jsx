@@ -4,13 +4,16 @@ import updateTableData from "./updatedTable";
 
 export async function updatedUser(id, name, email, password, isAdmin, setTableData, setDialogVisible) {
   try {
+
     const updatedData = {
       id: id,
-      name: name,
-      email: email,
-      password: password,
-      isAdmin: isAdmin,
+      name: name ? name : '',
+      email: email ? email : '',
+      password: password ? password : '',
+      isAdmin: JSON.parse(isAdmin),
     };
+
+    console.log(updatedData);
 
     await api.put(`/admin/user/${id}`, updatedData);
 

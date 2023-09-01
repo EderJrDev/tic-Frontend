@@ -52,7 +52,7 @@ function User() {
     setPassword(rowData.password);
   };
 
-  console.log(objEdit);
+  // console.log(objEdit);
 
   const handleCriarUser = () => {
     setCreateVisible(true);
@@ -212,43 +212,54 @@ function User() {
               style={{ width: '65vw' }}
             >
               <div className="row">
-                <div className='col-lg-3'>
-                  <span>Nome</span>
-                  <InputText
-                    type="text"
-                    className="p-inputtext-sm"
-                    value={createName}
-                    onChange={(e) => setCreateName(e.target.value)}
-                  />
+                <div className="col-lg-4">
+                  <div className="d-flex flex-column m-1">
+                    <label>Nome</label>
+                    <InputText
+                      type="text"
+                      value={createName}
+                      className="p-inputtext-sm"
+                      placeholder="Nome do usuário"
+                      onChange={(e) => setCreateName(e.target.value)}
+                    />
+                  </div>
                 </div>
-                <div className='col-lg-3'>
-                  <span>Email</span>
-                  <InputText
-                    type="text"
-                    className="p-inputtext-sm"
-                    value={createEmail}
-                    onChange={(e) => setCreateEmail(e.target.value)}
-                  />
+                <div className="col-lg-4">
+                  <div className="d-flex flex-column m-1">
+                    <label>Email</label>
+                    <InputText
+                      type="email"
+                      value={createEmail}
+                      className="p-inputtext-sm"
+                      placeholder="Email usuário"
+                      onChange={(e) => setCreateEmail(e.target.value)}
+                    />
+                  </div>
                 </div>
-                <div className='col-lg-3'>
-                  <span>Password</span>
-                  <InputText
-                    type="password"
-                    className="p-inputtext-sm"
-                    value={createPassword}
-                    onChange={(e) => setCreatePassword(e.target.value)}
-                  />
+                <div className="col-lg-4">
+                  <div className="d-flex flex-column m-1">
+                    <label>Senha</label>
+                    <InputText
+                      type="password"
+                      value={createPassword}
+                      className="p-inputtext-sm"
+                      placeholder="*******"
+                      onChange={(e) => setCreatePassword(e.target.value)}
+                    />
+                  </div>
                 </div>
-                <div className='col-lg-3'>
-                  <span>Adminitrador?</span>
-                  <Dropdown
-                    required
-                    value={createIsAdmin}
-                    options={adminOption}
-                    placeholder={'Selecione uma Opção'}
-                    className="p-inputtext-sm w-100"
-                    onChange={(e) => setCreateIsAdmin(e.value)}
-                  />
+                <div className="col-lg-4">
+                  <div className="d-flex flex-column m-1">
+                    <label>Administrador?</label>
+                    <Dropdown
+                      required
+                      value={createIsAdmin}
+                      options={adminOption}
+                      placeholder={'Selecione uma Opção'}
+                      className="p-inputtext-sm w-100"
+                      onChange={(e) => setCreateIsAdmin(e.value)}
+                    />
+                  </div>
                 </div>
                 <div className='col-lg-12'>
                   <div className='text-center pt-5'>

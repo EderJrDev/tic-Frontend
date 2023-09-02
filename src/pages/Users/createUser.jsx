@@ -11,7 +11,6 @@ export async function createUser(
   createIsAdmin,
   setTableData
 ) {
-
   try {
     const newData = {
       name: createName,
@@ -28,17 +27,17 @@ export async function createUser(
     getTable();
 
     addNotification(
-      'success',
-      'Usuário Adicionado!',
-      'Usuário cadastrado com sucesso.',
-      'top-right'
+      "success",
+      "Usuário Adicionado!",
+      "Usuário cadastrado com sucesso.",
+      "top-right"
     );
   } catch (error) {
     addNotification(
-      'danger', 
-      'Atualize todos os dados!',
-      'Por favor, preencha todos os campos para criar um usuário.',
-      'top-right'
+      "danger",
+      "Atualize todos os dados!",
+      "Por favor, preencha todos os campos para criar um usuário.",
+      "top-right"
     );
     console.log(error);
   }

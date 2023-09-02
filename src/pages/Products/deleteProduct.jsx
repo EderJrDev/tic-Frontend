@@ -4,26 +4,23 @@ import updateTableData from "./updatedTable";
 
 export async function deleteProduct(e, rowData, setTableData) {
   e.preventDefault();
-  const updatedData = {
-    id: rowData.id,
-  };
-
+  const updatedData = rowData.id;
   try {
-    await api.delete('/admin/product', { data: updatedData });
+    await api.delete(`/admin/product/${updatedData}`);
 
     await updateTableData(setTableData);
     addNotification(
-      'success',
-      'Produto Deletado!',
-      'Produto deletado com sucesso.',
-      'top-right'
+      "success",
+      "Produto Deletado!",
+      "Produto deletado com sucesso.",
+      "top-right"
     );
   } catch (error) {
     addNotification(
-      'danger',
-      'Falha ao Deletar!',
-      'Por favor, varifique sua conexão com a internet.',
-      'top-right'
+      "danger",
+      "Falha ao Deletar!",
+      "Por favor, verifique sua conexão com a internet.",
+      "top-right"
     );
     console.log(error);
   }

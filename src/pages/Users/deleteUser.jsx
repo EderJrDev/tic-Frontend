@@ -7,21 +7,21 @@ export async function deleteUser(e, rowData, setTableData) {
   const updatedData = rowData.id;
 
   try {
-    await api.delete(`/admin/user/${updatedData}`,);
+    await api.delete(`/admin/user/${updatedData}`);
 
     await updateTableData(setTableData);
     addNotification(
-      'success',
-      'User Deletado!',
-      'User deletado com sucesso.',
-      'top-right'
+      "success",
+      "User Deletado!",
+      "User deletado com sucesso.",
+      "top-right"
     );
   } catch (error) {
     addNotification(
-      'danger',
-      'Falha ao Deletar!',
-      'Por favor, varifique sua conexão com a internet.',
-      'top-right'
+      "danger",
+      "Falha ao Deletar!",
+      "Por favor, varifique sua conexão com a internet.",
+      "top-right"
     );
     console.log(error);
   }

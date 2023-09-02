@@ -10,28 +10,28 @@ export async function LastOrders(setTableData) {
     // console.log(response);
 
     const validit = (value) => {
-      if (value === 'pendente') {
-        return <span className="badge bg-danger">Pendente</span>
+      if (value === "pendente") {
+        return <span className="badge bg-danger">Pendente</span>;
       } else {
-        return <span className="badge bg-success">Concluído</span>
+        return <span className="badge bg-success">Concluído</span>;
       }
-    }
+    };
 
-    const data = getOrders.map(dado => ({
+    const data = getOrders.map((dado) => ({
       // id: dado.id
       status: validit(dado.status),
       produtos: dado.quant,
-      data: new Date(dado.expected_date).toLocaleDateString('pt-BR')
-    }))
+      data: new Date(dado.expected_date).toLocaleDateString("pt-BR"),
+    }));
     setTableData(data);
     // console.log(data);
     // atualizar o estado com os dados dos clientes
   } catch (e) {
     addNotification(
-      'danger',
-      'Falha na requisição!',
+      "danger",
+      "Falha na requisição!",
       `${error.errorApi} Status: ${e}`,
-      'top-right'
+      "top-right"
     );
   }
 }

@@ -1,37 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { Dialog } from 'primereact/dialog';
-import { Column } from 'primereact/column';
-import { Dropdown } from 'primereact/dropdown';
-import { DataTable } from 'primereact/datatable';
-import { InputText } from 'primereact/inputtext';
+import { Dialog } from "primereact/dialog";
+import { Column } from "primereact/column";
+import { Dropdown } from "primereact/dropdown";
+import { DataTable } from "primereact/datatable";
+import { InputText } from "primereact/inputtext";
 import { getMedida } from "./Products/getMedida.jsx";
 import { getTable } from "./Products/getDataTable.jsx";
 import { getCategory } from "./Products/getProducts.jsx";
 import { createProduct } from "./Products/createProduct.jsx";
 import { deleteProduct } from "./Products/deleteProduct.jsx";
 import { updatedProduct } from "./Products/updatedProduct.jsx";
-import { ReactNotifications } from 'react-notifications-component';
+import { ReactNotifications } from "react-notifications-component";
 import { Panel, PanelHeader, PanelBody } from "../components/panel/panel.jsx";
 import updateTableData from "./Products/updatedTable.jsx";
 
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import "bootstrap-icons/font/bootstrap-icons.css";
 import ExportTable from "../components/button/ExportTable.jsx";
 
 function Produtos() {
-  const [id, setId] = useState('');
-  const [name, setNome] = useState('');
+  const [id, setId] = useState("");
+  const [name, setNome] = useState("");
   const [medida, setMedida] = useState([]);
   const [clientes, setClientes] = useState([]);
-  const [category, setCategoria] = useState('');
+  const [category, setCategoria] = useState("");
   const [tableData, setTableData] = useState([]);
-  const [quantity, setQuantidade] = useState('');
-  const [location, setLocalizacao] = useState('');
-  const [createName, setCreateName] = useState('');
-  const [unidadeMedida, setUnidadeMedida] = useState('');
-  const [createLocation, setCreateLocation] = useState('');
-  const [createQuantity, setcreateQuantity] = useState('');
+  const [quantity, setQuantidade] = useState("");
+  const [location, setLocalizacao] = useState("");
+  const [createName, setCreateName] = useState("");
+  const [unidadeMedida, setUnidadeMedida] = useState("");
+  const [createLocation, setCreateLocation] = useState("");
+  const [createQuantity, setcreateQuantity] = useState("");
   const [createMeasure, setCreateMeasure] = useState(null);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [createVisible, setCreateVisible] = useState(false);
@@ -39,27 +39,29 @@ function Produtos() {
 
   const [purchase_allowed, setPurchase_allowed] = useState(null);
   const [originCityHall, setOriginCityHall] = useState(null);
-  const [globalFilterValue, setGlobalFilterValue] = useState('');
-
+  const [globalFilterValue, setGlobalFilterValue] = useState("");
 
   const columns = [
-    { field: 'name', header: 'Nome' },
-    { field: 'category', header: 'Categoria' },
-    { field: 'location', header: 'Localização' },
-    { field: 'quantity', header: 'Quantidade' },
-    { field: 'measure', header: 'Unidade de medida' },
-    { field: 'purchase_allowed', header: 'Compra Aprovada' },
-    { field: 'originCityHall', header: 'Vem da Prefeitura' }
+    { field: "name", header: "Nome" },
+    { field: "category", header: "Categoria" },
+    { field: "location", header: "Localização" },
+    { field: "quantity", header: "Quantidade" },
+    { field: "measure", header: "Unidade de medida" },
+    { field: "purchase_allowed", header: "Compra Aprovada" },
+    { field: "originCityHall", header: "Vem da Prefeitura" },
   ];
 
-  const exportColumns = columns.map((col) => ({ title: col.header, dataKey: col.field }));
+  const exportColumns = columns.map((col) => ({
+    title: col.header,
+    dataKey: col.field,
+  }));
 
   const onGlobalFilterChange = (e) => {
     setGlobalFilterValue(e.target.value);
   };
 
   const handleEditar = (e, rowData) => {
-    setId(rowData.id)
+    setId(rowData.id);
     setNome(rowData.name);
     setCategoria(rowData.category);
     setQuantidade(rowData.quantity);
@@ -76,24 +78,45 @@ function Produtos() {
 
   async function sendProduct() {
     updateTableData(setTableData);
-    createProduct(setCreateVisible, createName, category, createQuantity, unidadeMedida, createLocation, setTableData, purchase_allowed, originCityHall);
-    setCreateName('');
+    createProduct(
+      setCreateVisible,
+      createName,
+      category,
+      createQuantity,
+      unidadeMedida,
+      createLocation,
+      setTableData,
+      purchase_allowed,
+      originCityHall
+    );
+    setCreateName("");
     setCategoria(null);
-    setcreateQuantity('');
+    setcreateQuantity("");
     setUnidadeMedida(null);
-    setCreateLocation('');
-  };
+    setCreateLocation("");
+  }
 
   async function updateProduct() {
-    updatedProduct(id, name, category, quantity, unidadeMedida, location, setTableData, setDialogVisible, purchase_allowed, originCityHall);
+    updatedProduct(
+      id,
+      name,
+      category,
+      quantity,
+      unidadeMedida,
+      location,
+      setTableData,
+      setDialogVisible,
+      purchase_allowed,
+      originCityHall
+    );
     updateTableData(setTableData);
-  };
+  }
 
   useEffect(() => {
     async function fetchData() {
       const data = await getTable();
       setTableData(data);
-    };
+    }
     fetchData();
 
     getMedida(setMedida, setCreateMeasure);
@@ -101,13 +124,13 @@ function Produtos() {
   }, []);
 
   const purchase = [
-    { value: true, label: 'Sim' },
-    { value: false, label: 'Não' },
+    { value: true, label: "Sim" },
+    { value: false, label: "Não" },
   ];
 
   const origin = [
-    { value: true, label: 'Sim' },
-    { value: false, label: 'Não' },
+    { value: true, label: "Sim" },
+    { value: false, label: "Não" },
   ];
 
   return (
@@ -117,17 +140,18 @@ function Produtos() {
           <h1 className="page-header">Estoque de Produtos</h1>
         </div>
         <div>
-          <button className="btn btn-success btn-btn-sm" onClick={(e) => handleCriarProduct()}>
+          <button
+            className="btn btn-success btn-btn-sm"
+            onClick={(e) => handleCriarProduct()}
+          >
             Adicionar <i className="bi bi-plus-circle"></i>
           </button>
         </div>
       </div>
-      <ReactNotifications
-      />
+      <ReactNotifications />
       <Panel>
         <PanelHeader className="bg-teal-700 text-white">Produtos</PanelHeader>
         <PanelBody>
-
           <ExportTable
             tableData={tableData}
             exportColumns={exportColumns}
@@ -145,19 +169,26 @@ function Produtos() {
             rowsPerPageOptions={[10, 25, 50]}
             value={tableData}
             // totalRecords={tableData.length}
-            tableStyle={{ minWidth: '1rem', fontSize: '0.8rem' }}
+            tableStyle={{ minWidth: "1rem", fontSize: "0.8rem" }}
             emptyMessage="Nenhuma informação encontrada."
           >
             {columns.map(({ field, header }) => {
-              return <Column
-                key={field}
-                field={field} header={header}
-                style={{ width: '25%' }} />;
+              return (
+                <Column
+                  key={field}
+                  field={field}
+                  header={header}
+                  style={{ width: "25%" }}
+                />
+              );
             })}
             <Column
               header="Editar"
               body={(rowData) => (
-                <button className="btn btn-info btn-btn-sm" onClick={(e) => handleEditar(e, rowData)}>
+                <button
+                  className="btn btn-info btn-btn-sm"
+                  onClick={(e) => handleEditar(e, rowData)}
+                >
                   <i className="bi bi-pencil-square"></i>
                 </button>
                 // <Button
@@ -170,7 +201,10 @@ function Produtos() {
             <Column
               header="Deletar"
               body={(rowData) => (
-                <button className="btn btn-danger btn-btn-sm" onClick={(e) => deleteProduct(e, rowData, setTableData)}>
+                <button
+                  className="btn btn-danger btn-btn-sm"
+                  onClick={(e) => deleteProduct(e, rowData, setTableData)}
+                >
                   <i className="bi bi-trash"></i>
                 </button>
                 // <Button
@@ -182,15 +216,14 @@ function Produtos() {
             />
           </DataTable>
           <form action="put">
-
             <Dialog
               modal
               maximizable
               header="Editar Produtos"
               visible={dialogVisible}
               onHide={() => setDialogVisible(false)}
-              style={{ width: '70vw' }}
-              contentStyle={{ height: '360px' }}
+              style={{ width: "70vw" }}
+              contentStyle={{ height: "360px" }}
             >
               <div className="row">
                 <div className="col-lg-4">
@@ -240,7 +273,7 @@ function Produtos() {
                       required
                       onChange={(e) => setCategoria(e.value)}
                       options={clientes}
-                      placeholder={'Selecione uma Categoria'}
+                      placeholder={"Selecione uma Categoria"}
                       className="p-inputtext-sm w-100"
                     />
                   </div>
@@ -254,7 +287,7 @@ function Produtos() {
                       required
                       onChange={(e) => setUnidadeMedida(e.value)}
                       options={medida}
-                      placeholder={'Selecione Unidade de Medida'}
+                      placeholder={"Selecione Unidade de Medida"}
                       className="p-inputtext-sm w-100"
                     />
                   </div>
@@ -268,7 +301,7 @@ function Produtos() {
                       required
                       onChange={(e) => setPurchase_allowed(e.value)}
                       options={purchase}
-                      placeholder={'Selecione Unidade de Medida'}
+                      placeholder={"Selecione Unidade de Medida"}
                       className="p-inputtext-sm w-100"
                     />
                   </div>
@@ -282,17 +315,18 @@ function Produtos() {
                       required
                       onChange={(e) => setOriginCityHall(e.value)}
                       options={origin}
-                      placeholder={'Selecione Unidade de Medida'}
+                      placeholder={"Selecione Unidade de Medida"}
                       className="p-inputtext-sm w-100"
                     />
                   </div>
                 </div>
 
-                <div className='col-lg-12 pt-3 mt-3'>
-                  <div className='text-center'>
+                <div className="col-lg-12 pt-3 mt-3">
+                  <div className="text-center">
                     <button
                       className="btn btn-info btn-btn-sm"
-                      onClick={updateProduct}>
+                      onClick={updateProduct}
+                    >
                       Atualizar <i className="bi bi-check-circle-fill"></i>
                     </button>
                   </div>
@@ -306,8 +340,8 @@ function Produtos() {
               header="Adicionar um novo produto"
               visible={createVisible}
               onHide={() => setCreateVisible(false)}
-              style={{ width: '70vw' }}
-              contentStyle={{ height: '350px' }}
+              style={{ width: "70vw" }}
+              contentStyle={{ height: "350px" }}
             >
               <div className="row">
                 <div className="col-lg-4">
@@ -357,7 +391,7 @@ function Produtos() {
                       required
                       onChange={(e) => setCategoria(e.value)}
                       options={createCategory}
-                      placeholder={'Selecione uma Categoria'}
+                      placeholder={"Selecione uma Categoria"}
                       className="p-inputtext-sm w-100"
                     />
                   </div>
@@ -371,7 +405,7 @@ function Produtos() {
                       required
                       onChange={(e) => setUnidadeMedida(e.value)}
                       options={createMeasure}
-                      placeholder={'Selecione Unidade de Medida'}
+                      placeholder={"Selecione Unidade de Medida"}
                       className="p-inputtext-sm w-100"
                     />
                   </div>
@@ -385,7 +419,7 @@ function Produtos() {
                       required
                       onChange={(e) => setPurchase_allowed(e.value)}
                       options={purchase}
-                      placeholder={'Selecione Unidade de Medida'}
+                      placeholder={"Selecione Unidade de Medida"}
                       className="p-inputtext-sm w-100"
                     />
                   </div>
@@ -399,13 +433,13 @@ function Produtos() {
                       required
                       onChange={(e) => setOriginCityHall(e.value)}
                       options={origin}
-                      placeholder={'Selecione Unidade de Medida'}
+                      placeholder={"Selecione Unidade de Medida"}
                       className="p-inputtext-sm w-100"
                     />
                   </div>
                 </div>
-                <div className='col-lg-12 pt-3 mt-2'>
-                  <div className='text-center'>
+                <div className="col-lg-12 pt-3 mt-2">
+                  <div className="text-center">
                     <button
                       onClick={sendProduct}
                       className="btn btn-info btn-btn-sm"
@@ -416,11 +450,10 @@ function Produtos() {
                 </div>
               </div>
             </Dialog>
-
           </form>
         </PanelBody>
       </Panel>
-    </div >
+    </div>
   );
 }
 

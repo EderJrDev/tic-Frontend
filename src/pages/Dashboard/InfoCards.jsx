@@ -25,10 +25,10 @@ export async function InfoCards(Setproducts, Setbudget, SetOrder, SetCategory) {
     SetCategory(categoriesCont);
   } catch (e) {
     addNotification(
-      'danger',
-      'Falha na requisição!',
+      "danger",
+      "Falha na requisição!",
       `${error.errorApi} Status: ${e}`,
-      'top-right'
+      "top-right"
     );
   }
 }

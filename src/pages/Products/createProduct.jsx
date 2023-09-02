@@ -13,16 +13,15 @@ export async function createProduct(
   purchase_allowed,
   originCityHall
 ) {
-
   try {
     const newData = {
       name: createName,
-      category: category ? category : '',
+      category: category ? category : "",
       quantity: JSON.parse(createQuantity),
-      measure: unidadeMedida ? unidadeMedida : '',
+      measure: unidadeMedida ? unidadeMedida : "",
       purchase_allowed: purchase_allowed,
       originCityHall: originCityHall,
-      location: createLocation
+      location: createLocation,
     };
 
     console.log(newData);
@@ -32,17 +31,17 @@ export async function createProduct(
     await updateTableData(setTableData);
     setCreateVisible(false);
     addNotification(
-      'success',
-      'Produto Adicionado!',
-      'Produto cadastrado com sucesso.',
-      'top-right'
+      "success",
+      "Produto Adicionado!",
+      "Produto cadastrado com sucesso.",
+      "top-right"
     );
   } catch (error) {
     addNotification(
-      'danger',
-      'Atualize todos os dados!',
-      'Por favor, preencha todos os campos para realizar a atualização.',
-      'top-right'
+      "danger",
+      "Atualize todos os dados!",
+      "Por favor, preencha todos os campos para realizar a atualização.",
+      "top-right"
     );
     console.log(error);
   }

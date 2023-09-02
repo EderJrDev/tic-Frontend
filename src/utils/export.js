@@ -9,20 +9,20 @@ function convertArrayOfObjectsToCSV(array) {
   result += lineDelimiter;
 
   array.forEach(item => {
-      let ctr = 0;
-      keys.forEach(key => {
-          if (ctr > 0) result += columnDelimiter;
+    let ctr = 0;
+    keys.forEach(key => {
+      if (ctr > 0) result += columnDelimiter;
 
-          let value = item[key];
-          if (typeof value === 'string' && value.includes(';')) {
-              // se o valor contém ponto-e-vírgula, adiciona aspas duplas ao redor
-              value = `"${value}"`;
-          }
-          result += value;
+      let value = item[key];
+      if (typeof value === 'string' && value.includes(';')) {
+        // se o valor contém ponto-e-vírgula, adiciona aspas duplas ao redor
+        value = `"${value}"`;
+      }
+      result += value;
 
-          ctr++;
-      });
-      result += lineDelimiter;
+      ctr++;
+    });
+    result += lineDelimiter;
   });
 
   return result;
@@ -37,7 +37,7 @@ function downloadCSV(array) {
   const filename = 'export.csv';
 
   if (!csv.match(/^data:text\/csv/i)) {
-      csv = `data:text/csv;charset=utf-8,${csv}`;
+    csv = `data:text/csv;charset=utf-8,${csv}`;
   }
 
   link.setAttribute('href', encodeURI(csv));

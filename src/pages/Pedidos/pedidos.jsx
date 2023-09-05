@@ -139,24 +139,14 @@ function CustomerOrder() {
     console.log(orderData);
     // Send the data to the backend API using the appropriate method (POST or PUT)
     // Here, I'll assume you are using POST method to create a new order
-    api
-      .post("/admin/order/createOrder", orderData)
-      .then((response) => {
-        // addNotification(
-        //   'info',
-        //   'Pedido Realizado!',
-        //   'Os dados foram consultados com sucesso.',
-        //   'top-right'
-        // );
-        showSuccess();
-        console.log("Order submitted successfully!", response.data);
-        // Add any necessary logic to handle the successful submission
-      })
-      .catch((error) => {
-        showError();
-        console.error("Failed to submit order:", error);
-        // Add any necessary error handling logic
-      });
+    try {
+      api.post("/admin/order/createOrder", orderData);
+      showSuccess();
+      console.log("Ordem Criada!");
+    } catch (error) {
+      showError();
+      console.error("Failed to submit order:", error);
+    }
 
     const orderItem = orders.map((order) => ({
       status: "pendente",
@@ -167,24 +157,16 @@ function CustomerOrder() {
       newQuantity: parseFloat(order.newQuantity),
     }));
 
-    api
-      .post("/admin/order/createOrderItem", orderItem)
-      .then((response) => {
-        // addNotification(
-        //   'info',
-        //   'Pedido Realizado!',
-        //   'Os dados foram consultados com sucesso.',
-        //   'top-right'
-        // );
-        showSuccess();
-        console.log("Order submitted successfully!", response.data);
-        // Add any necessary logic to handle the successful submission
-      })
-      .catch((error) => {
-        showError();
-        console.error("Failed to submit order:", error);
-        // Add any necessary error handling logic
-      });
+    console.log(orderItem);
+
+    try {
+      api.post("/admin/order/createOrderItem", orderItem);
+      showSuccess();
+      console.log("Ordem criada com sucesso!!");
+    } catch (error) {
+      showError();
+      console.error("Falha ao criar ordem, erro: ", error);
+    }
   };
 
   return (
@@ -331,46 +313,29 @@ function CustomerOrder() {
                     className="row pos-table-row justify-content-between"
                     key={index}
                   >
-                    <div className="col-2">
-                      <div className="pos-product-thumb">
-                        <div className="info">
-                          <div className="title">{order.id}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-2">
-                      <div className="pos-product-thumb">
-                        <div className="info">
-                          <div className="title">{order.product}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-2 total-price d-none">
-                      {order.quantityInStock}
-                    </div>
-                    <div className="col-6 total-price">
-                      Nova Quantidade: {order.newQuantity}
-                    </div>
+                    <div className="title d-none">{order.id}</div>
                     <div className="row pos-table-row" key={index}>
-                      <div className="row">
-                        <div className="pos-product-thumb">
-                          <div className="info">
-                            <div className="title d-none">{`${order.id}`}</div>
-                            <div className="title pb-1">{`Produto: ${order.product}`}</div>
-                          </div>
+                      <div className="pos-product-thumb">
+                        <div className="info">
+                          <div className="title">Produto: {order.product}</div>
                         </div>
-                        <div className="pos-product-thumb">
-                          <div className="info">
-                            <div className="title pb-1">
-                              {" "}
-                              Quantidade em Estoque: {order.quantityInStock}
-                            </div>
-                            <div className="title">
-                              Nova Quantidade:{" "}
-                              <span className="font-weight-bold text-success">
-                                {order.newQuantity}
-                              </span>{" "}
-                            </div>
+                      </div>
+                      <div className="pos-product-thumb">
+                        <div className="d-none">{order.id}</div>
+                      </div>
+                      <div className="pos-product-thumb py-1">
+                        <div className="info">
+                          <div className="title pb-1">
+                            Quantidade em Estoque:
+                            <span className="font-weight-bold text-danger">
+                              {order.quantityInStock}
+                            </span>
+                          </div>
+                          <div className="title">
+                            Nova Quantidade:{" "}
+                            <span className="font-weight-bold text-success">
+                              {order.newQuantity}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -380,15 +345,10 @@ function CustomerOrder() {
               </div>
             </div>
             <div className="pos-sidebar-footer">
-              {/* <div className="subtotal">
-              <div className="text">Total em quantidade:</div>
-              <div className="price">{pedidoQuantidade}</div>
-            </div> */}
               <div className="subtotal">
                 <div className="text">Quantidade de Itens:</div>
                 <div className="price">{estoqueQuantidade}</div>
               </div>
-
               <div className="btn-row">
                 <form onSubmit={handleSubmit}>
                   <button type="submit" className="btn btn-success">

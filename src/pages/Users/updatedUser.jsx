@@ -9,7 +9,7 @@ export async function updatedUser(id, name, email, password, isAdmin, setTableDa
       id: id,
       name: name ? name : '',
       email: email ? email : '',
-      password: password ? password : '',
+      password: password,
       isAdmin: JSON.parse(isAdmin),
     };
 

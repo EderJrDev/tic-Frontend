@@ -25,6 +25,8 @@ export async function updatedProduct(
       originCityHall: originCityHall,
     };
 
+    console.log(updatedData);
+
     await api.put(`/admin/product/${id}`, updatedData);
 
     addNotification(

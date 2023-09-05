@@ -16,9 +16,9 @@ export async function createProduct(
   try {
     const newData = {
       name: createName,
-      category: category ? category : "",
+      categoryId: category ? category : "",
       quantity: JSON.parse(createQuantity),
-      measure: unidadeMedida ? unidadeMedida : "",
+      measureId: unidadeMedida ? unidadeMedida : "",
       purchase_allowed: purchase_allowed,
       originCityHall: originCityHall,
       location: createLocation,

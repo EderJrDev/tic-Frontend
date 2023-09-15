@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { api } from "../../utils/api";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
+import PerfectScrollbar from "react-perfect-scrollbar";
+
+import { format } from "date-fns";
+import { api } from "../../utils/api";
+
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { format } from "date-fns";
-
-import PerfectScrollbar from "react-perfect-scrollbar";
-import { addNotification } from "../../utils/notifications";
-import { useRef } from "react";
 
 function CustomerOrder() {
   const [posMobileSidebarToggled, setPosMobileSidebarToggled] = useState(false);
@@ -18,11 +18,9 @@ function CustomerOrder() {
   const [orders, setOrders] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [quantityToAdd, setQuantityToAdd] = useState("");
-  const [selectedCardQuantity, setSelectedCardQuantity] = useState("");
-  // const [selectedProduct, setSelectedProduct] = useState(null); // novo estado para armazenar o produto selecionado
   const [pedidoQuantidade, setPedidoQuantidade] = useState(0);
   const [estoqueQuantidade, setEstoqueQuantidade] = useState(0);
-
+  const [selectedCardQuantity, setSelectedCardQuantity] = useState("");
   const [selectedProduct, setSelectedProduct] = useState({
     id: null,
     name: "",
@@ -57,7 +55,7 @@ function CustomerOrder() {
   };
 
   const updateProduct = () => {
-    console.log(selectedProduct);
+    // console.log(selectedProduct);
 
     const updatedOrders = [...orders];
     updatedOrders.push({
@@ -69,6 +67,8 @@ function CustomerOrder() {
     setOrders(updatedOrders);
     setShowModal(false);
     setQuantityToAdd("");
+
+    console.log(orders);
 
     setSelectedProduct({ ...selectedProduct, quantityToAdd: "" }); // Reset the quantityToAdd property
     setQuantityToAdd("");
@@ -124,50 +124,51 @@ function CustomerOrder() {
     calcularTotais();
   }, [orders]); // Recalcula os totais sempre que o array 'orders' for alterado
 
-  const handleSubmit = (event) => {
+  async function handleSubmit(event) {
     event.preventDefault();
     // console.log(orders);
 
     const date = new Date();
-    const today = format(date, "MM/dd/yyyy");
+    const today = format(date, "yyyy-MM-dd");
 
     // Prepare the data in the required JSON format
     const orderData = {
       name: "ORDER TESTE",
     };
 
-    console.log(orderData);
-    // Send the data to the backend API using the appropriate method (POST or PUT)
-    // Here, I'll assume you are using POST method to create a new order
     try {
-      api.post("/admin/order/createOrder", orderData);
-      showSuccess();
-      console.log("Ordem Criada!");
+      const response = await api.post("/admin/order/createOrder", orderData);
+
+      // console.log(response);
+      // console.log(orders);
+
+      const orderItem = {
+        order_items: [
+          orders.map((order) => ({
+            status: "pendente",
+            expected_date: today,
+            orderId: response.data.createdOrder.id,
+            productId: order.id,
+            quantityInStock: parseFloat(order.quantityInStock),
+            newQuantity: parseFloat(order.newQuantity),
+          })),
+        ],
+      };
+
+      console.log(orderItem);
+
+      const responseOrder = await api.post(
+        "/admin/order/createOrderItem",
+        orderItem
+      );
+      // showSuccess();
+      console.log(responseOrder);
+      // console.log("Ordem criada com sucesso!!");
     } catch (error) {
       showError();
       console.error("Failed to submit order:", error);
     }
-
-    const orderItem = orders.map((order) => ({
-      status: "pendente",
-      productId: order.id,
-      // orderId:
-      expected_date: today,
-      quantityInStock: parseFloat(order.quantityInStock),
-      newQuantity: parseFloat(order.newQuantity),
-    }));
-
-    console.log(orderItem);
-
-    try {
-      api.post("/admin/order/createOrderItem", orderItem);
-      showSuccess();
-      console.log("Ordem criada com sucesso!!");
-    } catch (error) {
-      showError();
-      console.error("Falha ao criar ordem, erro: ", error);
-    }
-  };
+  }
 
   return (
     <div className="vh-100">

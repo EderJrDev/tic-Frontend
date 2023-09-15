@@ -54,6 +54,7 @@ function CustomerOrder() {
     setSelectedProduct({ ...item, quantityToAdd: "" }); // Add the quantityToAdd property
   };
 
+  //sevr pa porra benhuma ainda
   const updateProduct = () => {
     // console.log(selectedProduct);
 
@@ -68,7 +69,7 @@ function CustomerOrder() {
     setShowModal(false);
     setQuantityToAdd("");
 
-    console.log(orders);
+    //console.log(orders);
 
     setSelectedProduct({ ...selectedProduct, quantityToAdd: "" }); // Reset the quantityToAdd property
     setQuantityToAdd("");
@@ -87,7 +88,7 @@ function CustomerOrder() {
     async function getOrder() {
       const response = await api.get("/admin/order");
       const dados = response.data;
-      console.log(response);
+      //console.log(response);
       setOrder(dados);
     }
     getOrder();
@@ -106,7 +107,7 @@ function CustomerOrder() {
     let totalPedidoQuantidade = 0;
     let totalEstoqueQuantidade = 0;
 
-    console.log(orders);
+    //console.log(orders);
 
     orders.forEach((order) => {
       totalPedidoQuantidade += order.quantity;
@@ -139,14 +140,14 @@ function CustomerOrder() {
     try {
       const response = await api.post("/admin/order/createOrder", orderData);
 
-      // console.log(response);
-      // console.log(orders);
+      console.log(response);
+      console.log(orders);
 
       const orderItem = {
         order_items: [
           orders.map((order) => ({
             status: "pendente",
-            expected_date: today,
+            expected_date: "2023-08-09T14:30:00.000Z",
             orderId: response.data.createdOrder.id,
             productId: order.id,
             quantityInStock: parseFloat(order.quantityInStock),

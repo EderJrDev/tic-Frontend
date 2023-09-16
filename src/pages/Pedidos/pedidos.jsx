@@ -1,18 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import PerfectScrollbar from "react-perfect-scrollbar";
-
 import { format } from "date-fns";
 import { api } from "../../utils/api";
-
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 
 function CustomerOrder() {
-  const [posMobileSidebarToggled, setPosMobileSidebarToggled] = useState(false);
-
+  // State
   const [cli, setCli] = useState([]);
   const [order, setOrder] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -28,8 +24,10 @@ function CustomerOrder() {
     quantityToAdd: 0,
   });
 
+  // Ref para as notificações
   const toast = useRef(null);
 
+  // Funções para mostrar notificações
   const showSuccess = () => {
     toast.current.show({
       severity: "success",
@@ -48,33 +46,30 @@ function CustomerOrder() {
     });
   };
 
+  // Manipulação de clique em um item
   const handleCardClick = (item) => {
     setSelectedCardQuantity(item.quantity);
     setShowModal(true);
-    setSelectedProduct({ ...item, quantityToAdd: "" }); // Add the quantityToAdd property
+    setSelectedProduct({ ...item, quantityToAdd: "" });
   };
 
-  //sevr pa porra benhuma ainda
+  // Função para atualizar o produto
   const updateProduct = () => {
-    // console.log(selectedProduct);
-
     const updatedOrders = [...orders];
-    updatedOrders.push({
-      id: selectedProduct.id,
-      product: selectedProduct.name,
-      quantityInStock: selectedCardQuantity, // Use selectedCardQuantity instead of selectedQuantityToAdd
-      newQuantity: quantityToAdd, // Use selectedCardQuantity instead of selectedQuantityToAdd
-    });
+    const newItem = {
+      productId: selectedProduct.id,
+      // product: selectedProduct.name,
+      quantityInStock: selectedCardQuantity,
+      newQuantity: parseFloat(quantityToAdd),
+    };
+    updatedOrders.push(newItem);
     setOrders(updatedOrders);
     setShowModal(false);
     setQuantityToAdd("");
-
-    //console.log(orders);
-
-    setSelectedProduct({ ...selectedProduct, quantityToAdd: "" }); // Reset the quantityToAdd property
-    setQuantityToAdd("");
+    setSelectedProduct({ ...selectedProduct, quantityToAdd: "" });
   };
 
+  // Efeito para buscar a lista de produtos
   useEffect(() => {
     async function getCategory() {
       const response = await api.get("/admin/product");
@@ -84,16 +79,17 @@ function CustomerOrder() {
     getCategory();
   }, []);
 
+  // Efeito para buscar a lista de pedidos
   useEffect(() => {
     async function getOrder() {
       const response = await api.get("/admin/order");
       const dados = response.data;
-      //console.log(response);
       setOrder(dados);
     }
     getOrder();
   }, []);
 
+  // Efeito para enviar o pedido
   useEffect(() => {
     async function sendOrder() {
       const response = await api.get("/admin/product");
@@ -103,36 +99,13 @@ function CustomerOrder() {
     sendOrder();
   }, []);
 
-  const calcularTotais = () => {
-    let totalPedidoQuantidade = 0;
-    let totalEstoqueQuantidade = 0;
-
-    //console.log(orders);
-
-    orders.forEach((order) => {
-      totalPedidoQuantidade += order.quantity;
-      // Adicione aqui qualquer lógica adicional para calcular o total de itens em estoque, se necessário
-
-      // Exemplo de cálculo da quantidade em estoque:
-      totalEstoqueQuantidade += quantityToAdd;
-    });
-
-    setPedidoQuantidade(totalPedidoQuantidade);
-    setEstoqueQuantidade(totalEstoqueQuantidade);
-  };
-
-  useEffect(() => {
-    calcularTotais();
-  }, [orders]); // Recalcula os totais sempre que o array 'orders' for alterado
-
+  // Função para lidar com o envio do formulário
   async function handleSubmit(event) {
     event.preventDefault();
-    // console.log(orders);
 
-    const date = new Date();
-    const today = format(date, "yyyy-MM-dd");
+    // const date = new Date();
+    // const today = format(date, "yyyy-MM-dd");
 
-    // Prepare the data in the required JSON format
     const orderData = {
       name: "ORDER TESTE",
     };
@@ -140,18 +113,38 @@ function CustomerOrder() {
     try {
       const response = await api.post("/admin/order/createOrder", orderData);
 
-      console.log(response);
       console.log(orders);
+
+      // const orderItem = {
+      //   order_items: [
+      //     orders.map((item) => ({
+      //       ...item,
+      //       status: "pendente",
+      //       expected_date: "2023-08-09T14:30:00.000Z",
+      //       orderId: response.data.createdOrder.id,
+      //       productId: item.id,
+      //     })),
+      //   ],
+      // };
+
+      // const orderItem = {
+      //   order_items: orders.map((item) => ({
+      //     ...item,
+      //     status: "pendente",
+      //     expected_date: "2023-08-09T14:30:00.000Z",
+      //     orderId: response.data.createdOrder.id,
+      //     productId: item.id,
+      //   })),
+      // };
 
       const orderItem = {
         order_items: [
-          orders.map((order) => ({
+          ...orders.map((item) => ({
+            ...item,
             status: "pendente",
             expected_date: "2023-08-09T14:30:00.000Z",
             orderId: response.data.createdOrder.id,
-            productId: order.id,
-            quantityInStock: parseFloat(order.quantityInStock),
-            newQuantity: parseFloat(order.newQuantity),
+            productId: item.productId, // Use productId para referenciar o produto
           })),
         ],
       };
@@ -162,9 +155,9 @@ function CustomerOrder() {
         "/admin/order/createOrderItem",
         orderItem
       );
-      // showSuccess();
+
       console.log(responseOrder);
-      // console.log("Ordem criada com sucesso!!");
+      showSuccess();
     } catch (error) {
       showError();
       console.error("Failed to submit order:", error);
@@ -175,9 +168,7 @@ function CustomerOrder() {
     <div className="vh-100">
       <Toast ref={toast} />
       <div
-        className={`pos pos-customer ${
-          posMobileSidebarToggled ? "pos-mobile-sidebar-toggled" : ""
-        }`}
+        className={`pos pos-customer ${"pos-mobile-sidebar-toggled"}`}
         id="pos-customer"
       >
         <div className="pos-content">

@@ -12,6 +12,10 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import './index.css';
 import './scss/react.scss';
 
+import "primereact/resources/themes/lara-light-indigo/theme.css";
+import "primereact/resources/primereact.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+
 
 const container = document.getElementById('root');
 const root = createRoot(container);

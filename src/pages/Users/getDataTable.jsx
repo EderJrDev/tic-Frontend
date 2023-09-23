@@ -27,7 +27,7 @@ export async function getTable() {
     addNotification(
       "danger",
       "Falha ao Deletar!",
-      "Por favor, varifique sua conexão com a internet.",
+      "Por favor, verifique sua conexão com a internet.",
       "top-right"
     );
   }

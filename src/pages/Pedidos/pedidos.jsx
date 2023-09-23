@@ -7,14 +7,18 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 
+import { Calendar } from "primereact/calendar";
+
 function CustomerOrder() {
   // State
   const [cli, setCli] = useState([]);
+
+  const [expectedDate, setExpectedDate] = useState(null);
+  const [orderName, setOrderName] = useState("");
   const [order, setOrder] = useState([]);
   const [orders, setOrders] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [quantityToAdd, setQuantityToAdd] = useState("");
-  const [pedidoQuantidade, setPedidoQuantidade] = useState(0);
   const [estoqueQuantidade, setEstoqueQuantidade] = useState(0);
   const [selectedCardQuantity, setSelectedCardQuantity] = useState("");
   const [selectedProduct, setSelectedProduct] = useState({
@@ -103,46 +107,41 @@ function CustomerOrder() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    // const date = new Date();
-    // const today = format(date, "yyyy-MM-dd");
+    // const date = new Date().toISOString(); // pegando data atual
 
     const orderData = {
-      name: "ORDER TESTE",
+      name: orderName.toString(),
     };
+
+    // Extrair os componentes da data (ano, mês, dia, hora, minuto, segundo)
+    var ano = expectedDate.getFullYear();
+    var mes = expectedDate.getMonth() + 1; // Note que os meses em JavaScript são baseados em zero (janeiro é 0)
+    var dia = expectedDate.getDate();
+    var hora = expectedDate.getHours();
+    var minuto = expectedDate.getMinutes();
+    var segundo = expectedDate.getSeconds();
+
+    // Formatar a data no formato desejado (ano-mês-diaThora:minuto:segundo.000Z)
+    var dataFormatada = `${ano}-${mes.toString().padStart(2, "0")}-${dia
+      .toString()
+      .padStart(2, "0")}T${hora.toString().padStart(2, "0")}:${minuto
+      .toString()
+      .padStart(2, "0")}:${segundo.toString().padStart(2, "0")}.000Z`;
 
     try {
       const response = await api.post("/admin/order/createOrder", orderData);
 
       console.log(orders);
 
-      // const orderItem = {
-      //   order_items: [
-      //     orders.map((item) => ({
-      //       ...item,
-      //       status: "pendente",
-      //       expected_date: "2023-08-09T14:30:00.000Z",
-      //       orderId: response.data.createdOrder.id,
-      //       productId: item.id,
-      //     })),
-      //   ],
-      // };
-
-      // const orderItem = {
-      //   order_items: orders.map((item) => ({
-      //     ...item,
-      //     status: "pendente",
-      //     expected_date: "2023-08-09T14:30:00.000Z",
-      //     orderId: response.data.createdOrder.id,
-      //     productId: item.id,
-      //   })),
-      // };
+      console.log(`Èxpected Date: ${expectedDate}`);
+      console.log(`date correct: ${dataFormatada}`);
 
       const orderItem = {
         order_items: [
           ...orders.map((item) => ({
             ...item,
             status: "pendente",
-            expected_date: "2023-08-09T14:30:00.000Z",
+            expected_date: dataFormatada,
             orderId: response.data.createdOrder.id,
             productId: item.productId, // Use productId para referenciar o produto
           })),
@@ -156,8 +155,11 @@ function CustomerOrder() {
         orderItem
       );
 
-      console.log(responseOrder);
+      console.log(`create order item: ${responseOrder}`);
       showSuccess();
+      setOrderName("");
+      setExpectedDate("");
+      setOrders([]);
     } catch (error) {
       showError();
       console.error("Failed to submit order:", error);
@@ -233,7 +235,7 @@ function CustomerOrder() {
                     </div>
                   </div>
                   <div className="tab-pane fade" id="default-tab-2">
-                    <h1 className="page-header">order</h1>
+                    <h1 className="page-header">Pedidos</h1>
                   </div>
                 </div>
               </div>
@@ -241,7 +243,6 @@ function CustomerOrder() {
 
             <Dialog
               modal
-              maximizable
               header="Novo Pedido"
               visible={showModal}
               onHide={() => setShowModal(false)}
@@ -285,9 +286,7 @@ function CustomerOrder() {
           <div className="pos-sidebar-nav">
             <ul className="nav nav-tabs nav-fill">
               <li className="nav-item">
-                <Link to="/pos/customer-order" className="nav-link active">
-                  Novo Pedido
-                </Link>
+                <h5 className="pt-3">Novo Pedido</h5>
               </li>
             </ul>
           </div>
@@ -301,54 +300,58 @@ function CustomerOrder() {
                 <div className="text-center">
                   <p>Selecione um item para adicionar ao pedido.</p>
                 </div>
+                <div className="col-md-12">
+                  <label htmlFor="orderName">Nome do Produto</label>
+                  <InputText
+                    id="orderName"
+                    placeholder="Nome do Produto"
+                    className="w-100"
+                    value={orderName}
+                    onChange={(e) => setOrderName(e.target.value)}
+                  />
+                </div>
+                <div className="col-md-12 py-2">
+                  <label htmlFor="orderName">Data Esperada</label>
+                  <Calendar
+                    placeholder="dd/mm/aaaa"
+                    value={expectedDate}
+                    onChange={(e) => setExpectedDate(e.value)}
+                    showIcon
+                    className="w-100"
+                  />
+                </div>
                 {orders.map((order, index) => (
                   <div
                     className="row pos-table-row justify-content-between"
                     key={index}
                   >
-                    <div className="title d-none">{order.id}</div>
-                    <div className="row pos-table-row" key={index}>
-                      <div className="pos-product-thumb">
-                        <div className="info">
-                          <div className="title">Produto: {order.product}</div>
-                        </div>
+                    <div className="pos-sidebar-footer">
+                      <div className="subtotal">
+                        <div className="text">Em Estoque</div>
+                        <div className="price">{order.quantityInStock}</div>
                       </div>
-                      <div className="pos-product-thumb">
-                        <div className="d-none">{order.id}</div>
+                      <div className="taxes">
+                        <div className="text">Qtd á ser adicionada</div>
+                        <div className="price">{order.newQuantity}</div>
                       </div>
-                      <div className="pos-product-thumb py-1">
-                        <div className="info">
-                          <div className="title pb-1">
-                            Quantidade em Estoque:
-                            <span className="font-weight-bold text-danger">
-                              {order.quantityInStock}
-                            </span>
-                          </div>
-                          <div className="title">
-                            Nova Quantidade:{" "}
-                            <span className="font-weight-bold text-success">
-                              {order.newQuantity}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                      {/* <div className="total">
+                        <div className="text">Produto</div>
+                        <div className="price">$33.10</div>
+                      </div> */}
                     </div>
+                    <div className="title d-none">{order.id}</div>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="pos-sidebar-footer">
-              <div className="subtotal">
-                <div className="text">Quantidade de Itens:</div>
-                <div className="price">{estoqueQuantidade}</div>
-              </div>
-              <div className="btn-row">
-                <form onSubmit={handleSubmit}>
-                  <button type="submit" className="btn btn-success">
-                    <i className="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido
-                  </button>
-                </form>
-              </div>
+          </div>
+          <div className="pos-sidebar-footer">
+            <div className="btn-row">
+              <form onSubmit={handleSubmit}>
+                <button type="submit" className="btn btn-success">
+                  <i className="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido
+                </button>
+              </form>
             </div>
           </div>
         </div>

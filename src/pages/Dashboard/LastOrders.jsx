@@ -6,22 +6,11 @@ export async function LastOrders(setTableData) {
   try {
     const response = await api.get("/admin/order/latest");
     let dados = response.data;
-    let getOrders = dados.orders;
-    // console.log(response);
+    console.log(response.data);
 
-    const validit = (value) => {
-      if (value === "pendente") {
-        return <span className="badge bg-danger">Pendente</span>;
-      } else {
-        return <span className="badge bg-success">Concluído</span>;
-      }
-    };
-
-    const data = getOrders.map((dado) => ({
-      // id: dado.id
-      status: validit(dado.status),
-      produtos: dado.quant,
-      data: new Date(dado.expected_date).toLocaleDateString("pt-BR"),
+    const data = dados.map((dado) => ({
+      id: dado.id,
+      produto: dado.name,
     }));
     setTableData(data);
     // console.log(data);

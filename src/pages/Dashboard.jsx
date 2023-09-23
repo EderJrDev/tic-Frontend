@@ -25,9 +25,8 @@ function Dashboard() {
   };
 
   const columns = [
-    { field: "produtos", header: "Número de Produtos" },
-    { field: "status", header: "Status" },
-    { field: "data", header: "Data" },
+    { field: "id", header: "ID" },
+    { field: "produto", header: "Produto" },
   ];
 
   const exportColumns = columns.map((col) => ({
@@ -85,18 +84,17 @@ function Dashboard() {
                 onGlobalFilterChange={onGlobalFilterChange}
               />
               <DataTable
-                rows={5}
-                paginator
                 stripedRows
                 showGridlines
                 value={tableData}
+                paginator
+                rows={5}
                 sortMode="multiple"
                 selectionMode="single"
-                // totalRecords={tableData.length}
                 globalFilter={globalFilterValue}
-                rowsPerPageOptions={[10, 25, 50]}
-                emptyMessage="Nenhuma informação encontrada."
+                rowsPerPageOptions={[5, 25, 50]}
                 tableStyle={{ minWidth: "1rem", fontSize: "0.8rem" }}
+                emptyMessage="Nenhuma informação encontrada."
               >
                 {columns.map((col, i) => (
                   <Column

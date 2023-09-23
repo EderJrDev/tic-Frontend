@@ -75,6 +75,7 @@ function Login() {
                     type="email"
                     className="form-control fs-13px h-45px"
                     id="emailAddress"
+                    value={email}
                     placeholder="Email Address"
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -91,6 +92,7 @@ function Login() {
                     className="form-control fs-13px h-45px"
                     id="password"
                     placeholder="Password"
+                    value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <label

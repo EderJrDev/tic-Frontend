@@ -4,44 +4,43 @@ import { Column } from "primereact/column";
 import { Dropdown } from "primereact/dropdown";
 import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
-import { getMedida } from "./Products/getMedida.jsx";
-import { getTable } from "./Products/getDataTable.jsx";
-import { getCategory } from "./Products/getProducts.jsx";
+
+import { ReactNotifications } from "react-notifications-component";
+import { Panel, PanelBody, PanelHeader } from "../components/panel/panel.jsx";
 import { createProduct } from "./Products/createProduct.jsx";
 import { deleteProduct } from "./Products/deleteProduct.jsx";
-import { updatedProduct } from "./Products/updatedProduct.jsx";
-import { ReactNotifications } from "react-notifications-component";
-import { Panel, PanelHeader, PanelBody } from "../components/panel/panel.jsx";
+import { getTable } from "./Products/getDataTable.jsx";
+import { getMedida } from "./Products/getMedida.jsx";
+import { getCategory } from "./Products/getProducts.jsx";
 import updateTableData from "./Products/updatedTable.jsx";
+import { updatedProduct } from "./Products/updatedProduct.jsx";
 
-import "primereact/resources/themes/lara-light-indigo/theme.css";
-import "primereact/resources/primereact.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import ExportTable from "../components/button/ExportTable.jsx";
-
-function Produtos() {
+function Products() {
+  //Atributos do user
   const [id, setId] = useState("");
-  const [name, setNome] = useState("");
+  const [name, setName] = useState("");
   const [medida, setMedida] = useState([]);
-  const [clientes, setClientes] = useState([]);
-  const [category, setCategoria] = useState("");
+  const [location, setLocation] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [category, setCategory] = useState("");
+  const [typeCategory, setTypeCategory] = useState([]);
   const [tableData, setTableData] = useState([]);
-  const [quantity, setQuantidade] = useState("");
-  const [location, setLocalizacao] = useState("");
+
+  //Creates
   const [createName, setCreateName] = useState("");
-  const [unidadeMedida, setUnidadeMedida] = useState("");
-  const [createLocation, setCreateLocation] = useState("");
-  const [createQuantity, setcreateQuantity] = useState("");
-  const [createMeasure, setCreateMeasure] = useState(null);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [createVisible, setCreateVisible] = useState(false);
+  const [createMeasure, setCreateMeasure] = useState(null);
   const [createCategory, setCreateCategory] = useState(null);
+  const [unitMeasure, setUnitMeasure] = useState("");
 
-  const [purchase_allowed, setPurchase_allowed] = useState(null);
   const [originCityHall, setOriginCityHall] = useState(null);
-  const [globalFilterValue, setGlobalFilterValue] = useState("");
+  const [purchase_allowed, setPurchase_allowed] = useState(null);
 
-  const columns = [
+  const [createLocation, setCreateLocation] = useState("");
+  const [createQuantity, setCreateQuantity] = useState("");
+
+  const tableColumns = [
     { field: "name", header: "Nome" },
     { field: "category", header: "Categoria" },
     { field: "location", header: "Localização" },
@@ -50,78 +49,6 @@ function Produtos() {
     { field: "purchase_allowed", header: "Compra Aprovada" },
     { field: "originCityHall", header: "Vem da Prefeitura" },
   ];
-
-  const exportColumns = columns.map((col) => ({
-    title: col.header,
-    dataKey: col.field,
-  }));
-
-  const onGlobalFilterChange = (e) => {
-    setGlobalFilterValue(e.target.value);
-  };
-
-  const handleEditar = (e, rowData) => {
-    setId(rowData.id);
-    setNome(rowData.name);
-    setCategoria(rowData.category);
-    setQuantidade(rowData.quantity);
-    setUnidadeMedida(rowData.measure);
-    setLocalizacao(rowData.location);
-    setOriginCityHall(rowData);
-    setPurchase_allowed(rowData);
-    setDialogVisible(true);
-  };
-
-  const handleCriarProduct = () => {
-    setCreateVisible(true);
-  };
-
-  async function sendProduct() {
-    updateTableData(setTableData);
-    createProduct(
-      setCreateVisible,
-      createName,
-      category,
-      createQuantity,
-      unidadeMedida,
-      createLocation,
-      setTableData,
-      purchase_allowed,
-      originCityHall
-    );
-    setCreateName("");
-    setCategoria(null);
-    setcreateQuantity("");
-    setUnidadeMedida(null);
-    setCreateLocation("");
-  }
-
-  async function updateProduct() {
-    updatedProduct(
-      id,
-      name,
-      category,
-      quantity,
-      unidadeMedida,
-      location,
-      setTableData,
-      setDialogVisible,
-      purchase_allowed,
-      originCityHall
-    );
-    updateTableData(setTableData);
-  }
-
-  useEffect(() => {
-    async function fetchData() {
-      const data = await getTable();
-      setTableData(data);
-    }
-    fetchData();
-
-    getMedida(setMedida, setCreateMeasure);
-    getCategory(setClientes, setCreateCategory);
-  }, []);
 
   const purchase = [
     { value: true, label: "Sim" },
@@ -133,6 +60,68 @@ function Produtos() {
     { value: false, label: "Não" },
   ];
 
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getTable();
+      setTableData(data);
+    }
+    fetchData();
+
+    getMedida(setMedida, setCreateMeasure);
+    getCategory(setTypeCategory, setCreateCategory);
+  }, []);
+
+  const handleEditar = (rowData) => {
+    setDialogVisible(true);
+    console.log(rowData);
+    setId(rowData.id);
+    setName(rowData.name);
+    setCategory(rowData.category);
+    setQuantity(rowData.quantity);
+    setUnitMeasure(rowData.measure);
+    setLocation(rowData.location);
+    setPurchase_allowed(rowData.purchase_allowed);
+    setOriginCityHall(rowData.originCityHall);
+  };
+
+  const handleCreateProduct = () => {
+    setCreateVisible(true);
+  };
+
+  async function sendProduct() {
+    createProduct(
+      setCreateVisible,
+      createName,
+      category,
+      createQuantity,
+      unitMeasure,
+      createLocation,
+      setTableData,
+      purchase_allowed,
+      originCityHall
+    );
+    setCreateName("");
+    setLocation("");
+    setQuantity("");
+    getTable();
+  }
+
+  async function updated() {
+    updateTableData(tableData);
+    updatedProduct(
+      id,
+      name,
+      category,
+      quantity,
+      unitMeasure,
+      location,
+      setTableData,
+      setDialogVisible,
+      purchase_allowed,
+      originCityHall
+    );
+  }
+
   return (
     <div>
       <div className="d-flex justify-content-between">
@@ -142,7 +131,7 @@ function Produtos() {
         <div>
           <button
             className="btn btn-success btn-btn-sm"
-            onClick={(e) => handleCriarProduct()}
+            onClick={(e) => handleCreateProduct()}
           >
             Adicionar <i className="bi bi-plus-circle"></i>
           </button>
@@ -150,29 +139,21 @@ function Produtos() {
       </div>
       <ReactNotifications />
       <Panel>
-        <PanelHeader className="bg-teal-700 text-white">Produtos</PanelHeader>
+        <PanelHeader className="bg-teal-700 text-white">Usuários</PanelHeader>
         <PanelBody>
-          <ExportTable
-            tableData={tableData}
-            exportColumns={exportColumns}
-            globalFilterValue={globalFilterValue}
-            onGlobalFilterChange={onGlobalFilterChange}
-          />
-
           <DataTable
             rows={10}
             paginator
             stripedRows
             showGridlines
+            value={tableData}
             sortMode="multiple"
             selectionMode="single"
             rowsPerPageOptions={[10, 25, 50]}
-            value={tableData}
-            // totalRecords={tableData.length}
-            tableStyle={{ minWidth: "1rem", fontSize: "0.8rem" }}
             emptyMessage="Nenhuma informação encontrada."
+            tableStyle={{ minWidth: "1rem", fontSize: "0.8rem" }}
           >
-            {columns.map(({ field, header }) => {
+            {tableColumns.map(({ field, header }) => {
               return (
                 <Column
                   key={field}
@@ -187,18 +168,13 @@ function Produtos() {
               body={(rowData) => (
                 <button
                   className="btn btn-info btn-btn-sm"
-                  onClick={(e) => handleEditar(e, rowData)}
+                  onClick={() => handleEditar(rowData)}
                 >
                   <i className="bi bi-pencil-square"></i>
                 </button>
-                // <Button
-                //   label="Editar"
-                //   onClick={(e) => handleEditar(e, rowData)}
-                //   className="btn btn-info"
-                // />
               )}
             />
-            <Column
+            {/* <Column
               header="Deletar"
               body={(rowData) => (
                 <button
@@ -209,16 +185,16 @@ function Produtos() {
                 </button>
                 // <Button
                 //   label="Deletar"
-                //   onClick={(e) => deleteProduct(e, rowData, setTableData)}
+                //   onClick={(e) => deleteUser(e, rowData, setTableData)}
                 //   className="btn btn-danger"
                 // />
               )}
-            />
+            /> */}
           </DataTable>
+
           <form action="put">
             <Dialog
               modal
-              maximizable
               header="Editar Produtos"
               visible={dialogVisible}
               onHide={() => setDialogVisible(false)}
@@ -234,7 +210,7 @@ function Produtos() {
                       value={name}
                       className="p-inputtext-sm"
                       placeholder="Nome do produto"
-                      onChange={(e) => setNome(e.target.value)}
+                      onChange={(e) => setName(e.target.value)}
                     />
                   </div>
                 </div>
@@ -246,8 +222,8 @@ function Produtos() {
                       type="text"
                       value={location}
                       className="p-inputtext-sm"
-                      placeholder="Nome do produto"
-                      onChange={(e) => setLocalizacao(e.target.value)}
+                      placeholder="Localização do produto"
+                      onChange={(e) => setLocation(e.target.value)}
                     />
                   </div>
                 </div>
@@ -259,8 +235,8 @@ function Produtos() {
                       type="text"
                       value={quantity}
                       className="p-inputtext-sm"
-                      placeholder="Nome do produto"
-                      onChange={(e) => setQuantidade(e.target.value)}
+                      placeholder="Quantidade do produto"
+                      onChange={(e) => setQuantity(e.target.value)}
                     />
                   </div>
                 </div>
@@ -271,8 +247,8 @@ function Produtos() {
                     <Dropdown
                       value={category}
                       required
-                      onChange={(e) => setCategoria(e.value)}
-                      options={clientes}
+                      onChange={(e) => setCategory(e.value)}
+                      options={typeCategory}
                       placeholder={"Selecione uma Categoria"}
                       className="p-inputtext-sm w-100"
                     />
@@ -283,12 +259,12 @@ function Produtos() {
                   <div className="d-flex flex-column m-1">
                     <label>Unidade de medida</label>
                     <Dropdown
-                      value={unidadeMedida}
                       required
-                      onChange={(e) => setUnidadeMedida(e.value)}
                       options={medida}
-                      placeholder={"Selecione Unidade de Medida"}
+                      value={unitMeasure}
+                      onChange={(e) => setUnitMeasure(e.value)}
                       className="p-inputtext-sm w-100"
+                      placeholder={"Selecione Unidade de Medida"}
                     />
                   </div>
                 </div>
@@ -301,7 +277,7 @@ function Produtos() {
                       required
                       onChange={(e) => setPurchase_allowed(e.value)}
                       options={purchase}
-                      placeholder={"Selecione Unidade de Medida"}
+                      placeholder={"Compra Aprovada?"}
                       className="p-inputtext-sm w-100"
                     />
                   </div>
@@ -311,12 +287,12 @@ function Produtos() {
                   <div className="d-flex flex-column m-1">
                     <label>Vem da Prefeitura</label>
                     <Dropdown
-                      value={originCityHall}
                       required
-                      onChange={(e) => setOriginCityHall(e.value)}
                       options={origin}
-                      placeholder={"Selecione Unidade de Medida"}
+                      value={originCityHall}
                       className="p-inputtext-sm w-100"
+                      placeholder={"Produto vem da Prefeitura?"}
+                      onChange={(e) => setOriginCityHall(e.value)}
                     />
                   </div>
                 </div>
@@ -325,7 +301,7 @@ function Produtos() {
                   <div className="text-center">
                     <button
                       className="btn btn-info btn-btn-sm"
-                      onClick={updateProduct}
+                      onClick={updated}
                     >
                       Atualizar <i className="bi bi-check-circle-fill"></i>
                     </button>
@@ -376,9 +352,9 @@ function Produtos() {
                     <InputText
                       type="number"
                       value={createQuantity}
-                      className="p-inputtext-sm"
                       placeholder="0"
-                      onChange={(e) => setcreateQuantity(e.target.value)}
+                      className="p-inputtext-sm"
+                      onChange={(e) => setCreateQuantity(e.target.value)}
                     />
                   </div>
                 </div>
@@ -389,7 +365,7 @@ function Produtos() {
                     <Dropdown
                       value={category}
                       required
-                      onChange={(e) => setCategoria(e.value)}
+                      onChange={(e) => setCategory(e.value)}
                       options={createCategory}
                       placeholder={"Selecione uma Categoria"}
                       className="p-inputtext-sm w-100"
@@ -401,12 +377,12 @@ function Produtos() {
                   <div className="d-flex flex-column m-1">
                     <label>Unidade de medida</label>
                     <Dropdown
-                      value={unidadeMedida}
                       required
-                      onChange={(e) => setUnidadeMedida(e.value)}
+                      value={unitMeasure}
                       options={createMeasure}
-                      placeholder={"Selecione Unidade de Medida"}
+                      onChange={(e) => setUnitMeasure(e.value)}
                       className="p-inputtext-sm w-100"
+                      placeholder={"Selecione Unidade de Medida"}
                     />
                   </div>
                 </div>
@@ -417,10 +393,10 @@ function Produtos() {
                     <Dropdown
                       value={purchase_allowed}
                       required
-                      onChange={(e) => setPurchase_allowed(e.value)}
                       options={purchase}
-                      placeholder={"Selecione Unidade de Medida"}
+                      onChange={(e) => setPurchase_allowed(e.value)}
                       className="p-inputtext-sm w-100"
+                      placeholder={"Selecione se a Compra foi aprovada"}
                     />
                   </div>
                 </div>
@@ -433,7 +409,7 @@ function Produtos() {
                       required
                       onChange={(e) => setOriginCityHall(e.value)}
                       options={origin}
-                      placeholder={"Selecione Unidade de Medida"}
+                      placeholder={"Selecione a Unidade de Medida"}
                       className="p-inputtext-sm w-100"
                     />
                   </div>
@@ -457,4 +433,4 @@ function Produtos() {
   );
 }
 
-export default Produtos;
+export default Products;

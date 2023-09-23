@@ -3,10 +3,11 @@ import { addNotification } from "../../utils/notifications";
 import updateTableData from "./updatedTable";
 
 export async function deleteProduct(e, rowData, setTableData) {
+  console.log(rowData)
   e.preventDefault();
-  const updatedData = rowData.id;
+  const updatedData = 4;
   try {
-    await api.delete(`/admin/product/${updatedData}`);
+    await api.delete(`/admin/product/4`);
 
     await updateTableData(setTableData);
     addNotification(
@@ -19,7 +20,7 @@ export async function deleteProduct(e, rowData, setTableData) {
     addNotification(
       "danger",
       "Falha ao Deletar!",
-      "Por favor, verifique sua conexão com a internet.",
+      `${error.response.data.error}`,
       "top-right"
     );
     console.log(error);

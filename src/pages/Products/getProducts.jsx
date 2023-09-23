@@ -1,7 +1,7 @@
 import { api } from "../../utils/api";
 import { addNotification } from "../../utils/notifications";
 
-export async function getCategory(setClientes, setCreateCategory) {
+export async function getCategory(setTypeCategory, setCreateCategory) {
   try {
     const response = await api.get("/admin/category");
     const dados = response.data;
@@ -10,7 +10,7 @@ export async function getCategory(setClientes, setCreateCategory) {
       label: dado.name, // rótulo do cliente
     }));
 
-    setClientes(data);
+    setTypeCategory(data);
     setCreateCategory(data);
   } catch (e) {
     addNotification(

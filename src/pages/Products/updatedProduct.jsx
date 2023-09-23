@@ -7,7 +7,7 @@ export async function updatedProduct(
   name,
   category,
   quantity,
-  unidadeMedida,
+  unitMeasure,
   location,
   setTableData,
   setDialogVisible,
@@ -19,7 +19,7 @@ export async function updatedProduct(
       name: name,
       categoryId: category,
       quantity: parseInt(quantity),
-      measureId: unidadeMedida,
+      measureId: unitMeasure,
       location: location,
       purchase_allowed: purchase_allowed,
       originCityHall: originCityHall,
@@ -41,7 +41,7 @@ export async function updatedProduct(
     addNotification(
       "danger",
       "Atualize todos os dados!",
-      "Por favor preencha todos os campos para realizar a atualização.",
+      `${error.response.data.error}`,
       "top-right"
     );
     console.log(error);

@@ -20,7 +20,7 @@ export async function deleteUser(e, rowData, setTableData) {
     addNotification(
       "danger",
       "Falha ao Deletar!",
-      "Por favor, varifique sua conexão com a internet.",
+      "Por favor, verifique sua conexão com a internet.",
       "top-right"
     );
     console.log(error);

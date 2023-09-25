@@ -1,15 +1,15 @@
 import React, { useState, useContext, useEffect } from "react";
 import { api } from "../utils/api.js";
 import { Navigate } from "react-router-dom";
-import { AppSettings } from "../config/app-settings.js";
 import { Modal, Button } from "react-bootstrap";
+import { AppSettings } from "../config/app-settings.js";
 
 function Login() {
   const context = useContext(AppSettings);
 
-  const [redirect, setRedirect] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [redirect, setRedirect] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   async function handleSubmit(event) {

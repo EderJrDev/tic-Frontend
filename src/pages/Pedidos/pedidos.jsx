@@ -1,25 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import PerfectScrollbar from "react-perfect-scrollbar";
-import { format } from "date-fns";
 import { api } from "../../utils/api";
+import { Link } from "react-router-dom";
+
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
-import { InputText } from "primereact/inputtext";
-
 import { Calendar } from "primereact/calendar";
+import { InputText } from "primereact/inputtext";
+import PerfectScrollbar from "react-perfect-scrollbar";
 
 function CustomerOrder() {
   // State
   const [cli, setCli] = useState([]);
-
-  const [expectedDate, setExpectedDate] = useState(null);
-  const [orderName, setOrderName] = useState("");
   const [order, setOrder] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [orderName, setOrderName] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [quantityToAdd, setQuantityToAdd] = useState("");
-  const [estoqueQuantidade, setEstoqueQuantidade] = useState(0);
+  const [expectedDate, setExpectedDate] = useState(null);
   const [selectedCardQuantity, setSelectedCardQuantity] = useState("");
   const [selectedProduct, setSelectedProduct] = useState({
     id: null,

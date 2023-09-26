@@ -8,7 +8,7 @@ import { InputText } from "primereact/inputtext";
 import { ReactNotifications } from "react-notifications-component";
 import { Panel, PanelBody, PanelHeader } from "../components/panel/panel.jsx";
 import { createProduct } from "./Products/createProduct.jsx";
-import { deleteProduct } from "./Products/deleteProduct.jsx";
+// import { deleteProduct } from "./Products/deleteProduct.jsx";
 import { getTable } from "./Products/getDataTable.jsx";
 import { getMedida } from "./Products/getMedida.jsx";
 import { getCategory } from "./Products/getProducts.jsx";
@@ -41,6 +41,7 @@ function Products() {
   const [createQuantity, setCreateQuantity] = useState("");
 
   const tableColumns = [
+    { field: "id", header: "ID" },
     { field: "name", header: "Nome" },
     { field: "category", header: "Categoria" },
     { field: "location", header: "Localização" },

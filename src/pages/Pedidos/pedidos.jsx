@@ -32,8 +32,8 @@ function CustomerOrder() {
   const showSuccess = () => {
     toast.current.show({
       severity: "success",
-      summary: "Success",
-      detail: "Message Content",
+      summary: "Sucesso!",
+      detail: "O Pedido foi criado com exito.",
       life: 3000,
     });
   };
@@ -41,8 +41,8 @@ function CustomerOrder() {
   const showError = () => {
     toast.current.show({
       severity: "error",
-      summary: "Error",
-      detail: "Message Content",
+      summary: "Falha!",
+      detail: "Ocorreu um problema na busca das informações",
       life: 3000,
     });
   };
@@ -59,7 +59,7 @@ function CustomerOrder() {
     const updatedOrders = [...orders];
     const newItem = {
       productId: selectedProduct.id,
-      // product: selectedProduct.name,
+      product: selectedProduct.name,
       quantityInStock: selectedCardQuantity,
       newQuantity: parseFloat(quantityToAdd),
     };
@@ -128,31 +128,25 @@ function CustomerOrder() {
     try {
       const response = await api.post("/admin/order/createOrder", orderData);
 
-      console.log(orders);
-
-      console.log(`Èxpected Date: ${expectedDate}`);
-      console.log(`date correct: ${dataFormatada}`);
-
       const orderItem = {
         order_items: [
-          ...orders.map((item) => ({
-            ...item,
-            status: "pendente",
-            expected_date: dataFormatada,
-            orderId: response.data.createdOrder.id,
-            productId: item.productId, // Use productId para referenciar o produto
-          })),
+          ...orders.map((item) => {
+            const { product, ...rest } = item; //  removendo a propriedade 'product' pois o endpoint não precisa dela
+            return {
+              ...rest,
+              status: "pendente",
+              expected_date: dataFormatada,
+              orderId: response.data.createdOrder.id,
+              productId: item.productId,
+            };
+          }),
         ],
       };
 
-      console.log(orderItem);
+      // console.log(orderItem);
 
-      const responseOrder = await api.post(
-        "/admin/order/createOrderItem",
-        orderItem
-      );
+      await api.post("/admin/order/createOrderItem", orderItem);
 
-      console.log(`create order item: ${responseOrder}`);
       showSuccess();
       setOrderName("");
       setExpectedDate("");
@@ -298,23 +292,27 @@ function CustomerOrder() {
                   <p>Selecione um item para adicionar ao pedido.</p>
                 </div>
                 <div className="col-md-12">
-                  <label htmlFor="orderName">Nome do Produto</label>
-                  <InputText
-                    id="orderName"
-                    placeholder="Nome do Produto"
-                    className="w-100"
-                    value={orderName}
-                    onChange={(e) => setOrderName(e.target.value)}
-                  />
+                  <div className="pt-3">
+                    <span className="p-float-label">
+                      <InputText
+                        id="pedido"
+                        value={orderName}
+                        className="w-100"
+                        onChange={(e) => setOrderName(e.target.value)}
+                      />
+                      <label htmlFor="pedido">Nome do Pedido</label>
+                    </span>
+                  </div>
                 </div>
                 <div className="col-md-12 py-2">
                   <label htmlFor="orderName">Data Esperada</label>
                   <Calendar
+                    showIcon
+                    locale="pt"
+                    className="w-100"
                     placeholder="dd/mm/aaaa"
                     value={expectedDate}
                     onChange={(e) => setExpectedDate(e.value)}
-                    showIcon
-                    className="w-100"
                   />
                 </div>
                 {orders.map((order, index) => (
@@ -331,10 +329,10 @@ function CustomerOrder() {
                         <div className="text">Qtd á ser adicionada</div>
                         <div className="price">{order.newQuantity}</div>
                       </div>
-                      {/* <div className="total">
+                      <div className="total">
                         <div className="text">Produto</div>
-                        <div className="price">$33.10</div>
-                      </div> */}
+                        <div className="price">{order.product}</div>
+                      </div>
                     </div>
                     <div className="title d-none">{order.id}</div>
                   </div>
@@ -342,15 +340,15 @@ function CustomerOrder() {
               </div>
             </div>
           </div>
-          <div className="pos-sidebar-footer">
-            <div className="btn-row">
-              <form onSubmit={handleSubmit}>
-                <button type="submit" className="btn btn-success">
-                  <i className="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido
-                </button>
-              </form>
+            <div className="pos-sidebar-footer">
+              <div class="btn-row w-100">
+                <form onSubmit={handleSubmit}>
+                  <button type="submit" class="btn btn-success">
+                    <i class="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido
+                  </button>
+                </form>
+              </div>
             </div>
-          </div>
         </div>
       </div>
     </div>

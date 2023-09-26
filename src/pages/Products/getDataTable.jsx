@@ -16,7 +16,7 @@ export async function getTable() {
     };
 
     const data = dados.map((dado) => ({
-      id: dado.categoryId,
+      id: dado.id,
       name: dado.name,
       quantity: dado.quantity,
       location: dado.location,

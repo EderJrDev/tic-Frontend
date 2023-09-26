@@ -26,6 +26,7 @@ export async function updatedProduct(
     };
 
     console.log(updatedData);
+    console.log(id);
 
     await api.put(`/admin/product/${id}`, updatedData);
 

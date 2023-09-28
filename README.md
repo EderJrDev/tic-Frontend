@@ -9,4 +9,10 @@
    **Instalar as dependências:**
    ```shell
    npm install --force
+
+  **Para executar o projeto, você pode utilizar esses comandos:**
+
+  ```shell
+  npm start: Inicia a aplicação.
+  npm run build: Simula o projeto em produção.
    

@@ -6,13 +6,9 @@
 2. Abra o terminal do VS Code.
 3. Digite os seguintes comandos no terminal:
 
-   **Instalar as dependências:**
+   **Instalar as dependências:**  && **Para executar o projeto, você pode utilizar esses comandos:**
    ```shell
    npm install --force
-
-  **Para executar o projeto, você pode utilizar esses comandos:**
-
-  ```shell
-  npm start: Inicia a aplicação.
-  npm run build: Simula o projeto em produção.
+   npm start: Inicia a aplicação.
+   npm run build: Simula o projeto em produção.
    

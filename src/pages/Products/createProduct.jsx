@@ -24,12 +24,13 @@ export async function createProduct(
       location: createLocation,
     };
 
-    console.log(newData);
+    // console.log(newData);
 
     await api.post(`/admin/product`, newData);
 
     await updateTableData(setTableData);
     setCreateVisible(false);
+    
     addNotification(
       "success",
       "Produto Adicionado!",

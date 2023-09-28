@@ -99,7 +99,7 @@ function User() {
     <div>
       <div className="d-flex justify-content-between">
         <div>
-          <h1 className="page-header">Lista de usuários</h1>
+          <h1 className="page-header">Lista de Usuários</h1>
         </div>
         <div>
           <button

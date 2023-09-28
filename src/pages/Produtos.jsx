@@ -14,6 +14,7 @@ import { getMedida } from "./Products/getMedida.jsx";
 import { getCategory } from "./Products/getProducts.jsx";
 import updateTableData from "./Products/updatedTable.jsx";
 import { updatedProduct } from "./Products/updatedProduct.jsx";
+import { deleteProduct } from "./Products/deleteProduct.jsx";
 
 function Products() {
   //Atributos do user
@@ -101,9 +102,15 @@ function Products() {
       purchase_allowed,
       originCityHall
     );
-    setCreateName("");
-    setLocation("");
+    setName("");
     setQuantity("");
+    setCreateName("");
+    setCreateLocation("");
+    setCreateQuantity("");
+    setCategory(null);
+    setUnitMeasure(null);
+    setOriginCityHall(null);
+    setPurchase_allowed(null);
     getTable();
   }
 
@@ -121,6 +128,11 @@ function Products() {
       purchase_allowed,
       originCityHall
     );
+    setName("");
+    setCategory(null);
+    setQuantity("");
+    setUnitMeasure(null);
+    setLocation("");
   }
 
   return (
@@ -175,7 +187,7 @@ function Products() {
                 </button>
               )}
             />
-            {/* <Column
+            <Column
               header="Deletar"
               body={(rowData) => (
                 <button
@@ -184,13 +196,8 @@ function Products() {
                 >
                   <i className="bi bi-trash"></i>
                 </button>
-                // <Button
-                //   label="Deletar"
-                //   onClick={(e) => deleteUser(e, rowData, setTableData)}
-                //   className="btn btn-danger"
-                // />
               )}
-            /> */}
+            />
           </DataTable>
 
           <form action="put">

@@ -3,11 +3,11 @@ import { addNotification } from "../../utils/notifications";
 import updateTableData from "./updatedTable";
 
 export async function deleteProduct(e, rowData, setTableData) {
-  console.log(rowData)
   e.preventDefault();
-  const updatedData = 4;
+  // console.log(rowData);
+  const id = rowData.id;
   try {
-    await api.delete(`/admin/product/4`);
+    await api.delete(`/admin/product/${id}`);
 
     await updateTableData(setTableData);
     addNotification(

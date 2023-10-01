@@ -11,4 +11,9 @@
    npm install --force
    npm start - Inicia a aplicação.
    npm run build - Simula o projeto em produção.
-   
+
+4. Inicie o backend.
+5. Insira os seguintes dados no login:
+  ```shell
+  admin@gmail.com
+  12345678

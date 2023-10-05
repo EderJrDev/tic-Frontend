@@ -136,9 +136,6 @@ class App extends React.Component {
     };
     this.handleSetAppHeaderFixed = (value) => {
       if (value === false && this.state.appSidebarFixed) {
-        alert(
-          "Default Header with Fixed Sidebar option is not supported. Proceed with Default Header with Default Sidebar."
-        );
         this.setState((state) => ({
           appSidebarFixed: false,
         }));

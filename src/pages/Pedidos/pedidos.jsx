@@ -1,21 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
+import PerfectScrollbar from "react-perfect-scrollbar";
+
 import { api } from "../../utils/api";
 import { Link } from "react-router-dom";
 
 import { Toast } from "primereact/toast";
+import { Column } from "primereact/column";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
-import PerfectScrollbar from "react-perfect-scrollbar";
 import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
 
 function CustomerOrder() {
   // State
   const [cli, setCli] = useState([]);
   const [order, setOrder] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [tableData, setTableData] = useState();
+  const [tableData, setTableData] = useState([]);
   const [orderName, setOrderName] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showModalOrder, setShowModalOrder] = useState(false);
@@ -94,11 +95,19 @@ function CustomerOrder() {
       setCli(dados);
     }
 
+    const validitStatus = (status) => {
+      if (status === 'pendente') {
+        return <span className="badge bg-warning">Pendente</span>;
+      } else {
+        return <span className="badge bg-danger">Não</span>;
+      }
+    };
+
     async function getOrders() {
       const response = await api.get("/admin/order/show/orders");
       console.log("get orders: ", response);
       const dados = response.data;
-      console.log("teste: ", dados);
+      // console.log("teste: ", dados);
 
       const getOrderItens = dados.map((order) =>
         order.order_items.map((orderItem) => ({
@@ -106,13 +115,12 @@ function CustomerOrder() {
           name: orderItem.product.name,
           newQuantity: orderItem.newQuantity,
           quantityInStock: orderItem.quantityInStock,
-          status: orderItem.status,
+          status: validitStatus(orderItem.status),
         }))
       );
 
-      console.log("get ALL : ", getOrderItens);
-
-      setTableData(getOrderItens);
+      // console.log("get ALL : ", getOrderItens);
+      setTableData(getOrderItens.flat()); // trasnforma um array de array em array de objeto
       setOrder(dados);
     }
 
@@ -120,7 +128,7 @@ function CustomerOrder() {
     getOrders();
   }, []);
 
-  console.log("dataTable: ", tableData);
+  // console.log("dataTable: ", tableData);
 
   // Efeito para enviar o pedido
   useEffect(() => {
@@ -150,7 +158,7 @@ function CustomerOrder() {
     var minuto = expectedDate.getMinutes();
     var segundo = expectedDate.getSeconds();
 
-    // Formatar a data no formato desejado (ano-mês-diaThora:minuto:segundo.000Z)
+    // Formatar a data no formato desejado pelo backend (ano-mês-diaThora:minuto:segundo.000Z)
     var dataFormatada = `${ano}-${mes.toString().padStart(2, "0")}-${dia
       .toString()
       .padStart(2, "0")}T${hora.toString().padStart(2, "0")}:${minuto
@@ -176,7 +184,6 @@ function CustomerOrder() {
       };
 
       // console.log(orderItem);
-
       await api.post("/admin/order/createOrderItem", orderItem);
 
       showSuccess();
@@ -259,11 +266,27 @@ function CustomerOrder() {
                   <div className="tab-pane fade" id="default-tab-2">
                     <div className="invoice-header">
                       <div className="invoice-from">
-                        <div className="d-flex row">
+                        <div className="row">
                           {order &&
                             order.map((item) => (
                               <>
                                 <div key={item.id}>
+                                  <div className="col-lg-4 pb-3">
+                                    <div className="container">
+                                      <Link
+                                        className="product bg-gray-100"
+                                        data-bs-target="#"
+                                        onClick={() => handleCardOrder()}
+                                      >
+                                        <div className="text">
+                                          <div className="title">
+                                            {item.name}
+                                          </div>
+                                        </div>
+                                      </Link>
+                                    </div>
+                                  </div>
+                                  {/* modal to show orders */}
                                   <Dialog
                                     modal
                                     header="Pedido"
@@ -276,12 +299,25 @@ function CustomerOrder() {
                                       <div className="col-lg-12 pt-4">
                                         <div>
                                           <DataTable
+                                            stripedRows
+                                            showGridlines
                                             value={tableData}
+                                            paginator
+                                            rows={5}
+                                            sortMode="multiple"
+                                            selectionMode="single"
+                                            rowsPerPageOptions={[5, 25, 50]}
+                                            tableStyle={{
+                                              minWidth: "1rem",
+                                              fontSize: "0.8rem",
+                                            }}
+                                            emptyMessage="Nenhuma informação encontrada."
+                                            // value={tableData}
                                             scrollable
                                             scrollHeight="flex"
-                                            tableStyle={{ minWidth: "50rem" }}
+                                            // tableStyle={{ minWidth: "50rem" }}
                                           >
-                                            {columns.map((col, i) => (
+                                            {columns.map((col) => (
                                               <Column
                                                 sortable
                                                 key={col.field}
@@ -303,21 +339,7 @@ function CustomerOrder() {
                                       </div>
                                     </div>
                                   </Dialog>
-                                  <div className="col-lg-4 pb-3" key={item.id}>
-                                    <div className="container" data-type="meat">
-                                      <Link
-                                        className="product bg-gray-100"
-                                        data-bs-target="#"
-                                        onClick={() => handleCardOrder()}
-                                      >
-                                        <div className="text">
-                                          <div className="title">
-                                            {item.name}
-                                          </div>
-                                        </div>
-                                      </Link>
-                                    </div>
-                                  </div>
+                                  {/* end modal to show orders */}
                                 </div>
                               </>
                             ))}
@@ -412,10 +434,10 @@ function CustomerOrder() {
                     onChange={(e) => setExpectedDate(e.value)}
                   />
                 </div>
-                {orders.map((order, index) => (
+                {orders.map((order, i) => (
                   <div
                     className="row pos-table-row justify-content-between"
-                    key={index}
+                    key={i}
                   >
                     <div className="pos-sidebar-footer">
                       <div className="subtotal">
@@ -438,10 +460,10 @@ function CustomerOrder() {
             </div>
           </div>
           <div className="pos-sidebar-footer">
-            <div class="btn-row w-100">
+            <div className="btn-row w-100">
               <form onSubmit={handleSubmit}>
-                <button type="submit" class="btn btn-success">
-                  <i class="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido
+                <button type="submit" className="btn btn-success">
+                  <i className="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido
                 </button>
               </form>
             </div>

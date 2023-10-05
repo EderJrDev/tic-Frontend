@@ -6,7 +6,7 @@ export async function LastOrders(setTableData) {
   try {
     const response = await api.get("/admin/order/latest");
     let dados = response.data;
-    console.log(response.data);
+    // console.log(response.data);
 
     const data = dados.map((dado) => ({
       id: dado.id,

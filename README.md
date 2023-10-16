@@ -1,12 +1,19 @@
-**Para instalar as dependências use o  `eject`, npm install --force**
+# 📦 TIC_ESTOQUE - Passo a Passo de como instalar o projeto
 
-Para o projeto executar, você pode utilizar esses comandos:
+## 🚀 Iniciando o projeto com o git
 
-### `npm start` - Inicia a aplicação
+1. Clone o repositório.
+2. Abra o terminal do VS Code.
+3. Digite os seguintes comandos no terminal:
 
-### `npm run build` - Simula o projeto em produção
+   **Instalar as dependências && Para executar o projeto, você pode utilizar esses comandos:**
+   ```shell
+   npm install --force
+   npm start - Inicia a aplicação.
+   npm run build - Simula o projeto em produção.
 
-### Login (rodar o backend junto):
-
-## admin@gmail.com
-## 12345678
+4. Inicie o backend.
+5. Insira os seguintes dados no login:
+  ```shell
+  admin@gmail.com
+  12345678

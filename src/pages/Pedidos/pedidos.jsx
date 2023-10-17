@@ -10,18 +10,21 @@ import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { DataTable } from "primereact/datatable";
+import { InputSwitch } from "primereact/inputswitch";
 
 function CustomerOrder() {
   // State
   const [cli, setCli] = useState([]);
   const [order, setOrder] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [checked, setChecked] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [orderName, setOrderName] = useState("");
+  const [orderItems, setOrderItems] = useState({});
   const [showModal, setShowModal] = useState(false);
-  const [showModalOrder, setShowModalOrder] = useState(false);
   const [quantityToAdd, setQuantityToAdd] = useState("");
   const [expectedDate, setExpectedDate] = useState(null);
+  const [showModalOrder, setShowModalOrder] = useState(false);
   const [selectedCardQuantity, setSelectedCardQuantity] = useState("");
   const [selectedProduct, setSelectedProduct] = useState({
     id: null,
@@ -67,9 +70,11 @@ function CustomerOrder() {
     setSelectedProduct({ ...item, quantityToAdd: "" });
   };
 
-  const handleCardOrder = () => {
-    setShowModalOrder(true);
-  };
+  function handleCardOrder(orderId) {
+    const items = orderItems[orderId]; // Obtém os order items pelo ID do order
+    setTableData(items); // Atualiza a tabela com os order items do order clicado
+    setShowModalOrder(true); // Abre a modal
+  }
 
   // Função para atualizar o produto
   const updateProduct = () => {
@@ -95,40 +100,44 @@ function CustomerOrder() {
       setCli(dados);
     }
 
-    const validitStatus = (status) => {
-      if (status === 'pendente') {
-        return <span className="badge bg-warning">Pendente</span>;
-      } else {
-        return <span className="badge bg-danger">Não</span>;
-      }
-    };
+    getCategory();
+    getOrders();
+  }, [order]);
 
-    async function getOrders() {
+  const validitStatus = (status) => {
+    if (status === "pendente") {
+      return <span className="badge bg-warning">Pendente</span>;
+    } else {
+      return <span className="badge bg-danger">Não</span>;
+    }
+  };
+
+  async function getOrders() {
+    try {
       const response = await api.get("/admin/order/show/orders");
       console.log("get orders: ", response);
       const dados = response.data;
-      // console.log("teste: ", dados);
+      setOrder(dados); // Armazena os orders
 
-      const getOrderItens = dados.map((order) =>
-        order.order_items.map((orderItem) => ({
+      const orderItemsMap = {};
+
+      dados.forEach((order) => {
+        const orderItems = order.order_items.map((orderItem) => ({
           id: orderItem.id,
           name: orderItem.product.name,
           newQuantity: orderItem.newQuantity,
           quantityInStock: orderItem.quantityInStock,
           status: validitStatus(orderItem.status),
-        }))
-      );
+        }));
+        orderItemsMap[order.id] = orderItems;
+      });
 
-      // console.log("get ALL : ", getOrderItens);
-      setTableData(getOrderItens.flat()); // trasnforma um array de array em array de objeto
-      setOrder(dados);
+      setOrderItems(orderItemsMap);
+      // Você pode definir a tabela com todos os order items aqui, se necessário
+    } catch (error) {
+      console.error("Error fetching orders: ", error);
     }
-
-    getCategory();
-    getOrders();
-  }, []);
-
-  // console.log("dataTable: ", tableData);
+  }
 
   // Efeito para enviar o pedido
   useEffect(() => {
@@ -143,8 +152,6 @@ function CustomerOrder() {
   // Função para lidar com o envio do formulário
   async function handleSubmit(event) {
     event.preventDefault();
-
-    // const date = new Date().toISOString(); // pegando data atual
 
     const orderData = {
       name: orderName.toString(),
@@ -232,7 +239,6 @@ function CustomerOrder() {
                     </a>
                   </li>
                 </ul>
-
                 <div className="tab-content panel rounded-0 p-3 m-0">
                   <div className="tab-pane fade active show" id="default-tab-1">
                     <div className="invoice-header">
@@ -266,81 +272,82 @@ function CustomerOrder() {
                   <div className="tab-pane fade" id="default-tab-2">
                     <div className="invoice-header">
                       <div className="invoice-from">
-                        <div className="row">
+                        <div className="d-flex row">
                           {order &&
                             order.map((item) => (
                               <>
-                                <div key={item.id}>
-                                  <div className="col-lg-4 pb-3">
-                                    <div className="container">
-                                      <Link
-                                        className="product bg-gray-100"
-                                        data-bs-target="#"
-                                        onClick={() => handleCardOrder()}
-                                      >
-                                        <div className="text">
-                                          <div className="title">
-                                            {item.name}
-                                          </div>
-                                        </div>
-                                      </Link>
-                                    </div>
-                                  </div>
-                                  {/* modal to show orders */}
-                                  <Dialog
-                                    modal
-                                    header="Pedido"
-                                    visible={showModalOrder}
-                                    onHide={() => setShowModalOrder(false)}
-                                    style={{ width: "75vw" }}
-                                    // contentStyle={{ height: '300px' }}
-                                  >
-                                    <div className="row">
-                                      <div className="col-lg-12 pt-4">
-                                        <div>
-                                          <DataTable
-                                            stripedRows
-                                            showGridlines
-                                            value={tableData}
-                                            paginator
-                                            rows={5}
-                                            sortMode="multiple"
-                                            selectionMode="single"
-                                            rowsPerPageOptions={[5, 25, 50]}
-                                            tableStyle={{
-                                              minWidth: "1rem",
-                                              fontSize: "0.8rem",
-                                            }}
-                                            emptyMessage="Nenhuma informação encontrada."
-                                            // value={tableData}
-                                            scrollable
-                                            scrollHeight="flex"
-                                            // tableStyle={{ minWidth: "50rem" }}
-                                          >
-                                            {columns.map((col) => (
-                                              <Column
-                                                sortable
-                                                key={col.field}
-                                                field={col.field}
-                                                header={col.header}
-                                              />
-                                            ))}
-                                          </DataTable>
-                                        </div>
-                                        <div className="text-center">
-                                          <button
-                                            className="btn btn-info btn-btn-sm"
-                                            // onClick={updateProduct}
-                                          >
-                                            <i className="bi bi-check-circle-fill"></i>{" "}
-                                            Atualizar
-                                          </button>
+                                <div key={item.id} className="col-lg-3 pb-3">
+                                  <div className="container">
+                                    <Link
+                                      className="product bg-gray-100"
+                                      data-bs-target="#"
+                                      onClick={() => handleCardOrder(item.id)}
+                                    >
+                                      <div className="text">
+                                        <div className="title">
+                                          {item.name}{" "}
+                                          <i class="fa-solid fa-arrow-right"></i>
                                         </div>
                                       </div>
-                                    </div>
-                                  </Dialog>
-                                  {/* end modal to show orders */}
+                                    </Link>
+                                  </div>
                                 </div>
+                                {/* modal to show orders */}
+                                <Dialog
+                                  modal
+                                  header="Pedido"
+                                  visible={showModalOrder}
+                                  onHide={() => setShowModalOrder(false)}
+                                  style={{ width: "75vw" }}
+                                  // contentStyle={{ height: '300px' }}
+                                >
+                                  <div className="row">
+                                    <div className="col-lg-12 pt-4">
+                                      <div>
+                                        <DataTable
+                                          paginator
+                                          scrollable
+                                          stripedRows
+                                          showGridlines
+                                          rows={5}
+                                          value={tableData}
+                                          rowsPerPageOptions={[5, 25, 50]}
+                                          tableStyle={{
+                                            minWidth: "1rem",
+                                            fontSize: "0.8rem",
+                                          }}
+                                          sortMode="multiple"
+                                          scrollHeight="flex"
+                                          selectionMode="single"
+                                          emptyMessage="Nenhuma informação encontrada."
+                                        >
+                                          {columns.map((col) => (
+                                            <Column
+                                              sortable
+                                              key={col.field}
+                                              field={col.field}
+                                              header={col.header}
+                                            />
+                                          ))}
+                                          <Column
+                                            header="Atualizar Status"
+                                            body={(rowData) => (
+                                              <div className="text-center">
+                                                <InputSwitch
+                                                  checked={checked}
+                                                  onChange={(e) =>
+                                                    setChecked(e.value)
+                                                  }
+                                                />
+                                              </div>
+                                            )}
+                                          />
+                                        </DataTable>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Dialog>
+                                {/* end modal to show orders */}
                               </>
                             ))}
                         </div>
@@ -350,7 +357,7 @@ function CustomerOrder() {
                 </div>
               </div>
             </div>
-
+            {/* modal novo Pedido  */}
             <Dialog
               modal
               header="Novo Pedido"
@@ -390,6 +397,7 @@ function CustomerOrder() {
                 </div>
               </div>
             </Dialog>
+            {/* end modal novo Pedido  */}
           </PerfectScrollbar>
         </div>
         <div className="pos-sidebar" id="pos-sidebar">

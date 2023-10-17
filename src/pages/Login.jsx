@@ -22,6 +22,7 @@ function Login() {
 
       if (token) {
         setRedirect(true);
+        localStorage.setItem("token", token);
       } else {
         setIsModalOpen(true);
         setEmail("");

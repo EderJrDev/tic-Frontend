@@ -11,6 +11,8 @@ import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { DataTable } from "primereact/datatable";
 import { InputSwitch } from "primereact/inputswitch";
+import ProductModal from "./productModal";
+import OrderModal from "./orderModal";
 
 function CustomerOrder() {
   // State
@@ -98,13 +100,12 @@ function CustomerOrder() {
   };
 
   // Efeito para buscar a lista de produtos
+  async function getCategory() {
+    const response = await api.get("/admin/product");
+    const dados = response.data;
+    setCli(dados);
+  }
   useEffect(() => {
-    async function getCategory() {
-      const response = await api.get("/admin/product");
-      const dados = response.data;
-      setCli(dados);
-    }
-
     getCategory();
     getOrders();
   }, [order]);
@@ -113,7 +114,7 @@ function CustomerOrder() {
     if (status === "pendente") {
       return <span className="badge bg-warning">Pendente</span>;
     } else {
-      return <span className="badge bg-danger">Não</span>;
+      return <span className="badge bg-success">Chegou</span>;
     }
   };
 
@@ -173,26 +174,6 @@ function CustomerOrder() {
       console.error("Failed to submit order:", error);
     }
   };
-
-  // async function handleCheck(e) {
-  //   setChecked(e.value);
-
-  //   try {
-  //     const response = await api.post(
-  //       `/admin/order/updadeProduct/${selectedItemId}`,
-  //       {
-  //         status: "Chegou",
-  //       }
-  //     );
-
-  //     console.log(response);
-
-  //     showSuccess();
-  //   } catch (error) {
-  //     showError();
-  //     console.error("Failed to submit order:", error);
-  //   }
-  // }
 
   // Função para lidar com o envio do formulário
   async function handleSubmit(event) {
@@ -338,66 +319,14 @@ function CustomerOrder() {
                                   </div>
                                 </div>
                                 {/* modal to show orders */}
-                                <Dialog
-                                  modal
-                                  header="Pedido"
-                                  visible={showModalOrder}
-                                  onHide={() => setShowModalOrder(false)}
-                                  style={{ width: "75vw" }}
-                                  // contentStyle={{ height: '300px' }}
-                                >
-                                  <div className="row">
-                                    <div className="col-lg-12 pt-4">
-                                      <div>
-                                        <DataTable
-                                          paginator
-                                          scrollable
-                                          stripedRows
-                                          showGridlines
-                                          rows={5}
-                                          value={tableData}
-                                          rowsPerPageOptions={[5, 25, 50]}
-                                          tableStyle={{
-                                            minWidth: "1rem",
-                                            fontSize: "0.8rem",
-                                          }}
-                                          sortMode="multiple"
-                                          scrollHeight="flex"
-                                          selectionMode="single"
-                                          emptyMessage="Nenhuma informação encontrada."
-                                        >
-                                          {columns.map((col) => (
-                                            <Column
-                                              sortable
-                                              key={col.field}
-                                              field={col.field}
-                                              header={col.header}
-                                            />
-                                          ))}
-                                          <Column
-                                            header="Atualizar Status"
-                                            body={(rowData) => (
-                                              <div className="text-center">
-                                                <InputSwitch
-                                                  // checked={checked}
-                                                  checked={
-                                                    selectedRow === rowData
-                                                  }
-                                                  // onChange={(e) =>
-                                                  //   handleCheck(e)
-                                                  // }
-                                                  onChange={(e) =>
-                                                    handleCheck(e, rowData)
-                                                  }
-                                                />
-                                              </div>
-                                            )}
-                                          />
-                                        </DataTable>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </Dialog>
+                                <OrderModal
+                                  showModalOrder={showModalOrder}
+                                  setShowModalOrder={setShowModalOrder}
+                                  tableData={tableData}
+                                  selectedRow={selectedRow}
+                                  handleCheck={handleCheck}
+                                  columns={columns}
+                                />
                                 {/* end modal to show orders */}
                               </>
                             ))}
@@ -409,45 +338,14 @@ function CustomerOrder() {
               </div>
             </div>
             {/* modal novo Pedido  */}
-            <Dialog
-              modal
-              header="Novo Pedido"
-              visible={showModal}
-              onHide={() => setShowModal(false)}
-              style={{ width: "50vw" }}
-              // contentStyle={{ height: '300px' }}
-            >
-              <div className="row">
-                <div className="col-lg-6">
-                  <p className="m-auto pb-2">Quantidade em Estoque:</p>
-                  <InputText
-                    type="number"
-                    className="p-inputtext-sm w-100"
-                    value={selectedProduct ? selectedProduct.quantity : ""}
-                  />
-                </div>
-                <div className="col-lg-6">
-                  <p className="m-auto pb-2">Quantidade a Ser Adicionada:</p>
-                  <InputText
-                    type="number"
-                    placeholder="0"
-                    value={quantityToAdd}
-                    className="p-inputtext-sm w-100"
-                    onChange={(e) => setQuantityToAdd(e.target.value)}
-                  />
-                </div>
-                <div className="col-lg-12 pt-4">
-                  <div className="text-center">
-                    <button
-                      className="btn btn-info btn-btn-sm"
-                      onClick={updateProduct}
-                    >
-                      <i className="bi bi-check-circle-fill"></i> Atualizar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </Dialog>
+            <ProductModal
+              showModal={showModal}
+              setShowModal={setShowModal}
+              quantityToAdd={quantityToAdd}
+              setQuantityToAdd={setQuantityToAdd}
+              selectedProduct={selectedProduct}
+              updateProduct={updateProduct}
+            />
             {/* end modal novo Pedido  */}
           </PerfectScrollbar>
         </div>

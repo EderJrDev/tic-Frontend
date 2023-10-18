@@ -17,10 +17,13 @@ function CustomerOrder() {
   const [cli, setCli] = useState([]);
   const [order, setOrder] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [checked, setChecked] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [orderName, setOrderName] = useState("");
   const [orderItems, setOrderItems] = useState({});
+
+  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [selectedRow, setSelectedRow] = useState(null);
+
   const [showModal, setShowModal] = useState(false);
   const [quantityToAdd, setQuantityToAdd] = useState("");
   const [expectedDate, setExpectedDate] = useState(null);
@@ -36,7 +39,7 @@ function CustomerOrder() {
   const columns = [
     { field: "id", header: "ID" },
     { field: "name", header: "Nome do Produto" },
-    { field: "newQuantity", header: "Nova Quantidade" },
+    { field: "newQuantity", header: "Quantidade a ser Adicionada" },
     { field: "quantityInStock", header: "Quantidade em Estoque" },
     { field: "status", header: "Status do Pedido" },
   ];
@@ -71,6 +74,8 @@ function CustomerOrder() {
   };
 
   function handleCardOrder(orderId) {
+    console.log("item ID: ", orderId);
+    setSelectedItemId(orderId);
     const items = orderItems[orderId]; // Obtém os order items pelo ID do order
     setTableData(items); // Atualiza a tabela com os order items do order clicado
     setShowModalOrder(true); // Abre a modal
@@ -115,7 +120,7 @@ function CustomerOrder() {
   async function getOrders() {
     try {
       const response = await api.get("/admin/order/show/orders");
-      console.log("get orders: ", response);
+      // console.log("get orders: ", response);
       const dados = response.data;
       setOrder(dados); // Armazena os orders
 
@@ -148,6 +153,46 @@ function CustomerOrder() {
     }
     sendOrder();
   }, []);
+
+  const handleCheck = async (e, rowData) => {
+    setSelectedRow(rowData);
+    console.log("id: ", selectedItemId);
+    try {
+      const response = await api.post(
+        `/admin/order/updateProduct/${selectedItemId}`,
+        {
+          status: "Chegou",
+        }
+      );
+
+      console.log(response);
+
+      showSuccess();
+    } catch (error) {
+      showError();
+      console.error("Failed to submit order:", error);
+    }
+  };
+
+  // async function handleCheck(e) {
+  //   setChecked(e.value);
+
+  //   try {
+  //     const response = await api.post(
+  //       `/admin/order/updadeProduct/${selectedItemId}`,
+  //       {
+  //         status: "Chegou",
+  //       }
+  //     );
+
+  //     console.log(response);
+
+  //     showSuccess();
+  //   } catch (error) {
+  //     showError();
+  //     console.error("Failed to submit order:", error);
+  //   }
+  // }
 
   // Função para lidar com o envio do formulário
   async function handleSubmit(event) {
@@ -334,9 +379,15 @@ function CustomerOrder() {
                                             body={(rowData) => (
                                               <div className="text-center">
                                                 <InputSwitch
-                                                  checked={checked}
+                                                  // checked={checked}
+                                                  checked={
+                                                    selectedRow === rowData
+                                                  }
+                                                  // onChange={(e) =>
+                                                  //   handleCheck(e)
+                                                  // }
                                                   onChange={(e) =>
-                                                    setChecked(e.value)
+                                                    handleCheck(e, rowData)
                                                   }
                                                 />
                                               </div>

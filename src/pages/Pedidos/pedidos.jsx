@@ -5,14 +5,11 @@ import { api } from "../../utils/api";
 import { Link } from "react-router-dom";
 
 import { Toast } from "primereact/toast";
-import { Column } from "primereact/column";
-import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
-import { DataTable } from "primereact/datatable";
-import { InputSwitch } from "primereact/inputswitch";
-import ProductModal from "./productModal";
+
 import OrderModal from "./orderModal";
+import ProductModal from "./productModal";
 
 function CustomerOrder() {
   // State
@@ -23,13 +20,14 @@ function CustomerOrder() {
   const [orderName, setOrderName] = useState("");
   const [orderItems, setOrderItems] = useState({});
 
-  const [selectedItemId, setSelectedItemId] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedItemId, setSelectedItemId] = useState(null);
 
   const [showModal, setShowModal] = useState(false);
   const [quantityToAdd, setQuantityToAdd] = useState("");
   const [expectedDate, setExpectedDate] = useState(null);
   const [showModalOrder, setShowModalOrder] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [selectedCardQuantity, setSelectedCardQuantity] = useState("");
   const [selectedProduct, setSelectedProduct] = useState({
     id: null,
@@ -76,10 +74,25 @@ function CustomerOrder() {
   };
 
   function handleCardOrder(orderId) {
-    console.log("item ID: ", orderId);
-    setSelectedItemId(orderId);
+    // console.log("item ID: ", orderId);
+    let foundObjectsArray = [];
+    // Verifica se o orderId existe como uma chave no objeto
+    if (orderId in orderItems) {
+      // Obtém o array correspondente ao orderId
+      let foundArray = orderItems[orderId];
+      // Agora você pode acessar os objetos dentro do array encontrado
+      foundArray.forEach((obj) => {
+        console.log("Objeto encontrado:", obj);
+        foundObjectsArray.push(obj);
+      });
+    } else {
+      console.log("Nenhum array encontrado para o orderId:", orderId);
+    }
     const items = orderItems[orderId]; // Obtém os order items pelo ID do order
-    setTableData(items); // Atualiza a tabela com os order items do order clicado
+    // console.log("items: ", items);
+    // console.log("foundObjectsArray: ", foundObjectsArray);
+    // console.log("orderItems: ", orderItems);
+    setTableData(foundObjectsArray); // Atualiza a tabela com os order items do order clicado
     setShowModalOrder(true); // Abre a modal
   }
 
@@ -142,6 +155,7 @@ function CustomerOrder() {
       // Você pode definir a tabela com todos os order items aqui, se necessário
     } catch (error) {
       console.error("Error fetching orders: ", error);
+      showError();
     }
   }
 
@@ -156,17 +170,22 @@ function CustomerOrder() {
   }, []);
 
   const handleCheck = async (e, rowData) => {
+    setLoading(true);
     setSelectedRow(rowData);
-    console.log("id: ", selectedItemId);
+    console.log("rowData: ", rowData);
+    console.log("id: ", rowData.id);
     try {
       const response = await api.post(
-        `/admin/order/updateProduct/${selectedItemId}`,
+        `/admin/order/updateProduct/${rowData.id}`,
         {
           status: "Chegou",
         }
       );
 
-      console.log(response);
+      // console.log(response);
+      // getOrders()
+      setShowModalOrder(false);
+      setLoading(false);
 
       showSuccess();
     } catch (error) {
@@ -325,6 +344,7 @@ function CustomerOrder() {
                                   tableData={tableData}
                                   selectedRow={selectedRow}
                                   handleCheck={handleCheck}
+                                  loading={loading}
                                   columns={columns}
                                 />
                                 {/* end modal to show orders */}

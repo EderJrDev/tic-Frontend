@@ -8,6 +8,7 @@ const OrderModal = ({ showModalOrder, setShowModalOrder,
   tableData,
   selectedRow,
   handleCheck,
+  loading,
   columns,
 }) => {
   return (
@@ -27,6 +28,7 @@ const OrderModal = ({ showModalOrder, setShowModalOrder,
               stripedRows
               showGridlines
               rows={5}
+              loading={loading}
               value={tableData}
               rowsPerPageOptions={[5, 25, 50]}
               tableStyle={{

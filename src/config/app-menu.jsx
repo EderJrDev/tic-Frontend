@@ -10,6 +10,9 @@ const Menu = [
   {
     path: 'pedidos', icon: 'fa fa-shopping-cart', title: 'Pedidos',
   },
+  {
+    path: 'budget', icon: 'fa fa-file', title: 'Orçamento',
+  },
 
 ]
 

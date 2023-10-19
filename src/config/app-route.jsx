@@ -12,6 +12,7 @@ import {
   createRoutesFromElements,
   useNavigate,
 } from "react-router-dom";
+import Budget from "../pages/Budget/Budget.jsx";
 
 // const AppRoute = [
 // 	{
@@ -118,6 +119,15 @@ const router = createBrowserRouter(
         element={
           <IsUserLoggedIn>
             <CustomerOrder />
+          </IsUserLoggedIn>
+        }
+      />
+
+      <Route
+        path="budget"
+        element={
+          <IsUserLoggedIn>
+            <Budget />
           </IsUserLoggedIn>
         }
       />

@@ -41,6 +41,7 @@
     "react-dom": "^18.2.0",
     "react-downcount": "^1.0.2",
     "react-highlight": "^0.14.0",
+    "react-hook-form": "^7.47.0",
     "react-input-mask": "^2.0.4",
     "react-notifications-component": "^4.0.1",
     "react-perfect-scrollbar": "^1.5.8",

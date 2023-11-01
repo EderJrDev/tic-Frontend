@@ -66,9 +66,7 @@ const IsUserLoggedIn = ({ children }) => {
 
   if (isUserLoggedIn) {
     return children; // Renderiza o conteúdo protegido se o usuário estiver logado
-  } else {
-    return <RedirectToLogin />; // Redireciona para o login se o usuário não estiver logado
-  }
+  } 
 };
 
 // Componente de redirecionamento para login

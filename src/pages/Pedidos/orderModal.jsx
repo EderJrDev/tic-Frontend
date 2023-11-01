@@ -26,7 +26,7 @@ const OrderModal = ({ showModalOrder, setShowModalOrder,
               paginator
               scrollable
               stripedRows
-              showGridlines
+              showGridliness
               rows={5}
               loading={loading}
               value={tableData}

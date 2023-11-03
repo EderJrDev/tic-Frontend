@@ -1,30 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 
+import { Toast } from "primereact/toast";
 import { Column } from "primereact/column";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
-import { Divider } from "primereact/divider";
 import { DataTable } from "primereact/datatable";
+import { InputText } from "primereact/inputtext";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Accordion, AccordionTab } from "primereact/accordion";
 
 import { api } from "../../utils/api";
 import Input from "../../components/Inputs/Input";
-import { Panel, PanelBody, PanelHeader } from "../../components/panel/panel";
-
 import ExportTable from "../../components/button/ExportTable";
-import { InputText } from "primereact/inputtext";
+import { Panel, PanelBody, PanelHeader } from "../../components/panel/panel";
 
 function Budget() {
   const { control, handleSubmit, reset } = useForm();
 
   const [budget_products, setProducts] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [descricao, setDescricao] = useState("");
-  const [unidade, setUnidade] = useState(0);
-  const [valorA, setValorA] = useState(0);
-  const [valorB, setValorB] = useState(0);
-  const [valorC, setValorC] = useState(0);
+  const [unidade, setUnidade] = useState("");
+  const [valorA, setValorA] = useState("");
+  const [valorB, setValorB] = useState("");
+  const [valorC, setValorC] = useState("");
 
   const [budgetId, setBudgetId] = useState(0);
   const [budget_companyId, setBudgetCompanyId] = useState(0);
@@ -41,15 +41,15 @@ function Budget() {
 
     setProducts([...budget_products, product]);
     setDescricao("");
-    setUnidade(0);
-    setValorA(0);
-    setValorB(0);
-    setValorC(0);
+    setUnidade("");
+    setValorA("");
+    setValorB("");
+    setValorC("");
   };
 
   const [tableData, setTableData] = useState([]);
-  const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [showDialog, setShowDialog] = useState(false);
+  const [globalFilterValue, setGlobalFilterValue] = useState("");
 
   const onGlobalFilterChange = (e) => {
     setGlobalFilterValue(e.target.value);
@@ -68,10 +68,30 @@ function Budget() {
     dataKey: col.field,
   }));
 
+  // Ref para as notificações
+  const toast = useRef(null);
+
+  // Funções para mostrar notificações
+  const showSuccess = () => {
+    toast.current.show({
+      severity: "success",
+      summary: "Sucesso!",
+      detail: "O Pedido foi criado com exito.",
+      life: 3000,
+    });
+  };
+
+  const showError = () => {
+    toast.current.show({
+      severity: "error",
+      summary: "Falha!",
+      detail: "Ocorreu um problema ao salvar as informações!",
+      life: 3000,
+    });
+  };
+
   const getBudget = async () => {
     const response = await api.get("/admin/budget/");
-
-    // console.log(response);
     setTableData(response.data);
   };
 
@@ -142,9 +162,11 @@ function Budget() {
       setBudgetCompanyId(createBudgetCompany.data.createdBudgetProduct.id);
 
       console.log("DATA : ", data);
-
+      setActiveIndex(1);
+      showSuccess();
       reset();
     } catch (e) {
+      showError();
       console.log(e);
     }
   };
@@ -192,13 +214,25 @@ function Budget() {
       );
 
       console.log(createProduct);
+
+      showSuccess();
     } catch (e) {
+      showError();
       console.log(e);
     }
   };
 
+  const budgetDownload = async (e, rowData) => {
+    console.log(rowData);
+
+    const response = await api.post(`/admin/budget/print_budget/${rowData.id}`);
+
+    console.log(response);
+  };
+
   return (
     <div>
+      <Toast ref={toast} />
       {/* modal  */}
       <div className="d-flex justify-content-between">
         <div>
@@ -221,8 +255,11 @@ function Budget() {
         contentStyle={{ height: "750px" }}
         onHide={() => setShowDialog(false)}
       >
-        <TabView>
-          <TabPanel header="Header I" leftIcon="pi pi-calendar mr-2">
+        <TabView
+          activeIndex={activeIndex}
+          onTabChange={(e) => setActiveIndex(e.index)}
+        >
+          <TabPanel header="Orçamento" leftIcon="pi pi-calendar mr-2">
             <div className="row pb-3">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="row">
@@ -253,7 +290,7 @@ function Budget() {
                     </div>
                   </div>
                 </div>
-                <div className=" py-3">
+                <div className="py-3">
                   <Accordion activeIndex={0}>
                     <AccordionTab
                       header={
@@ -302,36 +339,28 @@ function Budget() {
                         </div>
                       }
                     >
-                      <div>
-                        <Divider align="left">
-                          <div className="inline-flex align-items-center">
-                            <i className="pi pi-user mr-2"></i>
-                            <b>Empresa B</b>
-                          </div>
-                        </Divider>
-                        <div className="row d-flex">
-                          <div className="col-lg-4">
-                            <Input
-                              name="razaoEmpB"
-                              control={control}
-                              label="Razão Social"
-                            />
-                          </div>
+                      <div className="row d-flex">
+                        <div className="col-lg-4">
+                          <Input
+                            name="razaoEmpB"
+                            control={control}
+                            label="Razão Social"
+                          />
+                        </div>
 
-                          <div className="col-lg-4">
-                            <Input
-                              name="cnpjEmpB"
-                              control={control}
-                              label="CPF"
-                            />
-                          </div>
-                          <div className="col-lg-4">
-                            <Input
-                              name="telEmpB"
-                              control={control}
-                              label="Telefone"
-                            />
-                          </div>
+                        <div className="col-lg-4">
+                          <Input
+                            name="cnpjEmpB"
+                            control={control}
+                            label="CPF"
+                          />
+                        </div>
+                        <div className="col-lg-4">
+                          <Input
+                            name="telEmpB"
+                            control={control}
+                            label="Telefone"
+                          />
                         </div>
                       </div>
                     </AccordionTab>
@@ -346,36 +375,28 @@ function Budget() {
                         </div>
                       }
                     >
-                      <div>
-                        <Divider align="left">
-                          <div className="inline-flex align-items-center">
-                            <i className="pi pi-user mr-2"></i>
-                            <b>Empresa C</b>
-                          </div>
-                        </Divider>
-                        <div className="row d-flex">
-                          <div className="col-lg-4">
-                            <Input
-                              name="razaoEmpC"
-                              control={control}
-                              label="Razão Social"
-                            />
-                          </div>
-                          <div className="col-lg-4">
-                            <Input
-                              name="cnpjEmpC"
-                              control={control}
-                              label="CPF"
-                            />
-                          </div>
+                      <div className="row d-flex">
+                        <div className="col-lg-4">
+                          <Input
+                            name="razaoEmpC"
+                            control={control}
+                            label="Razão Social"
+                          />
+                        </div>
+                        <div className="col-lg-4">
+                          <Input
+                            name="cnpjEmpC"
+                            control={control}
+                            label="CPF"
+                          />
+                        </div>
 
-                          <div className="col-lg-4">
-                            <Input
-                              name="telEmpC"
-                              control={control}
-                              label="Telefone"
-                            />
-                          </div>
+                        <div className="col-lg-4">
+                          <Input
+                            name="telEmpC"
+                            control={control}
+                            label="Telefone"
+                          />
                         </div>
                       </div>
                     </AccordionTab>
@@ -385,94 +406,94 @@ function Budget() {
                   <Button
                     type="submit"
                     severity="success"
-                    icon="pi pi-check"
-                    label="Criar Orçamento"
+                    icon="bi bi-arrow-right-circle"
+                    label="Avançar"
                   />
-                  {/* <Button
-                onClick={addProduct}
-                severity="info"
-                icon="pi pi-check"
-                label="Novo Produto"
-              /> */}
                 </div>
               </form>
             </div>
           </TabPanel>
-          <TabPanel header="Header II" rightIcon="pi pi-user ml-2">
-            <Accordion activeIndex={0}>
-              <AccordionTab header={`Produto`}>
-                <div>
-                  <div className="row d-flex">
-                    <div className="col-lg-4">
-                      <InputText
-                        name="descricao"
-                        value={descricao}
-                        onChange={(e) => setDescricao(e.target.value)}
-                        label="Descrição"
-                        placeholder="Descrição"
-                      />
-                    </div>
-                    <div className="col-lg-4">
-                      <InputText
-                        name="unidade"
-                        type="tel"
-                        value={unidade}
-                        onChange={(e) => setUnidade(e.target.value)}
-                        label="Unidade"
-                        placeholder="Unidade"
-                      />
-                    </div>
-                    <div className="col-lg-4">
-                      <InputText
-                        name="valorA"
-                        value={valorA}
-                        type="tel"
-                        onChange={(e) => setValorA(e.target.value)}
-                        label="Valor Empresa A"
-                        placeholder="Valor Empresa A"
-                      />
-                    </div>
-                    <div className="col-lg-4">
-                      <InputText
-                        name="valorB"
-                        value={valorB}
-                        type="tel"
-                        onChange={(e) => setValorB(e.target.value)}
-                        label="Valor Empresa B"
-                        placeholder="Valor Empresa B"
-                      />
-                    </div>
-                    <div className="col-lg-4">
-                      <InputText
-                        name="valorC"
-                        value={valorC}
-                        type="tel"
-                        onChange={(e) => setValorC(e.target.value)}
-                        label="Valor Empresa C"
-                        placeholder="Valor Empresa C"
-                      />
-                    </div>
-                  </div>
+          <TabPanel header="Produtos" rightIcon="pi pi-user ml-2">
+            <div>
+              <div className="row d-flex justify-content-between">
+                <div className="col-md-6">
+                  <h2>Novo Produto</h2>
                 </div>
-                <Button onClick={(e) => addProduct(e)}>
-                  Adicionar Novo Produto
-                </Button>
-              </AccordionTab>
-            </Accordion>
-            <div className="text-center">
-              {/* <Button
-                severity="success"
-                icon="pi pi-check"
-                onChange={saveProducts}
-                label="Salvar Produtos"
-              />
-              {/* <Button
-                onClick={addProduct}
-                severity="info"
-                icon="pi pi-check"
-                label="Novo Produto"
-              /> */}
-              <button onClick={saveProducts}>Salvar</button>
+                <div className="col-lg-6 text-end pb-3">
+                  <Button
+                    type="submit"
+                    label="Novo Produto"
+                    onClick={(e) => addProduct(e)}
+                    icon="bi bi-plus-circle"
+                  />
+                </div>
+              </div>
+              <div className="row d-flex">
+                <div className="col-lg-4 pb-3">
+                  <InputText
+                    name="descricao"
+                    className="form-control p-inputtext-sm"
+                    value={descricao}
+                    onChange={(e) => setDescricao(e.target.value)}
+                    label="Descrição"
+                    placeholder="Descrição"
+                  />
+                </div>
+                <div className="col-lg-4">
+                  <InputText
+                    name="unidade"
+                    type="tel"
+                    className="form-control p-inputtext-sm"
+                    value={unidade}
+                    onChange={(e) => setUnidade(e.target.value)}
+                    label="Unidade"
+                    placeholder="Unidade"
+                  />
+                </div>
+                <div className="col-lg-4">
+                  <InputText
+                    className="form-control p-inputtext-sm"
+                    name="valorA"
+                    value={valorA}
+                    type="tel"
+                    onChange={(e) => setValorA(e.target.value)}
+                    label="Valor Empresa A"
+                    placeholder="Valor Empresa A"
+                  />
+                </div>
+                <div className="col-lg-4">
+                  <InputText
+                    className="form-control p-inputtext-sm"
+                    name="valorB"
+                    value={valorB}
+                    type="tel"
+                    onChange={(e) => setValorB(e.target.value)}
+                    label="Valor Empresa B"
+                    placeholder="Valor Empresa B"
+                  />
+                </div>
+                <div className="col-lg-4 pb-3">
+                  <InputText
+                    className="form-control p-inputtext-sm"
+                    name="valorC"
+                    value={valorC}
+                    type="tel"
+                    onChange={(e) => setValorC(e.target.value)}
+                    label="Valor Empresa C"
+                    placeholder="Valor Empresa C"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="col-md-12">
+              <div className="text-end">
+                <Button
+                  label="Salvar"
+                  severity="success"
+                  onClick={saveProducts}
+                  icon="bi bi-send"
+                />
+              </div>
             </div>
           </TabPanel>
         </TabView>
@@ -504,15 +525,25 @@ function Budget() {
                 tableStyle={{ minWidth: "1rem", fontSize: "0.8rem" }}
                 emptyMessage="Nenhuma informação encontrada."
               >
-                {columns.map((col, i) => (
+                {columns.map((col) => (
                   <Column
                     sortable
                     key={col.field}
                     field={col.field}
                     header={col.header}
-                    // filterMatchMode={FilterMatchMode.CONTAINS}
                   />
                 ))}
+                <Column
+                  header="Baixar Orçamento"
+                  body={(rowData) => (
+                    <button
+                      className="btn btn-info btn-btn-sm"
+                      onClick={(e) => budgetDownload(e, rowData)}
+                    >
+                      <i className="bi bi-pencil-square"></i>
+                    </button>
+                  )}
+                />
               </DataTable>
             </PanelBody>
           </Panel>

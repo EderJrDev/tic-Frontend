@@ -337,17 +337,6 @@ function CustomerOrder() {
                                     </Link>
                                   </div>
                                 </div>
-                                {/* modal to show orders */}
-                                <OrderModal
-                                  showModalOrder={showModalOrder}
-                                  setShowModalOrder={setShowModalOrder}
-                                  tableData={tableData}
-                                  selectedRow={selectedRow}
-                                  handleCheck={handleCheck}
-                                  loading={loading}
-                                  columns={columns}
-                                />
-                                {/* end modal to show orders */}
                               </>
                             ))}
                         </div>
@@ -357,6 +346,17 @@ function CustomerOrder() {
                 </div>
               </div>
             </div>
+            {/* modal to show orders */}
+            <OrderModal
+              showModalOrder={showModalOrder}
+              setShowModalOrder={setShowModalOrder}
+              tableData={tableData}
+              selectedRow={selectedRow}
+              handleCheck={handleCheck}
+              loading={loading}
+              columns={columns}
+            />
+            {/* end modal to show orders */}
             {/* modal novo Pedido  */}
             <ProductModal
               showModal={showModal}

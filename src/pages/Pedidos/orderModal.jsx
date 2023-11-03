@@ -4,7 +4,9 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputSwitch } from "primereact/inputswitch";
 
-const OrderModal = ({ showModalOrder, setShowModalOrder,
+const OrderModal = ({
+  showModalOrder,
+  setShowModalOrder,
   tableData,
   selectedRow,
   handleCheck,
@@ -13,7 +15,6 @@ const OrderModal = ({ showModalOrder, setShowModalOrder,
 }) => {
   return (
     <Dialog
-      modal
       header="Pedido"
       visible={showModalOrder}
       onHide={() => setShowModalOrder(false)}
@@ -21,50 +22,48 @@ const OrderModal = ({ showModalOrder, setShowModalOrder,
     >
       <div className="row">
         <div className="col-lg-12 pt-4">
-          <div>
-            <DataTable
-              paginator
-              scrollable
-              stripedRows
-              showGridliness
-              rows={5}
-              loading={loading}
-              value={tableData}
-              rowsPerPageOptions={[5, 25, 50]}
-              tableStyle={{
-                minWidth: "1rem",
-                fontSize: "0.8rem",
-              }}
-              sortMode="multiple"
-              scrollHeight="flex"
-              selectionMode="single"
-              emptyMessage="Nenhuma informação encontrada."
-            >
-              {columns.map((col) => (
-                <Column
-                  sortable
-                  key={col.field}
-                  field={col.field}
-                  header={col.header}
-                />
-              ))}
+          <DataTable
+            paginator
+            scrollable
+            stripedRows
+            showGridliness
+            rows={5}
+            loading={loading}
+            value={tableData}
+            rowsPerPageOptions={[5, 25, 50]}
+            tableStyle={{
+              minWidth: "1rem",
+              fontSize: "0.8rem",
+            }}
+            sortMode="multiple"
+            scrollHeight="flex"
+            selectionMode="single"
+            emptyMessage="Nenhuma informação encontrada."
+          >
+            {columns.map((col) => (
               <Column
-                header="Atualizar Status"
-                body={(rowData) => (
-                  <div className="text-center">
-                    <InputSwitch
-                      // checked={checked}
-                      checked={selectedRow === rowData}
-                      // onChange={(e) =>
-                      //   handleCheck(e)
-                      // }
-                      onChange={(e) => handleCheck(e, rowData)}
-                    />
-                  </div>
-                )}
+                sortable
+                key={col.field}
+                field={col.field}
+                header={col.header}
               />
-            </DataTable>
-          </div>
+            ))}
+            <Column
+              header="Atualizar Status"
+              body={(rowData) => (
+                <div className="text-center">
+                  <InputSwitch
+                    // checked={checked}
+                    checked={selectedRow === rowData}
+                    // onChange={(e) =>
+                    //   handleCheck(e)
+                    // }
+                    onChange={(e) => handleCheck(e, rowData)}
+                  />
+                </div>
+              )}
+            />
+          </DataTable>
         </div>
       </div>
     </Dialog>

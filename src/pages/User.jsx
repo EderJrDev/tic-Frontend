@@ -103,7 +103,7 @@ function User() {
         </div>
         <div>
           <button
-            className="btn btn-success btn-btn-sm"
+            className="btn btn-info btn-btn-sm"
             onClick={(e) => handleCriarUser()}
           >
             Adicionar <i className="bi bi-plus-circle"></i>
@@ -112,7 +112,7 @@ function User() {
       </div>
       <ReactNotifications />
       <Panel>
-        <PanelHeader className="bg-teal-700 text-white">Usuários</PanelHeader>
+        <PanelHeader className="bg-cyan-700 text-white">Usuários</PanelHeader>
         <PanelBody>
           <DataTable
             rows={10}
@@ -145,11 +145,6 @@ function User() {
                 >
                   <i className="bi bi-pencil-square"></i>
                 </button>
-                // <Button
-                //   label="Editar"
-                //   onClick={(e) => handleEditar(e, rowData)}
-                //   className="btn btn-info"
-                // />
               )}
             />
             <Column
@@ -161,11 +156,6 @@ function User() {
                 >
                   <i className="bi bi-trash"></i>
                 </button>
-                // <Button
-                //   label="Deletar"
-                //   onClick={(e) => deleteUser(e, rowData, setTableData)}
-                //   className="btn btn-danger"
-                // />
               )}
             />
           </DataTable>
@@ -173,14 +163,13 @@ function User() {
           <form action="put">
             <Dialog
               modal
-              maximizable
               header="Editar Usuário"
               visible={dialogVisible}
-              style={{ width: "65vw" }}
+              style={{ width: "35vw" }}
               onHide={() => setDialogVisible(false)}
             >
               <div className="row">
-                <div className="col-lg-3">
+                <div className="col-lg-6">
                   <span>Nome</span>
                   <InputText
                     type="text"
@@ -189,7 +178,7 @@ function User() {
                     onChange={(e) => setName(e.target.value)}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-6">
                   <span>Email</span>
                   <InputText
                     type="text"
@@ -198,7 +187,7 @@ function User() {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-6">
                   <span>Senha</span>
                   <InputText
                     type="password"
@@ -207,7 +196,7 @@ function User() {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-6">
                   <span>É administrador?</span>
                   <Dropdown
                     required
@@ -233,14 +222,13 @@ function User() {
 
             <Dialog
               modal
-              maximizable
               header="Adicionar um novo Usuário"
               visible={createVisible}
               onHide={() => setCreateVisible(false)}
-              style={{ width: "65vw" }}
+              style={{ width: "35vw" }}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-6">
                   <div className="d-flex flex-column m-1">
                     <label>Nome</label>
                     <InputText
@@ -252,7 +240,7 @@ function User() {
                     />
                   </div>
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-6">
                   <div className="d-flex flex-column m-1">
                     <label>Email</label>
                     <InputText
@@ -264,7 +252,7 @@ function User() {
                     />
                   </div>
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-6">
                   <div className="d-flex flex-column m-1">
                     <label>Senha</label>
                     <InputText
@@ -276,7 +264,7 @@ function User() {
                     />
                   </div>
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-6">
                   <div className="d-flex flex-column m-1">
                     <label>Administrador?</label>
                     <Dropdown

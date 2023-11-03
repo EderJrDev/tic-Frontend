@@ -40,10 +40,6 @@ function Budget() {
   const [showDialog, setShowDialog] = useState(false);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
 
-  const onGlobalFilterChange = (e) => {
-    setGlobalFilterValue(e.target.value);
-  };
-
   const columns = [
     { field: "id", header: "ID" },
     { field: "name", header: "Nome" },
@@ -59,7 +55,6 @@ function Budget() {
 
   // Ref para as notificações
   const toast = useRef(null);
-
   // Funções para mostrar notificações
   const showSuccess = () => {
     toast.current.show({
@@ -96,8 +91,7 @@ function Budget() {
     setValorA("");
     setValorB("");
     setValorC("");
-
-    console.log(product);
+    // console.log(product);
 
     if (
       descricao === "" ||
@@ -124,7 +118,7 @@ function Budget() {
   };
 
   const onSubmit = async (data) => {
-    console.log("DATA.VALUE ", data);
+    // console.log("DATA.VALUE ", data);
     try {
       const createBudget = await api.post(`/admin/budget/createBudget`, {
         name: data.name,
@@ -132,9 +126,8 @@ function Budget() {
         rg: data.rg,
         cpf: data.cpf,
       });
-
-      console.log(createBudget);
-      console.log(createBudget.data.id);
+      // console.log(createBudget);
+      // console.log(createBudget.data.id);
 
       const createBudgetCompany = await api.post(
         `/admin/budget/createBudgetCompany`,
@@ -161,27 +154,7 @@ function Budget() {
           ],
         }
       );
-
-      console.log(createBudgetCompany);
-      console.log(createBudgetCompany.data.createdBudgetProduct.id);
-
-      console.log(
-        "obj: ",
-        data.descricao,
-        " / ",
-        data.valorEmpresaA,
-        " / ",
-        data.valorEmpresaB,
-        " / ",
-        data.valorEmpresaC,
-        " / ",
-        data.unidade,
-        " / ",
-        createBudgetCompany.data.createdBudgetProduct.id,
-        " / ",
-        createBudget.data.id
-      );
-
+      // console.log(createBudgetCompany);
       setBudgetId(createBudget.data.id);
       setBudgetCompanyId(createBudgetCompany.data.createdBudgetProduct.id);
 
@@ -213,7 +186,7 @@ function Budget() {
       product.budget_companyId = budget_companyId ? budget_companyId : 0;
       product.budgetId = budgetId ? budgetId : 0;
     });
-    console.log(product);
+    // console.log(product);
     try {
       if (!descricao || !unidade || !valorA || !valorB || !valorC) {
         toast.current.show({
@@ -233,16 +206,14 @@ function Budget() {
 
       console.log("budget ", budget_products);
 
-      const createProduct = await api.post(
-        `/admin/budget/createBudgetProduct`,
-        {
-          budget_products,
-        }
-      );
+      await api.post(`/admin/budget/createBudgetProduct`, {
+        budget_products,
+      });
 
-      console.log(createProduct);
+      // console.log(createProduct);
 
       showSuccess();
+      setShowDialog(false);
     } catch (e) {
       showError();
       console.log(e);
@@ -263,7 +234,7 @@ function Budget() {
       setTableData(response.data);
     };
     getBudget();
-  }, []);
+  }, [showDialog]);
 
   return (
     <div>
@@ -275,7 +246,7 @@ function Budget() {
         </div>
         <div>
           <button
-            className="btn btn-success btn-btn-sm"
+            className="btn btn-info btn-btn-sm"
             onClick={() => setShowDialog(true)}
           >
             Adicionar <i className="bi bi-plus-circle"></i>
@@ -555,7 +526,7 @@ function Budget() {
       <div className="row">
         <div className="col-xl-12">
           <Panel>
-            <PanelHeader className="bg-teal-700 text-white">
+            <PanelHeader className="bg-cyan-700 text-white">
               Últimos Orçamentos
             </PanelHeader>
             <PanelBody>
@@ -563,7 +534,9 @@ function Budget() {
                 tableData={tableData}
                 exportColumns={exportColumns}
                 globalFilterValue={globalFilterValue}
-                onGlobalFilterChange={onGlobalFilterChange}
+                onGlobalFilterChange={(e) =>
+                  setGlobalFilterValue(e.target.value)
+                }
               />
               <DataTable
                 stripedRows
@@ -590,10 +563,10 @@ function Budget() {
                   header="Baixar Orçamento"
                   body={(rowData) => (
                     <button
-                      className="btn btn-info btn-btn-sm"
+                      className="btn btn-success btn-btn-sm"
                       onClick={(e) => budgetDownload(e, rowData)}
                     >
-                      <i className="bi bi-pencil-square"></i>
+                      <i className="bi bi-download"></i>
                     </button>
                   )}
                 />

@@ -99,17 +99,27 @@ function CustomerOrder() {
   // Função para atualizar o produto
   const updateProduct = () => {
     const updatedOrders = [...orders];
-    const newItem = {
-      productId: selectedProduct.id,
-      product: selectedProduct.name,
-      quantityInStock: selectedCardQuantity,
-      newQuantity: parseFloat(quantityToAdd),
-    };
-    updatedOrders.push(newItem);
-    setOrders(updatedOrders);
-    setShowModal(false);
-    setQuantityToAdd("");
-    setSelectedProduct({ ...selectedProduct, quantityToAdd: "" });
+
+    if (!quantityToAdd || !selectedCardQuantity) {
+      toast.current.show({
+        severity: "error",
+        summary: "Falha!",
+        detail: "Quantidades necessárias!",
+        life: 3000,
+      });
+    } else {
+      const newItem = {
+        productId: selectedProduct.id,
+        product: selectedProduct.name,
+        quantityInStock: selectedCardQuantity,
+        newQuantity: parseFloat(quantityToAdd),
+      };
+      updatedOrders.push(newItem);
+      setOrders(updatedOrders);
+      setShowModal(false);
+      setQuantityToAdd("");
+      setSelectedProduct({ ...selectedProduct, quantityToAdd: "" });
+    }
   };
 
   // Efeito para buscar a lista de produtos
@@ -181,7 +191,6 @@ function CustomerOrder() {
           status: "Chegou",
         }
       );
-
       // console.log(response);
       // getOrders()
       setShowModalOrder(false);
@@ -198,53 +207,68 @@ function CustomerOrder() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    const orderData = {
-      name: orderName.toString(),
-    };
-
-    // Extrair os componentes da data (ano, mês, dia, hora, minuto, segundo)
-    var ano = expectedDate.getFullYear();
-    var mes = expectedDate.getMonth() + 1; // Note que os meses em JavaScript são baseados em zero (janeiro é 0)
-    var dia = expectedDate.getDate();
-    var hora = expectedDate.getHours();
-    var minuto = expectedDate.getMinutes();
-    var segundo = expectedDate.getSeconds();
-
-    // Formatar a data no formato desejado pelo backend (ano-mês-diaThora:minuto:segundo.000Z)
-    var dataFormatada = `${ano}-${mes.toString().padStart(2, "0")}-${dia
-      .toString()
-      .padStart(2, "0")}T${hora.toString().padStart(2, "0")}:${minuto
-      .toString()
-      .padStart(2, "0")}:${segundo.toString().padStart(2, "0")}.000Z`;
-
-    try {
-      const response = await api.post("/admin/order/createOrder", orderData);
-
-      const orderItem = {
-        order_items: [
-          ...orders.map((item) => {
-            const { product, ...rest } = item; //  removendo a propriedade 'product' pois o endpoint não precisa dela
-            return {
-              ...rest,
-              status: "pendente",
-              expected_date: dataFormatada,
-              orderId: response.data.createdOrder.id,
-              productId: item.productId,
-            };
-          }),
-        ],
+    if (!orderName || !expectedDate) {
+      toast.current.show({
+        severity: "error",
+        summary: "Falha!",
+        detail: "Informe um nome e uma data para o pedido!",
+        life: 3000,
+      });
+    } else {
+      const orderData = {
+        name: orderName.toString(),
       };
 
-      // console.log(orderItem);
-      await api.post("/admin/order/createOrderItem", orderItem);
+      // Extrair os componentes da data (ano, mês, dia, hora, minuto, segundo)
+      var ano = expectedDate.getFullYear();
+      var mes = expectedDate.getMonth() + 1; // Note que os meses em JavaScript são baseados em zero (janeiro é 0)
+      var dia = expectedDate.getDate();
+      var hora = expectedDate.getHours();
+      var minuto = expectedDate.getMinutes();
+      var segundo = expectedDate.getSeconds();
 
-      showSuccess();
-      setOrderName("");
-      setExpectedDate("");
-      setOrders([]);
-    } catch (error) {
-      showError();
-      console.error("Failed to submit order:", error);
+      // Formatar a data no formato desejado pelo backend (ano-mês-diaThora:minuto:segundo.000Z)
+      var dataFormatada = `${ano}-${mes.toString().padStart(2, "0")}-${dia
+        .toString()
+        .padStart(2, "0")}T${hora.toString().padStart(2, "0")}:${minuto
+        .toString()
+        .padStart(2, "0")}:${segundo.toString().padStart(2, "0")}.000Z`;
+
+      try {
+        const response = await api.post("/admin/order/createOrder", orderData);
+
+        const orderItem = {
+          order_items: [
+            ...orders.map((item) => {
+              const { product, ...rest } = item; //  removendo a propriedade 'product' pois o endpoint não precisa dela
+              return {
+                ...rest,
+                status: "pendente",
+                expected_date: dataFormatada,
+                orderId: response.data.createdOrder.id,
+                productId: item.productId,
+              };
+            }),
+          ],
+        };
+
+        // console.log(orderItem);
+        await api.post("/admin/order/createOrderItem", orderItem);
+
+        showSuccess();
+        setOrderName("");
+        setExpectedDate("");
+        setOrders([]);
+      } catch (error) {
+        toast.current.show({
+          severity: "error",
+          summary: "Falha!",
+          detail: "Ocorreu uma falha ao criar o pedido, tente novamente!",
+          life: 3000,
+        });
+
+        console.error("Failed to submit order:", error);
+      }
     }
   }
 
@@ -258,7 +282,7 @@ function CustomerOrder() {
         <div className="pos-content">
           <PerfectScrollbar
             className="pos-content-container"
-            options={{ suppressScrollX: true }}
+            // options={{ suppressScrollX: true }}
           >
             <div className="product-row">
               <div className="col-lg-12">
@@ -434,15 +458,21 @@ function CustomerOrder() {
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-          <div className="pos-sidebar-footer">
-            <div className="btn-row w-100">
-              <form onSubmit={handleSubmit}>
-                <button type="submit" className="btn btn-success">
-                  <i className="fa fa-check fa-fw fa-lg"></i> Finalizar Pedido
-                </button>
-              </form>
+              <hr />
+              {orders.length > 0 && (
+                <div className="w-100">
+                  <div className="w-100 text-center">
+                    <div className="btn-row w-100">
+                      <form onSubmit={handleSubmit}>
+                        <button type="submit" className="btn btn-success p-4">
+                          <i className="fa fa-check fa-fw fa-lg"></i> Finalizar
+                          Pedido
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

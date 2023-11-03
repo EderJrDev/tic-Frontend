@@ -143,7 +143,7 @@ function Products() {
         </div>
         <div>
           <button
-            className="btn btn-success btn-btn-sm"
+            className="btn btn-info btn-btn-sm"
             onClick={(e) => handleCreateProduct()}
           >
             Adicionar <i className="bi bi-plus-circle"></i>
@@ -152,7 +152,7 @@ function Products() {
       </div>
       <ReactNotifications />
       <Panel>
-        <PanelHeader className="bg-teal-700 text-white">Usuários</PanelHeader>
+        <PanelHeader className="bg-cyan-700 text-white">Usuários</PanelHeader>
         <PanelBody>
           <DataTable
             rows={10}
@@ -320,7 +320,6 @@ function Products() {
 
             <Dialog
               modal
-              maximizable
               header="Adicionar um novo produto"
               visible={createVisible}
               onHide={() => setCreateVisible(false)}

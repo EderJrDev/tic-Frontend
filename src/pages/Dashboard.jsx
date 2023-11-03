@@ -73,7 +73,7 @@ function Dashboard() {
       <div className="row">
         <div className="col-xl-12">
           <Panel>
-            <PanelHeader className="bg-teal-700 text-white">
+            <PanelHeader className="bg-cyan-700 text-white">
               Últimos Pedidos
             </PanelHeader>
             <PanelBody>

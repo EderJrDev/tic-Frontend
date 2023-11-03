@@ -9,7 +9,7 @@ class ThemePanel extends React.Component {
 
 		this.state = {
 			expand: false,
-			theme: (localStorage && typeof localStorage.appTheme !== 'undefined') ? localStorage.appTheme : 'green',
+			theme: (localStorage && typeof localStorage.appTheme !== 'undefined') ? localStorage.appTheme : 'cyan',
 			darkMode: false
 		}
 		this.theme = ['red', 'pink', 'orange', 'yellow', 'lime', 'green', 'teal', 'cyan', 'blue', 'purple', 'indigo', 'dark'];

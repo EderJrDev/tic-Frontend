@@ -12,40 +12,29 @@ import { Accordion, AccordionTab } from "primereact/accordion";
 
 import { api } from "../../utils/api";
 import Input from "../../components/Inputs/Input";
+import MaskInput from "../../components/Inputs/MaskInput";
 import ExportTable from "../../components/button/ExportTable";
 import { Panel, PanelBody, PanelHeader } from "../../components/panel/panel";
 
 function Budget() {
-  const { control, handleSubmit, reset } = useForm();
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
-  const [budget_products, setProducts] = useState([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [descricao, setDescricao] = useState("");
-  const [unidade, setUnidade] = useState("");
   const [valorA, setValorA] = useState("");
   const [valorB, setValorB] = useState("");
   const [valorC, setValorC] = useState("");
+  const [unidade, setUnidade] = useState("");
+  const [descricao, setDescricao] = useState("");
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [budget_products, setProducts] = useState([]);
 
   const [budgetId, setBudgetId] = useState(0);
   const [budget_companyId, setBudgetCompanyId] = useState(0);
-
-  const addProduct = (e) => {
-    e.preventDefault();
-    const product = {
-      descricao,
-      unidade: parseInt(unidade),
-      valorA: parseInt(valorA),
-      valorB: parseInt(valorB),
-      valorC: parseInt(valorC),
-    };
-
-    setProducts([...budget_products, product]);
-    setDescricao("");
-    setUnidade("");
-    setValorA("");
-    setValorB("");
-    setValorC("");
-  };
 
   const [tableData, setTableData] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
@@ -90,14 +79,49 @@ function Budget() {
     });
   };
 
-  const getBudget = async () => {
-    const response = await api.get("/admin/budget/");
-    setTableData(response.data);
-  };
+  const addProduct = (e) => {
+    e.preventDefault();
 
-  useEffect(() => {
-    getBudget();
-  }, []);
+    const product = {
+      descricao,
+      unidade: parseInt(unidade),
+      valorA: parseInt(valorA),
+      valorB: parseInt(valorB),
+      valorC: parseInt(valorC),
+    };
+
+    setProducts([...budget_products, product]);
+    setDescricao("");
+    setUnidade("");
+    setValorA("");
+    setValorB("");
+    setValorC("");
+
+    console.log(product);
+
+    if (
+      descricao === "" ||
+      unidade === NaN ||
+      valorA === NaN ||
+      valorB === NaN ||
+      valorC === NaN
+    ) {
+      toast.current.show({
+        severity: "error",
+        summary: "Falha!",
+        detail: "Informe todos os dados para criar um novo produto!",
+        life: 3000,
+      });
+    } else {
+      toast.current.show({
+        severity: "success",
+        summary: "Sucesso!",
+        detail:
+          "O produto foi adicionado com sucesso, já é possível adicionar outro.",
+        life: 3000,
+      });
+    }
+  };
 
   const onSubmit = async (data) => {
     console.log("DATA.VALUE ", data);
@@ -189,23 +213,26 @@ function Budget() {
       product.budget_companyId = budget_companyId ? budget_companyId : 0;
       product.budgetId = budgetId ? budgetId : 0;
     });
-
-    // Convertemos os valores em números
-    product.unidade = parseInt(unidade);
-    product.valorA = parseInt(valorA);
-    product.valorB = parseInt(valorB);
-    product.valorC = parseInt(valorC);
-
-    setProducts([...budget_products, product]);
-    setDescricao("");
-    setUnidade(0);
-    setValorA(0);
-    setValorB(0);
-    setValorC(0);
-
-    console.log("budget ", budget_products);
-
+    console.log(product);
     try {
+      if (!descricao || !unidade || !valorA || !valorB || !valorC) {
+        toast.current.show({
+          severity: "error",
+          summary: "Falha!",
+          detail: "Informe todos os dados para criar um novo produto!",
+          life: 3000,
+        });
+      }
+
+      setProducts([...budget_products, product]);
+      setDescricao("");
+      setUnidade(0);
+      setValorA(0);
+      setValorB(0);
+      setValorC(0);
+
+      console.log("budget ", budget_products);
+
       const createProduct = await api.post(
         `/admin/budget/createBudgetProduct`,
         {
@@ -229,6 +256,14 @@ function Budget() {
 
     console.log(response);
   };
+
+  useEffect(() => {
+    const getBudget = async () => {
+      const response = await api.get("/admin/budget/");
+      setTableData(response.data);
+    };
+    getBudget();
+  }, []);
 
   return (
     <div>
@@ -280,13 +315,23 @@ function Budget() {
                         label="Nome do Responsável"
                       />
                     </div>
-
                     <div className="col-lg-4">
-                      <Input name="rg" control={control} label="Informe o RG" />
+                      <MaskInput
+                        name="rg"
+                        control={control}
+                        mask="99.999.999-9"
+                        placeholder="RG"
+                        errors={errors}
+                      />
                     </div>
-
                     <div className="col-lg-4">
-                      <Input name="cpf" control={control} label="CPF" />
+                      <MaskInput
+                        name="cpf"
+                        control={control}
+                        mask="999.999.999-99"
+                        placeholder="CPF"
+                        errors={errors}
+                      />
                     </div>
                   </div>
                 </div>
@@ -312,18 +357,21 @@ function Budget() {
                             />
                           </div>
                           <div className="col-lg-4">
-                            <Input
+                            <MaskInput
                               name="cnpjEmpA"
                               control={control}
-                              label="CPF"
+                              mask="99.999.999/9999-99"
+                              placeholder="CNPJ"
+                              errors={errors}
                             />
                           </div>
-
                           <div className="col-lg-4">
-                            <Input
+                            <MaskInput
                               name="telEmpA"
                               control={control}
-                              label="Telefone"
+                              mask="(99) 9999-9999"
+                              placeholder="Telefone"
+                              errors={errors}
                             />
                           </div>
                         </div>
@@ -347,19 +395,22 @@ function Budget() {
                             label="Razão Social"
                           />
                         </div>
-
                         <div className="col-lg-4">
-                          <Input
+                          <MaskInput
                             name="cnpjEmpB"
                             control={control}
-                            label="CPF"
+                            mask="99.999.999/9999-99"
+                            placeholder="CNPJ"
+                            errors={errors}
                           />
                         </div>
                         <div className="col-lg-4">
-                          <Input
+                          <MaskInput
                             name="telEmpB"
                             control={control}
-                            label="Telefone"
+                            mask="(99) 9999-9999"
+                            placeholder="Telefone"
+                            errors={errors}
                           />
                         </div>
                       </div>
@@ -384,18 +435,21 @@ function Budget() {
                           />
                         </div>
                         <div className="col-lg-4">
-                          <Input
+                          <MaskInput
                             name="cnpjEmpC"
                             control={control}
-                            label="CPF"
+                            mask="99.999.999/9999-99"
+                            placeholder="CNPJ"
+                            errors={errors}
                           />
                         </div>
-
                         <div className="col-lg-4">
-                          <Input
+                          <MaskInput
                             name="telEmpC"
                             control={control}
-                            label="Telefone"
+                            mask="(99) 9999-9999"
+                            placeholder="Telefone"
+                            errors={errors}
                           />
                         </div>
                       </div>
@@ -421,7 +475,6 @@ function Budget() {
                 </div>
                 <div className="col-lg-6 text-end pb-3">
                   <Button
-                    type="submit"
                     label="Novo Produto"
                     onClick={(e) => addProduct(e)}
                     icon="bi bi-plus-circle"
@@ -436,6 +489,7 @@ function Budget() {
                     value={descricao}
                     onChange={(e) => setDescricao(e.target.value)}
                     label="Descrição"
+                    required
                     placeholder="Descrição"
                   />
                 </div>
@@ -498,7 +552,6 @@ function Budget() {
           </TabPanel>
         </TabView>
       </Dialog>
-
       <div className="row">
         <div className="col-xl-12">
           <Panel>
@@ -549,7 +602,6 @@ function Budget() {
           </Panel>
         </div>
       </div>
-
       {/* end modal  */}
     </div>
   );

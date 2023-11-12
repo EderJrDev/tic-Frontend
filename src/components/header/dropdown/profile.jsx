@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 //components
 
 // img
 import img from "../../../assets/default.jpg";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function DropdownProfile() {
-  const [redirect, setRedirect] = useState(false);
+  const navigate = useNavigate();
 
   // let user = localStorage.getItem("name");
   let getPhoto = localStorage.getItem("photo");
@@ -15,12 +15,8 @@ function DropdownProfile() {
   const logoutFunction = async () => {
     localStorage.clear();
 
-    setRedirect(true);
+    navigate("/login");
   };
-
-  if (redirect) {
-    return <Navigate to="/login" />;
-  }
 
   return (
     <div className="navbar-item navbar-user dropdown">
@@ -31,7 +27,7 @@ function DropdownProfile() {
       >
         <img src={photo} alt="Foto de Perfil" />
         <span>
-          <span className="d-none d-md-inline">Administrador</span>
+          {/* <span className="d-none d-md-inline">Administrador</span> */}
           <b className="caret"></b>
         </span>
       </a>

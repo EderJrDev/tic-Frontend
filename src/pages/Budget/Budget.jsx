@@ -130,11 +130,6 @@ function Budget() {
         rg: data.rg,
         cpf: data.cpf,
       });
-<<<<<<< HEAD
-=======
-      // console.log(createBudget);
-      // console.log(createBudget.data.id);
->>>>>>> b345b16ee6c1a28b3c31b52c74299c008d72c4f0
 
       const createBudgetCompany = await api.post(
         `/admin/budget/createBudgetCompany`,
@@ -161,14 +156,10 @@ function Budget() {
           ],
         }
       );
-<<<<<<< HEAD
 
       setDisabledProducts(false);
       setDisabledPanel(true);
 
-=======
-      // console.log(createBudgetCompany);
->>>>>>> b345b16ee6c1a28b3c31b52c74299c008d72c4f0
       setBudgetId(createBudget.data.id);
       setBudgetCompanyId(createBudgetCompany.data.createdBudgetProduct.id);
 
@@ -221,7 +212,6 @@ function Budget() {
 
       console.log("budget ", budget_products);
 
-<<<<<<< HEAD
       if (budget_products.length > 0) {
         const createProduct = await api.post(
           `/admin/budget/createBudgetProduct`,
@@ -241,7 +231,7 @@ function Budget() {
           life: 3000,
         });
       }
-=======
+
       await api.post(`/admin/budget/createBudgetProduct`, {
         budget_products,
       });
@@ -250,7 +240,6 @@ function Budget() {
 
       showSuccess();
       setShowDialog(false);
->>>>>>> b345b16ee6c1a28b3c31b52c74299c008d72c4f0
     } catch (e) {
       showError();
       console.log(e);

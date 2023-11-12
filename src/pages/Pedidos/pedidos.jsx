@@ -106,7 +106,7 @@ function CustomerOrder() {
       });
     }
     const updatedOrders = [...orders];
-<<<<<<< HEAD
+
     const newItem = {
       productId: selectedProduct.id,
       product: selectedProduct.name,
@@ -118,7 +118,6 @@ function CustomerOrder() {
     setShowModal(false);
     setQuantityToAdd("");
     setSelectedProduct({ ...selectedProduct, quantityToAdd: "" });
-=======
 
     if (!quantityToAdd || !selectedCardQuantity) {
       toast.current.show({
@@ -140,7 +139,6 @@ function CustomerOrder() {
       setQuantityToAdd("");
       setSelectedProduct({ ...selectedProduct, quantityToAdd: "" });
     }
->>>>>>> b345b16ee6c1a28b3c31b52c74299c008d72c4f0
   };
 
   // Efeito para buscar a lista de produtos

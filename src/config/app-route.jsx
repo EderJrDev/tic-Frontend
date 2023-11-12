@@ -62,7 +62,7 @@ const router = createBrowserRouter(
           </IsUserLoggedIn>
         }
       />
-      {isAdmin === true && (
+      {isAdmin === "true" && (
         <Route
           path="usuarios"
           element={

@@ -2,7 +2,15 @@ import React from "react";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 
-const ProductModal = ({showModal, setShowModal, quantityToAdd, setQuantityToAdd, selectedProduct, updateProduct}) => {
+const ProductModal = ({
+  quantity,
+  setQuantity,
+  showModal,
+  setShowModal,
+  quantityToAdd,
+  setQuantityToAdd,
+  updateProduct,
+}) => {
   return (
     <Dialog
       modal
@@ -13,11 +21,12 @@ const ProductModal = ({showModal, setShowModal, quantityToAdd, setQuantityToAdd,
     >
       <div className="row">
         <div className="col-lg-6">
-          <p className="m-auto pb-2">Quantidade em Estoque:</p>
+          <p className="m-auto pb-2">Qual a quantidade atual em estoque?</p>
           <InputText
             type="number"
             className="p-inputtext-sm w-100"
-            value={selectedProduct ? selectedProduct.quantity : ""}
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
           />
         </div>
         <div className="col-lg-6">

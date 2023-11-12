@@ -10,7 +10,6 @@ export async function createProduct(
   unitMeasure,
   createLocation,
   setTableData,
-  purchase_allowed,
   originCityHall
 ) {
   try {
@@ -19,7 +18,6 @@ export async function createProduct(
       categoryId: category ? category : "",
       quantity: JSON.parse(createQuantity),
       measureId: unitMeasure ? unitMeasure : "",
-      purchase_allowed: purchase_allowed,
       originCityHall: originCityHall,
       location: createLocation,
     };
@@ -30,7 +28,7 @@ export async function createProduct(
 
     await updateTableData(setTableData);
     setCreateVisible(false);
-    
+
     addNotification(
       "success",
       "Produto Adicionado!",

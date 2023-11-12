@@ -11,7 +11,6 @@ export async function updatedProduct(
   location,
   setTableData,
   setDialogVisible,
-  purchase_allowed,
   originCityHall
 ) {
   try {
@@ -21,7 +20,6 @@ export async function updatedProduct(
       quantity: parseInt(quantity),
       measureId: unitMeasure,
       location: location,
-      purchase_allowed: purchase_allowed,
       originCityHall: originCityHall,
     };
 

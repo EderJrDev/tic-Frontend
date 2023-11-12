@@ -14,6 +14,7 @@ import ProductModal from "./productModal";
 function CustomerOrder() {
   // State
   const [cli, setCli] = useState([]);
+  const [productsCityHall, setProductsCityHall] = useState([]);
   const [order, setOrder] = useState([]);
   const [orders, setOrders] = useState([]);
   const [tableData, setTableData] = useState([]);
@@ -21,7 +22,7 @@ function CustomerOrder() {
   const [orderItems, setOrderItems] = useState({});
 
   const [selectedRow, setSelectedRow] = useState(null);
-  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [quantity, setQuantity] = useState("");
 
   const [showModal, setShowModal] = useState(false);
   const [quantityToAdd, setQuantityToAdd] = useState("");
@@ -69,6 +70,7 @@ function CustomerOrder() {
   // Manipulação de clique em um item
   const handleCardClick = (item) => {
     setSelectedCardQuantity(item.quantity);
+    setQuantity(item.quantity);
     setShowModal(true);
     setSelectedProduct({ ...item, quantityToAdd: "" });
   };
@@ -88,21 +90,26 @@ function CustomerOrder() {
     } else {
       console.log("Nenhum array encontrado para o orderId:", orderId);
     }
-    const items = orderItems[orderId]; // Obtém os order items pelo ID do order
-    // console.log("items: ", items);
-    // console.log("foundObjectsArray: ", foundObjectsArray);
-    // console.log("orderItems: ", orderItems);
+
     setTableData(foundObjectsArray); // Atualiza a tabela com os order items do order clicado
     setShowModalOrder(true); // Abre a modal
   }
 
   // Função para atualizar o produto
   const updateProduct = () => {
+    if (!quantityToAdd) {
+      return toast.current.show({
+        severity: "error",
+        summary: "Falha!",
+        detail: "Por favor insira uma quantidade.",
+        life: 3000,
+      });
+    }
     const updatedOrders = [...orders];
     const newItem = {
       productId: selectedProduct.id,
       product: selectedProduct.name,
-      quantityInStock: selectedCardQuantity,
+      quantityInStock: quantity,
       newQuantity: parseFloat(quantityToAdd),
     };
     updatedOrders.push(newItem);
@@ -116,7 +123,18 @@ function CustomerOrder() {
   async function getCategory() {
     const response = await api.get("/admin/product");
     const dados = response.data;
+    // console.log(dados);
     setCli(dados);
+
+    const filterProducts = dados.filter(
+      (product) => product.originCityHall === true
+    );
+    // console.log([filterProducts]);
+
+    setProductsCityHall([filterProducts]);
+
+    // console.log(filterProducts);
+    // return filterProducts;
   }
   useEffect(() => {
     getCategory();
@@ -269,18 +287,36 @@ function CustomerOrder() {
                       data-bs-toggle="tab"
                       className="nav-link active"
                     >
-                      <span className="d-sm-none">Itens</span>
-                      <span className="d-sm-block d-none">Itens</span>
+                      <span className="d-sm-none">Produtos</span>
+                      <span className="d-sm-block d-none">Produtos</span>
                     </a>
                   </li>
+
                   <li className="nav-item">
                     <a
                       href="#default-tab-2"
                       data-bs-toggle="tab"
                       className="nav-link"
                     >
-                      <span className="d-sm-none">Pedidos</span>
-                      <span className="d-sm-block d-none">Pedidos</span>
+                      <span className="d-sm-none">Pedidos Permitidos</span>
+                      <span className="d-sm-block d-none">
+                        Pedidos Permitidos
+                      </span>
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a
+                      href="#default-tab-3"
+                      data-bs-toggle="tab"
+                      className="nav-link"
+                    >
+                      <span className="d-sm-none">
+                        Produtos Pedidos na Prefeitura
+                      </span>
+                      <span className="d-sm-block d-none">
+                        {" "}
+                        Produtos Pedidos na Prefeitura
+                      </span>
                     </a>
                   </li>
                 </ul>
@@ -343,6 +379,37 @@ function CustomerOrder() {
                       </div>
                     </div>
                   </div>
+                  <div className="tab-pane fade" id="default-tab-3">
+                    <div className="invoice-header">
+                      <div className="invoice-from">
+                        <div className="d-flex row">
+                          {productsCityHall &&
+                            productsCityHall.map((product) => (
+                              <>
+                                <div key={product.id} className="col-lg-3 pb-3">
+                                  <div className="container">
+                                    <Link
+                                      className="product bg-gray-100"
+                                      data-bs-target="#"
+                                      onClick={() =>
+                                        handleCardOrder(product.id)
+                                      }
+                                    >
+                                      <div className="text">
+                                        <div className="title">
+                                          {product.name}{" "}
+                                          <i class="fa-solid fa-arrow-right"></i>
+                                        </div>
+                                      </div>
+                                    </Link>
+                                  </div>
+                                </div>
+                              </>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -359,6 +426,8 @@ function CustomerOrder() {
             {/* end modal to show orders */}
             {/* modal novo Pedido  */}
             <ProductModal
+              quantity={quantity}
+              setQuantity={setQuantity}
               showModal={showModal}
               setShowModal={setShowModal}
               quantityToAdd={quantityToAdd}

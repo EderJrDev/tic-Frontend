@@ -15,6 +15,7 @@ import { getCategory } from "./Products/getProducts.jsx";
 import updateTableData from "./Products/updatedTable.jsx";
 import { updatedProduct } from "./Products/updatedProduct.jsx";
 import { deleteProduct } from "./Products/deleteProduct.jsx";
+import { Button } from "primereact/button";
 
 function Products() {
   //Atributos do user
@@ -33,9 +34,10 @@ function Products() {
   const [createVisible, setCreateVisible] = useState(false);
   const [createMeasure, setCreateMeasure] = useState(null);
   const [createCategory, setCreateCategory] = useState(null);
+
   const [unitMeasure, setUnitMeasure] = useState("");
 
-  const [originCityHall, setOriginCityHall] = useState(null);
+  const [originCityHall, setOriginCityHall] = useState("");
   const [purchase_allowed, setPurchase_allowed] = useState(null);
 
   const [createLocation, setCreateLocation] = useState("");
@@ -48,13 +50,8 @@ function Products() {
     { field: "location", header: "Localização" },
     { field: "quantity", header: "Quantidade" },
     { field: "measure", header: "Unidade de medida" },
-    { field: "purchase_allowed", header: "Compra Aprovada" },
+    { field: "purchase_allowed", header: "Compra Permitida" },
     { field: "originCityHall", header: "Vem da Prefeitura" },
-  ];
-
-  const purchase = [
-    { value: true, label: "Sim" },
-    { value: false, label: "Não" },
   ];
 
   const origin = [
@@ -75,15 +72,31 @@ function Products() {
 
   const handleEditar = (rowData) => {
     setDialogVisible(true);
-    console.log(rowData);
     setId(rowData.id);
     setName(rowData.name);
-    setCategory(rowData.category);
     setQuantity(rowData.quantity);
-    setUnitMeasure(rowData.measure);
     setLocation(rowData.location);
-    setPurchase_allowed(rowData.purchase_allowed);
-    setOriginCityHall(rowData.originCityHall);
+
+    const categoriaSelecionada = typeCategory.find(
+      (categoria) => categoria.label === rowData.category
+    );
+    if (categoriaSelecionada) {
+      setCategory(categoriaSelecionada.value); // Configura o rótulo da categoria
+    }
+
+    const unidadeSelecionada = medida.find(
+      (medida) => medida.label === rowData.measure
+    );
+    if (unidadeSelecionada) {
+      setUnitMeasure(unidadeSelecionada.value); // Configura o rótulo da categoria
+    }
+
+    const originCityHall = medida.find(
+      (origin) => origin.label === rowData.originCityHall
+    );
+    if (originCityHall) {
+      setOriginCityHall(originCityHall.value); // Configura o rótulo da categoria
+    }
   };
 
   const handleCreateProduct = () => {
@@ -99,7 +112,6 @@ function Products() {
       unitMeasure,
       createLocation,
       setTableData,
-      purchase_allowed,
       originCityHall
     );
     setName("");
@@ -110,7 +122,6 @@ function Products() {
     setCategory(null);
     setUnitMeasure(null);
     setOriginCityHall(null);
-    setPurchase_allowed(null);
     getTable();
   }
 
@@ -125,7 +136,6 @@ function Products() {
       location,
       setTableData,
       setDialogVisible,
-      purchase_allowed,
       originCityHall
     );
     setName("");
@@ -152,7 +162,7 @@ function Products() {
       </div>
       <ReactNotifications />
       <Panel>
-        <PanelHeader className="bg-teal-700 text-white">Usuários</PanelHeader>
+        <PanelHeader className="bg-teal-700 text-white">Produtos</PanelHeader>
         <PanelBody>
           <DataTable
             rows={10}
@@ -207,7 +217,21 @@ function Products() {
               visible={dialogVisible}
               onHide={() => setDialogVisible(false)}
               style={{ width: "70vw" }}
-              contentStyle={{ height: "360px" }}
+              contentStyle={{ height: "200px" }}
+              footer={
+                <div>
+                  <div className="col-lg-12 pt-3 mt-2">
+                    <div className="text-center">
+                      <Button
+                        onClick={updated}
+                        label="Atualizar"
+                        className="btn-cyan"
+                        icon="bi bi-check-circle-fill"
+                      />
+                    </div>
+                  </div>
+                </div>
+              }
             >
               <div className="row">
                 <div className="col-lg-4">
@@ -267,25 +291,11 @@ function Products() {
                   <div className="d-flex flex-column m-1">
                     <label>Unidade de medida</label>
                     <Dropdown
+                      value={unitMeasure}
                       required
                       options={medida}
-                      value={unitMeasure}
                       onChange={(e) => setUnitMeasure(e.value)}
-                      className="p-inputtext-sm w-100"
                       placeholder={"Selecione Unidade de Medida"}
-                    />
-                  </div>
-                </div>
-
-                <div className="col-lg-4 mt-3">
-                  <div className="d-flex flex-column m-1">
-                    <label>Compra aprovada</label>
-                    <Dropdown
-                      value={purchase_allowed}
-                      required
-                      onChange={(e) => setPurchase_allowed(e.value)}
-                      options={purchase}
-                      placeholder={"Compra Aprovada?"}
                       className="p-inputtext-sm w-100"
                     />
                   </div>
@@ -304,28 +314,30 @@ function Products() {
                     />
                   </div>
                 </div>
-
-                <div className="col-lg-12 pt-3 mt-3">
-                  <div className="text-center">
-                    <button
-                      className="btn btn-info btn-btn-sm"
-                      onClick={updated}
-                    >
-                      Atualizar <i className="bi bi-check-circle-fill"></i>
-                    </button>
-                  </div>
-                </div>
               </div>
             </Dialog>
 
             <Dialog
               modal
-              maximizable
               header="Adicionar um novo produto"
               visible={createVisible}
               onHide={() => setCreateVisible(false)}
               style={{ width: "70vw" }}
-              contentStyle={{ height: "350px" }}
+              contentStyle={{ height: "200px" }}
+              footer={
+                <div>
+                  <div className="col-lg-12 pt-3 mt-2">
+                    <div className="text-center">
+                      <Button
+                        onClick={sendProduct}
+                        label="Cadastrar"
+                        className="btn-cyan"
+                        icon="bi bi-check-circle-fill"
+                      />
+                    </div>
+                  </div>
+                </div>
+              }
             >
               <div className="row">
                 <div className="col-lg-4">
@@ -350,19 +362,6 @@ function Products() {
                       className="p-inputtext-sm"
                       placeholder="Exemplo: Cozinha"
                       onChange={(e) => setCreateLocation(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="col-lg-4">
-                  <div className="d-flex flex-column m-1">
-                    <label>Quantidade</label>
-                    <InputText
-                      type="number"
-                      value={createQuantity}
-                      placeholder="0"
-                      className="p-inputtext-sm"
-                      onChange={(e) => setCreateQuantity(e.target.value)}
                     />
                   </div>
                 </div>
@@ -394,21 +393,18 @@ function Products() {
                     />
                   </div>
                 </div>
-
                 <div className="col-lg-4">
                   <div className="d-flex flex-column m-1">
-                    <label>Compra aprovada</label>
-                    <Dropdown
-                      value={purchase_allowed}
-                      required
-                      options={purchase}
-                      onChange={(e) => setPurchase_allowed(e.value)}
-                      className="p-inputtext-sm w-100"
-                      placeholder={"Selecione se a Compra foi aprovada"}
+                    <label>Quantidade</label>
+                    <InputText
+                      type="number"
+                      value={createQuantity}
+                      placeholder="0"
+                      className="p-inputtext-sm"
+                      onChange={(e) => setCreateQuantity(e.target.value)}
                     />
                   </div>
                 </div>
-
                 <div className="col-lg-4">
                   <div className="d-flex flex-column m-1">
                     <label>Vem da Prefeitura</label>
@@ -420,16 +416,6 @@ function Products() {
                       placeholder={"Selecione a Unidade de Medida"}
                       className="p-inputtext-sm w-100"
                     />
-                  </div>
-                </div>
-                <div className="col-lg-12 pt-3 mt-2">
-                  <div className="text-center">
-                    <button
-                      onClick={sendProduct}
-                      className="btn btn-info btn-btn-sm"
-                    >
-                      Cadastrar <i className="bi bi-check-circle-fill"></i>
-                    </button>
                   </div>
                 </div>
               </div>

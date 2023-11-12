@@ -1,56 +1,23 @@
 import React, { useEffect, useState } from "react";
+import {
+  createBrowserRouter,
+  Route,
+  useNavigate,
+  createRoutesFromElements,
+} from "react-router-dom";
+//components
 import App from "./../app.jsx";
 import User from "../pages/User.jsx";
-import Login from "../pages/Login.jsx";
 import Produtos from "../pages/Produtos.jsx";
 import Dashboard from "../pages/Dashboard.jsx";
+import Login from "../pages/Login.jsx";
+import Budget from "../pages/Budget/Budget.jsx";
 import CustomerOrder from "../pages/Pedidos/pedidos.jsx";
 import ErrorPage from "../pages/ErrorPage/ErrorPage.jsx";
-import {
-  Route,
-  createBrowserRouter,
-  createRoutesFromElements,
-  useNavigate,
-} from "react-router-dom";
-import Budget from "../pages/Budget/Budget.jsx";
 
-// const AppRoute = [
-// 	{
-// 		path: '*',
-// 		element: <App />,
-// 		children: [
-// 			{
-// 				path: '',
-// 				element: <Login />
-// 			},
-// 			{
-// 				path: 'dashboard',
-// 				element: <Dashboard />
-// 			},
-// 			{
-// 				path: 'produtos',
-// 				element: <Produtos />,
-// 			},
-// 			{
-// 				path: 'usuarios',
-// 				element: <User />,
-// 			},
-// 			{
-// 				path: 'pedidos',
-// 				element: <CustomerOrder />,
-// 			},
-// 			{
-// 				path: 'user',
-// 				element: <Login />,
-// 			}
-// 		]
-// 	}
-// ];
-
-// export default AppRoute;
+const isAdmin = localStorage.getItem("isAdmin");
 
 // Função para verificar a presença do token no localStorage
-
 const IsUserLoggedIn = ({ children }) => {
   const navigate = useNavigate();
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
@@ -60,24 +27,16 @@ const IsUserLoggedIn = ({ children }) => {
 
     if (token) {
       setIsUserLoggedIn(true);
-      navigate("/dashboard"); // Redireciona para a página de login
     }
-  }, [isUserLoggedIn]);
+  }, []);
 
   if (isUserLoggedIn) {
     return children; // Renderiza o conteúdo protegido se o usuário estiver logado
-  } 
-};
-
-// Componente de redirecionamento para login
-const RedirectToLogin = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate("/error"); // Redireciona para a página de login
-  }, [navigate]);
-
-  return null;
+  } else {
+    navigate("/error");
+    // Redireciona para a página de login; // Redireciona para o login se o usuário não estiver logado
+    return null;
+  }
 };
 
 const router = createBrowserRouter(
@@ -85,8 +44,7 @@ const router = createBrowserRouter(
     <Route path="/" element={<App />}>
       <Route index element={<Login />} />
       <Route path="/login" element={<Login />} />
-      <Route path="error" element={<ErrorPage />} />
-      {/* <Route path="/login/:id" element={<LoginWithId />} /> */}
+      <Route path="/error" element={<ErrorPage />} />
       {/* Rotas protegida por login */}
       <Route
         path="dashboard"
@@ -104,14 +62,17 @@ const router = createBrowserRouter(
           </IsUserLoggedIn>
         }
       />
-      <Route
-        path="usuarios"
-        element={
-          <IsUserLoggedIn>
-            <User />
-          </IsUserLoggedIn>
-        }
-      />
+      {isAdmin === true && (
+        <Route
+          path="usuarios"
+          element={
+            <IsUserLoggedIn>
+              <User />
+            </IsUserLoggedIn>
+          }
+        />
+      )}
+
       <Route
         path="pedidos"
         element={
@@ -129,6 +90,7 @@ const router = createBrowserRouter(
           </IsUserLoggedIn>
         }
       />
+
       <Route path="*" element={<ErrorPage />} />
     </Route>
   )

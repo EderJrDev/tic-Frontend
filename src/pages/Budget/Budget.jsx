@@ -12,6 +12,7 @@ import { Accordion, AccordionTab } from "primereact/accordion";
 
 import { api } from "../../utils/api";
 import Input from "../../components/Inputs/Input";
+import { InputNumber } from "primereact/inputnumber";
 import MaskInput from "../../components/Inputs/MaskInput";
 import ExportTable from "../../components/button/ExportTable";
 import { Panel, PanelBody, PanelHeader } from "../../components/panel/panel";
@@ -29,6 +30,9 @@ function Budget() {
   const [valorC, setValorC] = useState("");
   const [unidade, setUnidade] = useState("");
   const [descricao, setDescricao] = useState("");
+
+  const [disabledPanel, setDisabledPanel] = useState(false);
+  const [disabledProducts, setDisabledProducts] = useState(true);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [budget_products, setProducts] = useState([]);
@@ -124,7 +128,7 @@ function Budget() {
   };
 
   const onSubmit = async (data) => {
-    console.log("DATA.VALUE ", data);
+    // console.log("DATA.VALUE ", data);
     try {
       const createBudget = await api.post(`/admin/budget/createBudget`, {
         name: data.name,
@@ -132,9 +136,6 @@ function Budget() {
         rg: data.rg,
         cpf: data.cpf,
       });
-
-      console.log(createBudget);
-      console.log(createBudget.data.id);
 
       const createBudgetCompany = await api.post(
         `/admin/budget/createBudgetCompany`,
@@ -162,30 +163,12 @@ function Budget() {
         }
       );
 
-      console.log(createBudgetCompany);
-      console.log(createBudgetCompany.data.createdBudgetProduct.id);
-
-      console.log(
-        "obj: ",
-        data.descricao,
-        " / ",
-        data.valorEmpresaA,
-        " / ",
-        data.valorEmpresaB,
-        " / ",
-        data.valorEmpresaC,
-        " / ",
-        data.unidade,
-        " / ",
-        createBudgetCompany.data.createdBudgetProduct.id,
-        " / ",
-        createBudget.data.id
-      );
+      setDisabledProducts(false);
+      setDisabledPanel(true);
 
       setBudgetId(createBudget.data.id);
       setBudgetCompanyId(createBudgetCompany.data.createdBudgetProduct.id);
 
-      console.log("DATA : ", data);
       setActiveIndex(1);
       showSuccess();
       reset();
@@ -226,23 +209,34 @@ function Budget() {
 
       setProducts([...budget_products, product]);
       setDescricao("");
-      setUnidade(0);
-      setValorA(0);
-      setValorB(0);
-      setValorC(0);
+      setUnidade();
+      setValorA();
+      setValorB();
+      setValorC();
+
+      console.log(budget_products);
 
       console.log("budget ", budget_products);
 
-      const createProduct = await api.post(
-        `/admin/budget/createBudgetProduct`,
-        {
-          budget_products,
-        }
-      );
+      if (budget_products.length > 0) {
+        const createProduct = await api.post(
+          `/admin/budget/createBudgetProduct`,
+          {
+            budget_products,
+          }
+        );
 
-      console.log(createProduct);
+        console.log(createProduct);
 
-      showSuccess();
+        showSuccess();
+      } else {
+        toast.current.show({
+          severity: "error",
+          summary: "Falha!",
+          detail: "Adicione ao menos um produto!",
+          life: 3000,
+        });
+      }
     } catch (e) {
       showError();
       console.log(e);
@@ -294,7 +288,11 @@ function Budget() {
           activeIndex={activeIndex}
           onTabChange={(e) => setActiveIndex(e.index)}
         >
-          <TabPanel header="Orçamento" leftIcon="pi pi-calendar mr-2">
+          <TabPanel
+            header="Orçamento"
+            leftIcon="pi pi-calendar mr-2"
+            disabled={disabledPanel}
+          >
             <div className="row pb-3">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="row">
@@ -369,7 +367,7 @@ function Budget() {
                             <MaskInput
                               name="telEmpA"
                               control={control}
-                              mask="(99) 9999-9999"
+                              mask="(99) 999999-9999"
                               placeholder="Telefone"
                               errors={errors}
                             />
@@ -408,7 +406,7 @@ function Budget() {
                           <MaskInput
                             name="telEmpB"
                             control={control}
-                            mask="(99) 9999-9999"
+                            mask="(99) 99999-9999"
                             placeholder="Telefone"
                             errors={errors}
                           />
@@ -447,7 +445,7 @@ function Budget() {
                           <MaskInput
                             name="telEmpC"
                             control={control}
-                            mask="(99) 9999-9999"
+                            mask="(99) 99999-9999"
                             placeholder="Telefone"
                             errors={errors}
                           />
@@ -467,7 +465,11 @@ function Budget() {
               </form>
             </div>
           </TabPanel>
-          <TabPanel header="Produtos" rightIcon="pi pi-user ml-2">
+          <TabPanel
+            header="Produtos"
+            rightIcon="pi pi-user ml-2"
+            disabled={disabledProducts}
+          >
             <div>
               <div className="row d-flex justify-content-between">
                 <div className="col-md-6">
@@ -494,18 +496,40 @@ function Budget() {
                   />
                 </div>
                 <div className="col-lg-4">
-                  <InputText
+                  <InputNumber
+                    inputId="currency-pt"
+                    value={unidade}
+                    onValueChange={(e) => setUnidade(e.value)}
+                    className="w-100 p-inputtext-sm"
+                    label="Unidades"
+                    required
+                    placeholder="Unidades"
+                  />
+                  {/* <InputText
                     name="unidade"
                     type="tel"
                     className="form-control p-inputtext-sm"
                     value={unidade}
                     onChange={(e) => setUnidade(e.target.value)}
-                    label="Unidade"
-                    placeholder="Unidade"
-                  />
+                    label="Unidades"
+                    placeholder="Unidades"
+                  /> */}
                 </div>
                 <div className="col-lg-4">
-                  <InputText
+                  <InputNumber
+                    inputId="currency-pt"
+                    value={valorA}
+                    onValueChange={(e) => setValorA(e.value)}
+                    mode="currency"
+                    currency="BRL"
+                    locale="pt-BR"
+                    className="w-100 p-inputtext-sm"
+                    label="Valor Empresa A"
+                    required
+                    placeholder="Valor Empresa A"
+                  />
+
+                  {/* <InputText
                     className="form-control p-inputtext-sm"
                     name="valorA"
                     value={valorA}
@@ -513,10 +537,23 @@ function Budget() {
                     onChange={(e) => setValorA(e.target.value)}
                     label="Valor Empresa A"
                     placeholder="Valor Empresa A"
-                  />
+                  /> */}
                 </div>
                 <div className="col-lg-4">
-                  <InputText
+                  <InputNumber
+                    inputId="currency-pt"
+                    value={valorB}
+                    onValueChange={(e) => setValorB(e.value)}
+                    mode="currency"
+                    currency="BRL"
+                    locale="pt-BR"
+                    className="w-100 p-inputtext-sm"
+                    label="Valor Empresa B"
+                    required
+                    placeholder="Valor Empresa B"
+                  />
+
+                  {/* <InputText
                     className="form-control p-inputtext-sm"
                     name="valorB"
                     value={valorB}
@@ -524,10 +561,22 @@ function Budget() {
                     onChange={(e) => setValorB(e.target.value)}
                     label="Valor Empresa B"
                     placeholder="Valor Empresa B"
-                  />
+                  /> */}
                 </div>
                 <div className="col-lg-4 pb-3">
-                  <InputText
+                  <InputNumber
+                    inputId="currency-pt"
+                    value={valorC}
+                    onValueChange={(e) => setValorC(e.value)}
+                    mode="currency"
+                    currency="BRL"
+                    locale="pt-BR"
+                    className="w-100 p-inputtext-sm"
+                    label="Valor Empresa C"
+                    required
+                    placeholder="Valor Empresa C"
+                  />
+                  {/* <InputText
                     className="form-control p-inputtext-sm"
                     name="valorC"
                     value={valorC}
@@ -535,7 +584,7 @@ function Budget() {
                     onChange={(e) => setValorC(e.target.value)}
                     label="Valor Empresa C"
                     placeholder="Valor Empresa C"
-                  />
+                  /> */}
                 </div>
               </div>
             </div>

@@ -44,10 +44,6 @@ function Budget() {
   const [showDialog, setShowDialog] = useState(false);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
 
-  const onGlobalFilterChange = (e) => {
-    setGlobalFilterValue(e.target.value);
-  };
-
   const columns = [
     { field: "id", header: "ID" },
     { field: "name", header: "Nome" },
@@ -63,7 +59,6 @@ function Budget() {
 
   // Ref para as notificações
   const toast = useRef(null);
-
   // Funções para mostrar notificações
   const showSuccess = () => {
     toast.current.show({
@@ -100,8 +95,7 @@ function Budget() {
     setValorA("");
     setValorB("");
     setValorC("");
-
-    console.log(product);
+    // console.log(product);
 
     if (
       descricao === "" ||
@@ -136,6 +130,11 @@ function Budget() {
         rg: data.rg,
         cpf: data.cpf,
       });
+<<<<<<< HEAD
+=======
+      // console.log(createBudget);
+      // console.log(createBudget.data.id);
+>>>>>>> b345b16ee6c1a28b3c31b52c74299c008d72c4f0
 
       const createBudgetCompany = await api.post(
         `/admin/budget/createBudgetCompany`,
@@ -162,10 +161,14 @@ function Budget() {
           ],
         }
       );
+<<<<<<< HEAD
 
       setDisabledProducts(false);
       setDisabledPanel(true);
 
+=======
+      // console.log(createBudgetCompany);
+>>>>>>> b345b16ee6c1a28b3c31b52c74299c008d72c4f0
       setBudgetId(createBudget.data.id);
       setBudgetCompanyId(createBudgetCompany.data.createdBudgetProduct.id);
 
@@ -196,7 +199,7 @@ function Budget() {
       product.budget_companyId = budget_companyId ? budget_companyId : 0;
       product.budgetId = budgetId ? budgetId : 0;
     });
-    console.log(product);
+    // console.log(product);
     try {
       if (!descricao || !unidade || !valorA || !valorB || !valorC) {
         toast.current.show({
@@ -218,6 +221,7 @@ function Budget() {
 
       console.log("budget ", budget_products);
 
+<<<<<<< HEAD
       if (budget_products.length > 0) {
         const createProduct = await api.post(
           `/admin/budget/createBudgetProduct`,
@@ -237,6 +241,16 @@ function Budget() {
           life: 3000,
         });
       }
+=======
+      await api.post(`/admin/budget/createBudgetProduct`, {
+        budget_products,
+      });
+
+      // console.log(createProduct);
+
+      showSuccess();
+      setShowDialog(false);
+>>>>>>> b345b16ee6c1a28b3c31b52c74299c008d72c4f0
     } catch (e) {
       showError();
       console.log(e);
@@ -257,7 +271,7 @@ function Budget() {
       setTableData(response.data);
     };
     getBudget();
-  }, []);
+  }, [showDialog]);
 
   return (
     <div>
@@ -269,7 +283,7 @@ function Budget() {
         </div>
         <div>
           <button
-            className="btn btn-success btn-btn-sm"
+            className="btn btn-info btn-btn-sm"
             onClick={() => setShowDialog(true)}
           >
             Adicionar <i className="bi bi-plus-circle"></i>
@@ -604,7 +618,7 @@ function Budget() {
       <div className="row">
         <div className="col-xl-12">
           <Panel>
-            <PanelHeader className="bg-teal-700 text-white">
+            <PanelHeader className="bg-cyan-700 text-white">
               Últimos Orçamentos
             </PanelHeader>
             <PanelBody>
@@ -612,7 +626,9 @@ function Budget() {
                 tableData={tableData}
                 exportColumns={exportColumns}
                 globalFilterValue={globalFilterValue}
-                onGlobalFilterChange={onGlobalFilterChange}
+                onGlobalFilterChange={(e) =>
+                  setGlobalFilterValue(e.target.value)
+                }
               />
               <DataTable
                 stripedRows
@@ -639,10 +655,10 @@ function Budget() {
                   header="Baixar Orçamento"
                   body={(rowData) => (
                     <button
-                      className="btn btn-info btn-btn-sm"
+                      className="btn btn-success btn-btn-sm"
                       onClick={(e) => budgetDownload(e, rowData)}
                     >
-                      <i className="bi bi-pencil-square"></i>
+                      <i className="bi bi-download"></i>
                     </button>
                   )}
                 />

@@ -18,20 +18,6 @@ import "primereact/resources/primereact.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import router from "./config/app-route.jsx";
 
-// const container = document.getElementById('root');
-// const root = createRoot(container);
-// function App() {
-// 	let element = useRoutes(AppRoute);
-
-// 	return element;
-// }
-
-// root.render(
-//   <BrowserRouter>
-//   	<App />
-//   </BrowserRouter>
-// );
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <RouterProvider router={router} />

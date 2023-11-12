@@ -1,7 +1,7 @@
 import { api } from "../../utils/api";
-import { addNotification } from "../../utils/notifications";
 import { getTable } from "./getDataTable";
 import updateTableData from "./updatedTable";
+import { addNotification } from "../../utils/notifications";
 
 export async function createUser(
   setCreateVisible,

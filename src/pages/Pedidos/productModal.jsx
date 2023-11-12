@@ -17,7 +17,7 @@ const ProductModal = ({
       header="Novo Pedido"
       visible={showModal}
       onHide={() => setShowModal(false)}
-      style={{ width: "50vw" }}
+      style={{ width: "35vw" }}
     >
       <div className="row">
         <div className="col-lg-6">

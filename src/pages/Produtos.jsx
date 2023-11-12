@@ -153,7 +153,7 @@ function Products() {
         </div>
         <div>
           <button
-            className="btn btn-success btn-btn-sm"
+            className="btn btn-info btn-btn-sm"
             onClick={(e) => handleCreateProduct()}
           >
             Adicionar <i className="bi bi-plus-circle"></i>
@@ -162,7 +162,11 @@ function Products() {
       </div>
       <ReactNotifications />
       <Panel>
+<<<<<<< HEAD
         <PanelHeader className="bg-teal-700 text-white">Produtos</PanelHeader>
+=======
+        <PanelHeader className="bg-cyan-700 text-white">Usuários</PanelHeader>
+>>>>>>> b345b16ee6c1a28b3c31b52c74299c008d72c4f0
         <PanelBody>
           <DataTable
             rows={10}

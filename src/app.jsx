@@ -94,7 +94,6 @@ class App extends React.Component {
         localStorage.appSidebarGrid = value;
       }
     };
-
     this.toggleAppSidebarEnd = (e) => {
       e.preventDefault();
       this.setState((state) => ({

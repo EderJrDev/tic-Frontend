@@ -17,6 +17,8 @@ import MaskInput from "../../components/Inputs/MaskInput";
 import ExportTable from "../../components/button/ExportTable";
 import { Panel, PanelBody, PanelHeader } from "../../components/panel/panel";
 
+import { saveAs } from "file-saver";
+
 function Budget() {
   const {
     control,
@@ -95,7 +97,7 @@ function Budget() {
     setValorA("");
     setValorB("");
     setValorC("");
-    // console.log(product);
+    console.log(product);
 
     if (
       descricao === "" ||
@@ -110,7 +112,15 @@ function Budget() {
         detail: "Informe todos os dados para criar um novo produto!",
         life: 3000,
       });
+
+      return;
     } else {
+      setShowDialog(false);
+      setActiveIndex(0);
+
+      setDisabledPanel(false);
+      setDisabledProducts(true);
+
       toast.current.show({
         severity: "success",
         summary: "Sucesso!",
@@ -173,7 +183,7 @@ function Budget() {
   };
 
   const saveProducts = async () => {
-    const product = {
+    const newProduct = {
       descricao,
       unidade: parseInt(unidade),
       valorA: parseInt(valorA),
@@ -182,64 +192,66 @@ function Budget() {
     };
 
     // Adicionamos os IDs
-    product.budget_companyId = budget_companyId ? budget_companyId : 0;
-    product.budgetId = budgetId ? budgetId : 0;
+    newProduct.budget_companyId = budget_companyId ? budget_companyId : 0;
+    newProduct.budgetId = budgetId ? budgetId : 0;
+
+    // Criamos uma cópia do array existente e adicionamos o novo produto
+    const updatedProducts = [...budget_products, newProduct];
 
     // Adicionamos os IDs em todos os objetos do array
-    budget_products.forEach((product) => {
-      product.budget_companyId = budget_companyId ? budget_companyId : 0;
-      product.budgetId = budgetId ? budgetId : 0;
-    });
-    // console.log(product);
+    const productsWithIds = updatedProducts.map((product) => ({
+      ...product,
+      budget_companyId: budget_companyId ? budget_companyId : 0,
+      budgetId: budgetId ? budgetId : 0,
+    }));
+
     try {
-      if (!descricao || !unidade || !valorA || !valorB || !valorC) {
+      if (
+        descricao === "" ||
+        isNaN(unidade) ||
+        isNaN(valorA) ||
+        isNaN(valorB) ||
+        isNaN(valorC)
+      ) {
         toast.current.show({
           severity: "error",
           summary: "Falha!",
           detail: "Informe todos os dados para criar um novo produto!",
           life: 3000,
         });
+
+        return;
       }
 
-      setProducts([...budget_products, product]);
+      // Atualizamos o estado com os produtos atualizados
+      setProducts(productsWithIds);
+
+      // Limpa os campos de entrada
       setDescricao("");
-      setUnidade();
-      setValorA();
-      setValorB();
-      setValorC();
+      setUnidade("");
+      setValorA("");
+      setValorB("");
+      setValorC("");
 
-      console.log(budget_products);
+      console.log(productsWithIds);
 
-      console.log("budget ", budget_products);
+      const requestPayload = {
+        budget_products: productsWithIds,
+      };
 
-      if (budget_products.length > 0) {
-        const createProduct = await api.post(
-          `/admin/budget/createBudgetProduct`,
-          {
-            budget_products,
-          }
-        );
+      const createProduct = await api.post(
+        `/admin/budget/createBudgetProduct`,
+        requestPayload
+      );
 
-        console.log(createProduct);
-
-        showSuccess();
-      } else {
-        toast.current.show({
-          severity: "error",
-          summary: "Falha!",
-          detail: "Adicione ao menos um produto!",
-          life: 3000,
-        });
-      }
-
-      await api.post(`/admin/budget/createBudgetProduct`, {
-        budget_products,
-      });
-
-      // console.log(createProduct);
+      console.log(createProduct);
 
       showSuccess();
       setShowDialog(false);
+      setActiveIndex(0);
+
+      setDisabledPanel(false);
+      setDisabledProducts(true);
     } catch (e) {
       showError();
       console.log(e);
@@ -248,10 +260,31 @@ function Budget() {
 
   const budgetDownload = async (e, rowData) => {
     console.log(rowData);
+    try {
+      const response = await api.get(
+        `/admin/budget/print_budget/${rowData.id}`,
+        {
+          responseType: "blob", // Indica que a resposta é um blob (Binary Large Object)
+        }
+      );
 
-    const response = await api.post(`/admin/budget/print_budget/${rowData.id}`);
+      // Cria um Blob a partir dos dados recebidos
+      const blob = new Blob([response.data], { type: "application/pdf" });
 
-    console.log(response);
+      // Usa o file-saver para realizar o download do Blob como um arquivo PDF
+      saveAs(blob, `budget_${rowData.id}.pdf`);
+
+      toast.current.show({
+        severity: "success",
+        summary: "Sucesso!",
+        detail: "Orçamento foi baixado com exito.",
+        life: 3000,
+      });
+    } catch (error) {
+      showError();
+      console.error("Erro ao fazer o download do PDF", error);
+      // Lide com o erro de acordo com suas necessidades
+    }
   };
 
   useEffect(() => {
@@ -478,13 +511,6 @@ function Budget() {
                 <div className="col-md-6">
                   <h2>Novo Produto</h2>
                 </div>
-                <div className="col-lg-6 text-end pb-3">
-                  <Button
-                    label="Novo Produto"
-                    onClick={(e) => addProduct(e)}
-                    icon="bi bi-plus-circle"
-                  />
-                </div>
               </div>
               <div className="row d-flex">
                 <div className="col-lg-4 pb-3">
@@ -508,15 +534,6 @@ function Budget() {
                     required
                     placeholder="Unidades"
                   />
-                  {/* <InputText
-                    name="unidade"
-                    type="tel"
-                    className="form-control p-inputtext-sm"
-                    value={unidade}
-                    onChange={(e) => setUnidade(e.target.value)}
-                    label="Unidades"
-                    placeholder="Unidades"
-                  /> */}
                 </div>
                 <div className="col-lg-4">
                   <InputNumber
@@ -531,16 +548,6 @@ function Budget() {
                     required
                     placeholder="Valor Empresa A"
                   />
-
-                  {/* <InputText
-                    className="form-control p-inputtext-sm"
-                    name="valorA"
-                    value={valorA}
-                    type="tel"
-                    onChange={(e) => setValorA(e.target.value)}
-                    label="Valor Empresa A"
-                    placeholder="Valor Empresa A"
-                  /> */}
                 </div>
                 <div className="col-lg-4">
                   <InputNumber
@@ -555,16 +562,6 @@ function Budget() {
                     required
                     placeholder="Valor Empresa B"
                   />
-
-                  {/* <InputText
-                    className="form-control p-inputtext-sm"
-                    name="valorB"
-                    value={valorB}
-                    type="tel"
-                    onChange={(e) => setValorB(e.target.value)}
-                    label="Valor Empresa B"
-                    placeholder="Valor Empresa B"
-                  /> */}
                 </div>
                 <div className="col-lg-4 pb-3">
                   <InputNumber
@@ -579,22 +576,20 @@ function Budget() {
                     required
                     placeholder="Valor Empresa C"
                   />
-                  {/* <InputText
-                    className="form-control p-inputtext-sm"
-                    name="valorC"
-                    value={valorC}
-                    type="tel"
-                    onChange={(e) => setValorC(e.target.value)}
-                    label="Valor Empresa C"
-                    placeholder="Valor Empresa C"
-                  /> */}
                 </div>
               </div>
             </div>
             <div className="col-md-12">
               <div className="text-end">
                 <Button
-                  label="Salvar"
+                  label="Novo Produto"
+                  onClick={(e) => addProduct(e)}
+                  icon="bi bi-plus-circle"
+                  className="me-2"
+                />
+
+                <Button
+                  label="Finalizar"
                   severity="success"
                   onClick={saveProducts}
                   icon="bi bi-send"

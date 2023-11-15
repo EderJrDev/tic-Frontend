@@ -8,10 +8,10 @@ const OrderModal = ({
   showModalOrder,
   setShowModalOrder,
   tableData,
-  selectedRow,
   handleCheck,
   loading,
   columns,
+  disabled,
 }) => {
   return (
     <Dialog
@@ -53,11 +53,10 @@ const OrderModal = ({
               body={(rowData) => (
                 <div className="text-center">
                   <InputSwitch
-                    // checked={checked}
-                    checked={selectedRow === rowData}
-                    // onChange={(e) =>
-                    //   handleCheck(e)
-                    // }
+                    checked={
+                      rowData.status.props.children === "Chegou" ? true : false
+                    }
+                    disabled={disabled}
                     onChange={(e) => handleCheck(e, rowData)}
                   />
                 </div>

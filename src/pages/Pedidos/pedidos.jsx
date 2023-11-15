@@ -20,8 +20,8 @@ function CustomerOrder() {
   const [tableData, setTableData] = useState([]);
   const [orderName, setOrderName] = useState("");
   const [orderItems, setOrderItems] = useState({});
+  const [disabled, setDisabled] = useState(false);
 
-  const [selectedRow, setSelectedRow] = useState(null);
   const [quantity, setQuantity] = useState("");
 
   const [showModal, setShowModal] = useState(false);
@@ -84,7 +84,7 @@ function CustomerOrder() {
       let foundArray = orderItems[orderId];
       // Agora você pode acessar os objetos dentro do array encontrado
       foundArray.forEach((obj) => {
-        console.log("Objeto encontrado:", obj);
+        // console.log("Objeto encontrado:", obj);
         foundObjectsArray.push(obj);
       });
     } else {
@@ -105,6 +105,8 @@ function CustomerOrder() {
         life: 3000,
       });
     }
+
+    console.log("orders: ", orders);
     const updatedOrders = [...orders];
 
     const newItem = {
@@ -126,18 +128,7 @@ function CustomerOrder() {
         detail: "Quantidades necessárias!",
         life: 3000,
       });
-    } else {
-      const newItem = {
-        productId: selectedProduct.id,
-        product: selectedProduct.name,
-        quantityInStock: selectedCardQuantity,
-        newQuantity: parseFloat(quantityToAdd),
-      };
-      updatedOrders.push(newItem);
-      setOrders(updatedOrders);
-      setShowModal(false);
-      setQuantityToAdd("");
-      setSelectedProduct({ ...selectedProduct, quantityToAdd: "" });
+      return;
     }
   };
 
@@ -210,25 +201,23 @@ function CustomerOrder() {
   }, []);
 
   const handleCheck = async (e, rowData) => {
+    e.preventDefault();
     setLoading(true);
-    setSelectedRow(rowData);
     console.log("rowData: ", rowData);
     console.log("id: ", rowData.id);
+
     try {
-      const response = await api.post(
-        `/admin/order/updateProduct/${rowData.id}`,
-        {
-          status: "Chegou",
-        }
-      );
-      // console.log(response);
-      // getOrders()
-      setShowModalOrder(false);
+      await api.post(`/admin/order/updateProduct/${rowData.id}`, {
+        status: "Chegou",
+      });
+
       setLoading(false);
+      setDisabled(true);
 
       showSuccess();
     } catch (error) {
       showError();
+      setLoading(false);
       console.error("Failed to submit order:", error);
     }
   };
@@ -310,10 +299,7 @@ function CustomerOrder() {
         id="pos-customer"
       >
         <div className="pos-content">
-          <PerfectScrollbar
-            className="pos-content-container"
-            // options={{ suppressScrollX: true }}
-          >
+          <PerfectScrollbar className="pos-content-container">
             <div className="product-row">
               <div className="col-lg-12">
                 <ul className="nav nav-tabs">
@@ -454,7 +440,7 @@ function CustomerOrder() {
               showModalOrder={showModalOrder}
               setShowModalOrder={setShowModalOrder}
               tableData={tableData}
-              selectedRow={selectedRow}
+              disabled={disabled}
               handleCheck={handleCheck}
               loading={loading}
               columns={columns}

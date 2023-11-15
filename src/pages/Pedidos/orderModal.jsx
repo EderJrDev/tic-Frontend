@@ -59,6 +59,7 @@ const OrderModal = ({
                     disabled={disabled}
                     onChange={(e) => handleCheck(e, rowData)}
                   />
+                  
                 </div>
               )}
             />

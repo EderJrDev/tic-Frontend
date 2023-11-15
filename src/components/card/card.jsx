@@ -15,7 +15,7 @@ export function Card(props) {
           <div className="stats-progress progress">
             <div className="progress-bar" style={{ width: "70.1%" }}></div>
           </div>
-          <div className="stats-desc">Em Estoque</div>
+          <div className="stats-desc">{props.footer}</div>
         </div>
       </div>
     </div>

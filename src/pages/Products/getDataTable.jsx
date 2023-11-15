@@ -5,7 +5,7 @@ export async function getTable() {
   try {
     const response = await api.get("/admin/product");
     let dados = response.data;
-    console.log(dados);
+    // console.log(dados);
 
     const validit = (value) => {
       if (value === true) {

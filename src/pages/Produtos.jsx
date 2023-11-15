@@ -76,6 +76,7 @@ function Products() {
     setName(rowData.name);
     setQuantity(rowData.quantity);
     setLocation(rowData.location);
+    // console.log(rowData);
 
     const categoriaSelecionada = typeCategory.find(
       (categoria) => categoria.label === rowData.category
@@ -91,8 +92,8 @@ function Products() {
       setUnitMeasure(unidadeSelecionada.value); // Configura o rótulo da categoria
     }
 
-    const originCityHall = medida.find(
-      (origin) => origin.label === rowData.originCityHall
+    const originCityHall = origin.find(
+      (origin) => origin.label === rowData.originCityHall.props.children
     );
     if (originCityHall) {
       setOriginCityHall(originCityHall.value); // Configura o rótulo da categoria
@@ -126,7 +127,7 @@ function Products() {
   }
 
   async function updated() {
-    updateTableData(tableData);
+    // updateTableData(tableData);
     updatedProduct(
       id,
       name,
@@ -305,12 +306,12 @@ function Products() {
                   <div className="d-flex flex-column m-1">
                     <label>Vem da Prefeitura</label>
                     <Dropdown
+                      value={originCityHall}
                       required
                       options={origin}
-                      value={originCityHall}
+                      onChange={(e) => setOriginCityHall(e.value)}
                       className="p-inputtext-sm w-100"
                       placeholder={"Produto vem da Prefeitura?"}
-                      onChange={(e) => setOriginCityHall(e.value)}
                     />
                   </div>
                 </div>

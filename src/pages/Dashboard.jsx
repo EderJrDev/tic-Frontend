@@ -48,12 +48,14 @@ function Dashboard() {
         <Card
           title="Produtos"
           content={products}
+          footer="Cadastrados"
           style="widget widget-stats bg-teal"
           icon={<i className="fa fa-globe fa-fw"></i>}
         />
         <Card
           title="Orçamentos"
           content={budget}
+          footer="Feitos"
           style="widget widget-stats bg-blue"
           icon={<i className="fa fa-dollar-sign fa-fw"></i>}
         />

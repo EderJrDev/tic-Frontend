@@ -23,8 +23,8 @@ export async function updatedProduct(
       originCityHall: originCityHall,
     };
 
-    console.log(updatedData);
-    console.log(id);
+    // console.log(updatedData);
+    // console.log(id);
 
     await api.put(`/admin/product/${id}`, updatedData);
 

@@ -21,7 +21,7 @@ function DropdownProfile() {
   return (
     <div className="navbar-item navbar-user dropdown">
       <a
-        href="#/"
+        href="#"
         className="navbar-link dropdown-toggle d-flex align-items-center"
         data-bs-toggle="dropdown"
       >

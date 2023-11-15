@@ -403,7 +403,7 @@ function Budget() {
                             <MaskInput
                               name="telEmpA"
                               control={control}
-                              mask="(99) 999999-9999"
+                              mask="(99) 99999-9999"
                               placeholder="Telefone"
                               errors={errors}
                             />

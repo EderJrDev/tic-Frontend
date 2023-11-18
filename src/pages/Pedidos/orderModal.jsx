@@ -3,6 +3,7 @@ import { Dialog } from "primereact/dialog";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputSwitch } from "primereact/inputswitch";
+import { InputText } from "primereact/inputtext";
 
 const OrderModal = ({
   showModalOrder,
@@ -13,9 +14,26 @@ const OrderModal = ({
   columns,
   disabled,
 }) => {
+  const textEditor = (options) => {
+    return (
+      <InputText
+        type="text"
+        value={options.value}
+        onChange={(e) => options.editorCallback(e.target.value)}
+      />
+    );
+  };
+
+  const onCellEditComplete = (e) => {
+    let { rowData, newValue, field, originalEvent: event } = e;
+
+    if (newValue.trim().length > 0) rowData[field] = newValue;
+    else event.preventDefault();
+  };
+
   return (
     <Dialog
-      header="Pedido"
+      header="Pedido Prefeitura"
       visible={showModalOrder}
       onHide={() => setShowModalOrder(false)}
       style={{ width: "75vw" }}
@@ -46,6 +64,10 @@ const OrderModal = ({
                 key={col.field}
                 field={col.field}
                 header={col.header}
+                editor={(options) =>
+                  col.field === "newQuantity" ? textEditor(options) : null
+                }
+                onCellEditComplete={onCellEditComplete}
               />
             ))}
             <Column
@@ -59,7 +81,6 @@ const OrderModal = ({
                     disabled={disabled}
                     onChange={(e) => handleCheck(e, rowData)}
                   />
-                  
                 </div>
               )}
             />

@@ -14,7 +14,7 @@ const ProductModal = ({
   return (
     <Dialog
       modal
-      header="Novo Pedido"
+      header="Novo Pedido Prefeitura"
       visible={showModal}
       onHide={() => setShowModal(false)}
       style={{ width: "35vw" }}

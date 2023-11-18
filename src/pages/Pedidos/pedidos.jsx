@@ -40,8 +40,8 @@ function CustomerOrder() {
   const columns = [
     { field: "id", header: "ID" },
     { field: "name", header: "Nome do Produto" },
-    { field: "newQuantity", header: "Quantidade a ser Adicionada" },
     { field: "quantityInStock", header: "Quantidade em Estoque" },
+    { field: "newQuantity", header: "Quantidade Recebida" },
     { field: "status", header: "Status do Pedido" },
   ];
 
@@ -309,8 +309,10 @@ function CustomerOrder() {
                       data-bs-toggle="tab"
                       className="nav-link active"
                     >
-                      <span className="d-sm-none">Produtos</span>
-                      <span className="d-sm-block d-none">Produtos</span>
+                      <span className="d-sm-none">Produtos Prefeitura</span>
+                      <span className="d-sm-block d-none">
+                        Produtos Prefeitura
+                      </span>
                     </a>
                   </li>
 
@@ -320,9 +322,9 @@ function CustomerOrder() {
                       data-bs-toggle="tab"
                       className="nav-link"
                     >
-                      <span className="d-sm-none">Pedidos Permitidos</span>
+                      <span className="d-sm-none">Pedidos Prefeitura</span>
                       <span className="d-sm-block d-none">
-                        Pedidos Permitidos
+                        Pedidos Prefeitura
                       </span>
                     </a>
                   </li>
@@ -332,12 +334,23 @@ function CustomerOrder() {
                       data-bs-toggle="tab"
                       className="nav-link"
                     >
-                      <span className="d-sm-none">
-                        Produtos Pedidos na Prefeitura
-                      </span>
+                      <span className="d-sm-none">Produtos Autorizados</span>
                       <span className="d-sm-block d-none">
                         {" "}
-                        Produtos Pedidos na Prefeitura
+                        Produtos Autorizados
+                      </span>
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a
+                      href="#default-tab-3"
+                      data-bs-toggle="tab"
+                      className="nav-link"
+                    >
+                      <span className="d-sm-none">Pedidos Autorizados</span>
+                      <span className="d-sm-block d-none">
+                        {" "}
+                        Pedidos Autorizados
                       </span>
                     </a>
                   </li>

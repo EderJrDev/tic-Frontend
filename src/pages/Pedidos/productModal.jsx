@@ -10,6 +10,7 @@ const ProductModal = ({
   quantityToAdd,
   setQuantityToAdd,
   updateProduct,
+  origin,
 }) => {
   return (
     <Dialog
@@ -29,16 +30,18 @@ const ProductModal = ({
             onChange={(e) => setQuantity(e.target.value)}
           />
         </div>
-        <div className="col-lg-6">
-          <p className="m-auto pb-2">Quantidade a Ser Adicionada:</p>
-          <InputText
-            type="number"
-            placeholder="0"
-            value={quantityToAdd}
-            className="p-inputtext-sm w-100"
-            onChange={(e) => setQuantityToAdd(e.target.value)}
-          />
-        </div>
+        {!origin && (
+          <div className="col-lg-6">
+            <p className="m-auto pb-2">Quantidade a Ser Adicionada:</p>
+            <InputText
+              type="number"
+              placeholder="0"
+              value={quantityToAdd}
+              className="p-inputtext-sm w-100"
+              onChange={(e) => setQuantityToAdd(e.target.value)}
+            />
+          </div>
+        )}
         <div className="col-lg-12 pt-4">
           <div className="text-center">
             <button className="btn btn-info btn-btn-sm" onClick={updateProduct}>

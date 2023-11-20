@@ -21,6 +21,7 @@ function CustomerOrder() {
   const [orderName, setOrderName] = useState("");
   const [orderItems, setOrderItems] = useState({});
   const [disabled, setDisabled] = useState(false);
+  const [origin, setOrigin] = useState(null);
 
   const [quantity, setQuantity] = useState("");
 
@@ -71,6 +72,7 @@ function CustomerOrder() {
   const handleCardClick = (item) => {
     setSelectedCardQuantity(item.quantity);
     setQuantity(item.quantity);
+    setOrigin(item.originCityHall);
     setShowModal(true);
     setSelectedProduct({ ...item, quantityToAdd: "" });
   };
@@ -137,17 +139,15 @@ function CustomerOrder() {
     const response = await api.get("/admin/product");
     const dados = response.data;
     // console.log(dados);
-    setCli(dados);
 
     const filterProducts = dados.filter(
-      (product) => product.originCityHall === true
+      (product) => product.originCityHall === false
     );
-    // console.log([filterProducts]);
+    setProductsCityHall(filterProducts);
 
-    setProductsCityHall([filterProducts]);
-
-    // console.log(filterProducts);
-    // return filterProducts;
+    const filter = dados.filter((product) => product.originCityHall === true);
+    // console.log(filter);
+    setCli(filter);
   }
   useEffect(() => {
     getCategory();
@@ -426,9 +426,7 @@ function CustomerOrder() {
                                     <Link
                                       className="product bg-gray-100"
                                       data-bs-target="#"
-                                      onClick={() =>
-                                        handleCardOrder(product.id)
-                                      }
+                                      onClick={() => handleCardClick(product)}
                                     >
                                       <div className="text">
                                         <div className="title">
@@ -453,6 +451,7 @@ function CustomerOrder() {
               showModalOrder={showModalOrder}
               setShowModalOrder={setShowModalOrder}
               tableData={tableData}
+              setTableData={setTableData}
               disabled={disabled}
               handleCheck={handleCheck}
               loading={loading}
@@ -462,6 +461,7 @@ function CustomerOrder() {
             {/* modal novo Pedido  */}
             <ProductModal
               quantity={quantity}
+              origin={origin}
               setQuantity={setQuantity}
               showModal={showModal}
               setShowModal={setShowModal}

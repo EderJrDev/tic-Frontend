@@ -9,6 +9,7 @@ const OrderModal = ({
   showModalOrder,
   setShowModalOrder,
   tableData,
+  setTableData,
   handleCheck,
   loading,
   columns,
@@ -25,12 +26,15 @@ const OrderModal = ({
   };
 
   const onCellEditComplete = (e) => {
-    let { rowData, newValue, field, originalEvent: event } = e;
+    let { rowData, newValue, value, field, originalEvent } = e;
 
-    if (newValue.trim().length > 0) rowData[field] = newValue;
-    else event.preventDefault();
+    if (field === "newQuantity") {
+      if (!originalEvent) {
+        // Check if the cell editing was canceled
+        rowData["newQuantity"] = "pref" + rowData["newQuantity"]; // your expression
+      }
+    }
   };
-
   return (
     <Dialog
       header="Pedido Prefeitura"
@@ -68,6 +72,7 @@ const OrderModal = ({
                   col.field === "newQuantity" ? textEditor(options) : null
                 }
                 onCellEditComplete={onCellEditComplete}
+                onCellEditCancel={onCellEditComplete} // Handle cancel action
               />
             ))}
             <Column

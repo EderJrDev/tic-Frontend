@@ -4,6 +4,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputSwitch } from "primereact/inputswitch";
 import { InputText } from "primereact/inputtext";
+import { api } from "../../utils/api";
 
 const OrderModal = ({
   showModalOrder,
@@ -20,12 +21,30 @@ const OrderModal = ({
       <InputText
         type="text"
         value={options.value}
+        // onBlur={(e) => {
+        //   const updatedData = { ...rowData };
+        //   updatedData[field] = value;
+        //   setTableData(
+        //     tableData.map((data) =>
+        //       data.id === rowData.id ? updatedData : data
+        //     )
+        //   );
+
+        //   // Make the API request here
+        //   api
+        //     .post(`/admin/order/updateProduct/${rowData.id}`, {
+        //       newQuantity: value,
+        //     })
+        //     .then((response) => {
+        //       console.log(response);
+        //     });
+        // }}
         onChange={(e) => options.editorCallback(e.target.value)}
       />
     );
   };
 
-  const onCellEditComplete = (e) => {
+  const onCellEditComplete = async (e) => {
     let { rowData, newValue, value, field, originalEvent } = e;
 
     if (field === "newQuantity") {
@@ -34,6 +53,12 @@ const OrderModal = ({
         rowData["newQuantity"] = "pref" + rowData["newQuantity"]; // your expression
       }
     }
+
+    const updated = await api.post(`/admin/order/updateProduct/${rowData.id}`, {
+      newQuantity: value,
+    });
+
+    console.log(updated);
   };
   return (
     <Dialog

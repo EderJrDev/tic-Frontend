@@ -114,7 +114,7 @@ function CustomerOrder() {
     const newItem = {
       productId: selectedProduct.id,
       product: selectedProduct.name,
-      quantityInStock: quantity,
+      quantityInStock: parseFloat(quantity),
       newQuantity: parseFloat(quantityToAdd),
     };
     updatedOrders.push(newItem);
@@ -124,6 +124,35 @@ function CustomerOrder() {
     setSelectedProduct({ ...selectedProduct, quantityToAdd: "" });
 
     if (!quantityToAdd || !selectedCardQuantity) {
+      toast.current.show({
+        severity: "error",
+        summary: "Falha!",
+        detail: "Quantidades necessárias!",
+        life: 3000,
+      });
+      return;
+    }
+  };
+
+  // Função para atualizar a quantidade
+  const updateProductQuantity = () => {
+    // console.log("orders: ", orders);
+    const updatedOrders = [...orders];
+
+    const newItem = {
+      productId: selectedProduct.id,
+      product: selectedProduct.name,
+      quantityInStock: parseFloat(quantity),
+      newQuantity: 0,
+      // newQuantity: parseFloat(quantityToAdd),
+    };
+    updatedOrders.push(newItem);
+    setOrders(updatedOrders);
+    setShowModal(false);
+    setQuantityToAdd("");
+    setSelectedProduct({ ...selectedProduct, quantityToAdd: "" });
+
+    if (!selectedCardQuantity) {
       toast.current.show({
         severity: "error",
         summary: "Falha!",
@@ -271,7 +300,7 @@ function CustomerOrder() {
           ],
         };
 
-        // console.log(orderItem);
+        console.log(orderItem);
         await api.post("/admin/order/createOrderItem", orderItem);
 
         showSuccess();
@@ -469,6 +498,7 @@ function CustomerOrder() {
               setQuantityToAdd={setQuantityToAdd}
               selectedProduct={selectedProduct}
               updateProduct={updateProduct}
+              updateProductQuantity={updateProductQuantity}
             />
             {/* end modal novo Pedido  */}
           </PerfectScrollbar>
@@ -526,7 +556,9 @@ function CustomerOrder() {
                         <div className="price">{order.quantityInStock}</div>
                       </div>
                       <div className="taxes">
-                        <div className="text">Qtd á ser adicionada</div>
+                        <div className="text">
+                          {order.newQuantity ? "Qtd á ser adicionada" : ""}
+                        </div>
                         <div className="price">{order.newQuantity}</div>
                       </div>
                       <div className="total">

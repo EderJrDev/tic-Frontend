@@ -18,6 +18,7 @@ function Dashboard() {
   const [category, SetCategory] = useState();
   const [products, Setproducts] = useState();
   const [tableData, setTableData] = useState([]);
+  const [pedidos, setPedidos] = useState([]);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
 
   const onGlobalFilterChange = (e) => {
@@ -35,7 +36,7 @@ function Dashboard() {
   }));
 
   useEffect(() => {
-    LastOrders(setTableData);
+    LastOrders(setTableData, setPedidos);
     InfoCards(Setproducts, Setbudget, SetOrder, SetCategory);
   }, []);
 
@@ -56,7 +57,7 @@ function Dashboard() {
           title="Orçamentos"
           content={budget}
           footer="Feitos"
-          style="widget widget-stats bg-blue"
+          style="widget widget-stats bg-red"
           icon={<i className="fa fa-dollar-sign fa-fw"></i>}
         />
         <Card
@@ -68,12 +69,12 @@ function Dashboard() {
         <Card
           title="Categorias"
           content={category}
-          style="widget widget-stats bg-dark"
+          style="widget widget-stats bg-green"
           icon={<i className="fa fa-comment-alt fa-fw"></i>}
         />
       </div>
       <div className="row">
-        <div className="col-xl-12">
+        <div className="col-xl-6">
           <Panel>
             <PanelHeader className="bg-cyan-700 text-white">
               Últimos Pedidos
@@ -89,6 +90,44 @@ function Dashboard() {
                 stripedRows
                 showGridlines
                 value={tableData}
+                paginator
+                rows={5}
+                sortMode="multiple"
+                selectionMode="single"
+                globalFilter={globalFilterValue}
+                rowsPerPageOptions={[5, 25, 50]}
+                tableStyle={{ minWidth: "1rem", fontSize: "0.8rem" }}
+                emptyMessage="Nenhuma informação encontrada."
+              >
+                {columns.map((col, i) => (
+                  <Column
+                    sortable
+                    key={col.field}
+                    field={col.field}
+                    header={col.header}
+                    filterMatchMode={FilterMatchMode.CONTAINS}
+                  />
+                ))}
+              </DataTable>
+            </PanelBody>
+          </Panel>
+        </div>
+        <div className="col-xl-6">
+          <Panel>
+            <PanelHeader className="bg-cyan-700 text-white">
+              Pedidos em Andamento
+            </PanelHeader>
+            <PanelBody>
+              <ExportTable
+                tableData={tableData}
+                exportColumns={exportColumns}
+                globalFilterValue={globalFilterValue}
+                onGlobalFilterChange={onGlobalFilterChange}
+              />
+              <DataTable
+                stripedRows
+                showGridlines
+                value={pedidos}
                 paginator
                 rows={5}
                 sortMode="multiple"

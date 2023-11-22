@@ -10,6 +10,7 @@ const ProductModal = ({
   quantityToAdd,
   setQuantityToAdd,
   updateProduct,
+  updateProductQuantity,
   origin,
 }) => {
   return (
@@ -44,9 +45,21 @@ const ProductModal = ({
         )}
         <div className="col-lg-12 pt-4">
           <div className="text-center">
-            <button className="btn btn-info btn-btn-sm" onClick={updateProduct}>
-              <i className="bi bi-check-circle-fill"></i> Atualizar
-            </button>
+            {!origin ? (
+              <button
+                className="btn btn-info btn-btn-sm"
+                onClick={updateProduct}
+              >
+                <i className="bi bi-check-circle-fill"></i> Atualizarssss
+              </button>
+            ) : (
+              <button
+                className="btn btn-info btn-btn-sm"
+                onClick={updateProductQuantity}
+              >
+                <i className="bi bi-check-circle-fill"></i> Atualizar
+              </button>
+            )}
           </div>
         </div>
       </div>

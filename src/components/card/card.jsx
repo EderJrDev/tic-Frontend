@@ -1,6 +1,6 @@
 export function Card(props) {
   return (
-    <div className="col-xl-3 col-md-6">
+    <div className="col-xl-6 col-md-5">
       {/* <div className="widget widget-stats bg-teal"> */}
       <div className={props.style}>
         <div className="stats-icon stats-icon-lg">

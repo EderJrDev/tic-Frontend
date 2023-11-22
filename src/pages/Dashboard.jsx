@@ -26,8 +26,8 @@ function Dashboard() {
   };
 
   const columns = [
-    { field: "id", header: "ID" },
     { field: "produto", header: "Produto" },
+    { field: "quantidade", header: "Quantidade" },
   ];
 
   const exportColumns = columns.map((col) => ({
@@ -77,7 +77,7 @@ function Dashboard() {
         <div className="col-xl-6">
           <Panel>
             <PanelHeader className="bg-cyan-700 text-white">
-              Últimos Pedidos
+              Produtos Acabando
             </PanelHeader>
             <PanelBody>
               <ExportTable

@@ -199,57 +199,10 @@ function CustomerOrder() {
       const dados = response.data;
 
       // console.log(dados);
-      // Filtrar order_items com originCityHall false para cada objeto em dados
-      const originCityHallFalse = [].concat(
-        ...dados.map((obj) =>
-          obj.order_items.filter(
-            (item) => item.product.originCityHall === false
-          )
-        )
-      );
-
-      // Filtrar order_items com originCityHall true para cada objeto em dados
-      const originCityHallTrue = [].concat(
-        ...dados.map((obj) =>
-          obj.order_items.filter((item) => item.product.originCityHall === true)
-        )
-      );
-
-      // Criar um novo objeto com as propriedades desejadas
-      const result = dados.map((obj) => {
-        const filteredItems = obj.order_items.filter(
-          (item) => item.product.originCityHall === true
-        );
-        return {
-          id: obj.id,
-          name: obj.name,
-          created_at: obj.created_at,
-          order_items: filteredItems,
-        };
-      });
-
-      const notCityHall = dados.map((obj) => {
-        const filteredItems = obj.order_items.filter(
-          (item) => item.product.originCityHall === false
-        );
-        return {
-          id: obj.id,
-          name: obj.name,
-          created_at: obj.created_at,
-          order_items: filteredItems,
-        };
-      });
-
-      // Exibir os resultados
-      // console.log("Resultado:", result);
-
-      // Exibir os resultados
-      // console.log("originCityHallFalse:", originCityHallFalse);
-      // console.log("originCityHallTrue:", originCityHallTrue);
 
       // console.log(dados);
-      setOrderAuth(result);
-      setOrder(notCityHall); // Armazena os orders
+      setOrderAuth(dados);
+      setOrder(dados); // Armazena os orders
 
       // console.log(dados);
 

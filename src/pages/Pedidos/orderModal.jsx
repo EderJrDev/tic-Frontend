@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -16,50 +16,44 @@ const OrderModal = ({
   columns,
   disabled,
 }) => {
+  const inputRef = useRef(null); // Referência para o campo de entrada
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  useEffect(() => {
+    // Foca no campo de entrada quando uma linha é selecionada
+    if (inputRef.current && selectedRow) {
+      inputRef.current.focus();
+    }
+  }, [selectedRow]);
+
   const textEditor = (options) => {
     return (
       <InputText
         type="text"
         value={options.value}
-        // onBlur={(e) => {
-        //   const updatedData = { ...rowData };
-        //   updatedData[field] = value;
-        //   setTableData(
-        //     tableData.map((data) =>
-        //       data.id === rowData.id ? updatedData : data
-        //     )
-        //   );
-
-        //   // Make the API request here
-        //   api
-        //     .post(`/admin/order/updateProduct/${rowData.id}`, {
-        //       newQuantity: value,
-        //     })
-        //     .then((response) => {
-        //       console.log(response);
-        //     });
-        // }}
+        inputRef={inputRef} // Define a referência para o campo de entrada
         onChange={(e) => options.editorCallback(e.target.value)}
+        onBlur={() => handleCellEditComplete(options)}
       />
     );
   };
 
-  const onCellEditComplete = async (e) => {
-    let { rowData, newValue, value, field, originalEvent } = e;
+  const handleCellEditComplete = async (options) => {
+    const { rowData, value, field } = options;
 
-    if (field === "newQuantity") {
-      if (!originalEvent) {
-        // Check if the cell editing was canceled
-        rowData["newQuantity"] = "pref" + rowData["newQuantity"]; // your expression
-      }
-    }
+    // Verifica se a edição da célula não foi cancelada
+    rowData[field] = "pref" + value; // Sua expressão
+    console.log(rowData.id);
+    console.log(value);
 
+    // Atualiza a quantidade via API
     const updated = await api.post(`/admin/order/updateProduct/${rowData.id}`, {
       newQuantity: value,
     });
 
     console.log(updated);
   };
+
   return (
     <Dialog
       header="Pedido Prefeitura"
@@ -85,19 +79,19 @@ const OrderModal = ({
             sortMode="multiple"
             scrollHeight="flex"
             selectionMode="single"
+            selection={selectedRow}
+            onSelectionChange={(e) => setSelectedRow(e.value)}
             emptyMessage="Nenhuma informação encontrada."
           >
             {columns.map((col) => (
               <Column
-                sortable
                 key={col.field}
                 field={col.field}
                 header={col.header}
                 editor={(options) =>
                   col.field === "newQuantity" ? textEditor(options) : null
                 }
-                onCellEditComplete={onCellEditComplete}
-                onCellEditCancel={onCellEditComplete} // Handle cancel action
+                style={{ overflow: "visible" }} // Importante para evitar problemas de layout
               />
             ))}
             <Column

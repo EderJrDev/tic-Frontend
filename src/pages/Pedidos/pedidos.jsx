@@ -16,6 +16,7 @@ function CustomerOrder() {
   const [cli, setCli] = useState([]);
   const [productsCityHall, setProductsCityHall] = useState([]);
   const [order, setOrder] = useState([]);
+  const [orderAuth, setOrderAuth] = useState([]);
   const [orders, setOrders] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [orderName, setOrderName] = useState("");
@@ -196,7 +197,61 @@ function CustomerOrder() {
       const response = await api.get("/admin/order/show/orders");
       // console.log("get orders: ", response);
       const dados = response.data;
-      setOrder(dados); // Armazena os orders
+
+      // console.log(dados);
+      // Filtrar order_items com originCityHall false para cada objeto em dados
+      const originCityHallFalse = [].concat(
+        ...dados.map((obj) =>
+          obj.order_items.filter(
+            (item) => item.product.originCityHall === false
+          )
+        )
+      );
+
+      // Filtrar order_items com originCityHall true para cada objeto em dados
+      const originCityHallTrue = [].concat(
+        ...dados.map((obj) =>
+          obj.order_items.filter((item) => item.product.originCityHall === true)
+        )
+      );
+
+      // Criar um novo objeto com as propriedades desejadas
+      const result = dados.map((obj) => {
+        const filteredItems = obj.order_items.filter(
+          (item) => item.product.originCityHall === true
+        );
+        return {
+          id: obj.id,
+          name: obj.name,
+          created_at: obj.created_at,
+          order_items: filteredItems,
+        };
+      });
+
+      const notCityHall = dados.map((obj) => {
+        const filteredItems = obj.order_items.filter(
+          (item) => item.product.originCityHall === false
+        );
+        return {
+          id: obj.id,
+          name: obj.name,
+          created_at: obj.created_at,
+          order_items: filteredItems,
+        };
+      });
+
+      // Exibir os resultados
+      // console.log("Resultado:", result);
+
+      // Exibir os resultados
+      // console.log("originCityHallFalse:", originCityHallFalse);
+      // console.log("originCityHallTrue:", originCityHallTrue);
+
+      // console.log(dados);
+      setOrderAuth(result);
+      setOrder(notCityHall); // Armazena os orders
+
+      // console.log(dados);
 
       const orderItemsMap = {};
 
@@ -372,7 +427,7 @@ function CustomerOrder() {
                   </li>
                   <li className="nav-item">
                     <a
-                      href="#default-tab-3"
+                      href="#default-tab-4"
                       data-bs-toggle="tab"
                       className="nav-link"
                     >
@@ -447,19 +502,48 @@ function CustomerOrder() {
                     <div className="invoice-header">
                       <div className="invoice-from">
                         <div className="d-flex row">
-                          {productsCityHall &&
-                            productsCityHall.map((product) => (
+                          {productsCityHall.map((item) => (
+                            <div className="col-lg-4 pb-3" key={item.id}>
+                              <div className="container" data-type="meat">
+                                <Link
+                                  className="product bg-gray-100"
+                                  data-bs-target="#"
+                                  onClick={() => handleCardClick(item)}
+                                >
+                                  <div className="text">
+                                    <div className="title">{item.name}</div>
+                                    <div className="desc">
+                                      Categoria: {item.location}
+                                    </div>
+                                    <div className="price">
+                                      Quantidade: {item.quantity}
+                                    </div>
+                                  </div>
+                                </Link>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="tab-pane fade" id="default-tab-4">
+                    <div className="invoice-header">
+                      <div className="invoice-from">
+                        <div className="d-flex row">
+                          {orderAuth &&
+                            orderAuth.map((item) => (
                               <>
-                                <div key={product.id} className="col-lg-3 pb-3">
+                                <div key={item.id} className="col-lg-3 pb-3">
                                   <div className="container">
                                     <Link
                                       className="product bg-gray-100"
                                       data-bs-target="#"
-                                      onClick={() => handleCardClick(product)}
+                                      onClick={() => handleCardOrder(item.id)}
                                     >
                                       <div className="text">
                                         <div className="title">
-                                          {product.name}{" "}
+                                          {item.name}{" "}
                                           <i class="fa-solid fa-arrow-right"></i>
                                         </div>
                                       </div>

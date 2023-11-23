@@ -1,6 +1,7 @@
 import React from "react";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
 
 const ProductModal = ({
   quantity,
@@ -16,7 +17,7 @@ const ProductModal = ({
   return (
     <Dialog
       modal
-      header="Novo Pedido Prefeitura"
+      header="Novo Pedido"
       visible={showModal}
       onHide={() => setShowModal(false)}
       style={{ width: "35vw" }}
@@ -46,19 +47,19 @@ const ProductModal = ({
         <div className="col-lg-12 pt-4">
           <div className="text-center">
             {!origin ? (
-              <button
-                className="btn btn-info btn-btn-sm"
+              <Button
                 onClick={updateProduct}
-              >
-                <i className="bi bi-check-circle-fill"></i> Atualizar
-              </button>
+                severity="info"
+                icon="bi bi-check-circle-fill"
+                label="Atualizar"
+              />
             ) : (
-              <button
-                className="btn btn-info btn-btn-sm"
+              <Button
                 onClick={updateProductQuantity}
-              >
-                <i className="bi bi-check-circle-fill"></i> Atualizar
-              </button>
+                severity="info"
+                icon="bi bi-check-circle-fill"
+                label="Atualizar"
+              />
             )}
           </div>
         </div>

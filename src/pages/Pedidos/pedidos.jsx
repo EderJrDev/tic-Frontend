@@ -12,6 +12,7 @@ import OrderModal from "./orderModal";
 import ProductModal from "./productModal";
 import Loader from "../../components/loader/loader";
 import { formatDate } from "../../utils/formatDate";
+import OrderAuthModal from "./orderAuthModal";
 
 function CustomerOrder() {
   // State
@@ -21,6 +22,7 @@ function CustomerOrder() {
   const [orderAuth, setOrderAuth] = useState([]);
   const [orders, setOrders] = useState([]);
   const [tableData, setTableData] = useState([]);
+  const [tableDataAuth, setTableDataAuth] = useState([]);
   const [orderName, setOrderName] = useState("");
   const [orderItems, setOrderItems] = useState({});
   const [disabled, setDisabled] = useState(false);
@@ -35,6 +37,7 @@ function CustomerOrder() {
   const [quantityToAdd, setQuantityToAdd] = useState("");
   const [expectedDate, setExpectedDate] = useState(null);
   const [showModalOrder, setShowModalOrder] = useState(false);
+  const [showModalOrderAuth, setShowModalOrderAuth] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedCardQuantity, setSelectedCardQuantity] = useState("");
   const [selectedProduct, setSelectedProduct] = useState({
@@ -83,7 +86,9 @@ function CustomerOrder() {
     setSelectedProduct({ ...item, quantityToAdd: "" });
   };
 
-  function handleCardOrder(orderId) {
+  async function handleCardOrder(orderId) {
+    getOrders();
+    getCategory();
     // console.log("item ID: ", orderId);
     let foundObjectsArray = [];
     // Verifica se o orderId existe como uma chave no objeto
@@ -103,8 +108,30 @@ function CustomerOrder() {
     setShowModalOrder(true); // Abre a modal
   }
 
+  async function handleCardOrderAuth(orderId) {
+    getOrders();
+    getCategory();
+    // console.log("item ID: ", orderId);
+    let foundObjectsArray = [];
+    // Verifica se o orderId existe como uma chave no objeto
+    if (orderId in orderItems) {
+      // Obtém o array correspondente ao orderId
+      let foundArray = orderItems[orderId];
+      // Agora você pode acessar os objetos dentro do array encontrado
+      foundArray.forEach((obj) => {
+        // console.log("Objeto encontrado:", obj);
+        foundObjectsArray.push(obj);
+      });
+    } else {
+      console.log("Nenhum array encontrado para o orderId:", orderId);
+    }
+
+    setTableDataAuth(foundObjectsArray); // Atualiza a tabela com os order items do order clicado
+    setShowModalOrderAuth(true); // Abre a modal
+  }
+
   // Função para atualizar o produto
-  const updateProduct = () => {
+  const updateProduct = async () => {
     if (!quantityToAdd) {
       return toast.current.show({
         severity: "error",
@@ -122,12 +149,16 @@ function CustomerOrder() {
       product: selectedProduct.name,
       quantityInStock: parseFloat(quantity),
       newQuantity: parseFloat(quantityToAdd),
+      // newQuantity: 0,
     };
+
     updatedOrders.push(newItem);
     setOrders(updatedOrders);
     setShowModal(false);
     setQuantityToAdd("");
     setSelectedProduct({ ...selectedProduct, quantityToAdd: "" });
+
+    getCategory();
 
     if (!quantityToAdd || !selectedCardQuantity) {
       toast.current.show({
@@ -141,7 +172,7 @@ function CustomerOrder() {
   };
 
   // Função para atualizar a quantidade
-  const updateProductQuantity = () => {
+  const updateProductQuantity = async () => {
     // console.log("orders: ", orders);
     const updatedOrders = [...orders];
 
@@ -181,9 +212,14 @@ function CustomerOrder() {
 
       const filter = dados.filter((product) => product.originCityHall === true);
 
+      console.log(dados);
+      console.log(filter);
+
       // Atualiza o estado interno antes de definir o estado final
-      setProductsCityHall(filterProducts);
       setCli(filter);
+
+      console.log(cli);
+      setProductsCityHall(filterProducts);
     } catch (error) {
       // Lidar com erros, se necessário
       console.error("Erro ao obter categoria:", error);
@@ -204,7 +240,7 @@ function CustomerOrder() {
     }
 
     fetchData();
-  }, [order]);
+  }, []);
 
   const validitStatus = (status) => {
     if (status === "pendente") {
@@ -258,16 +294,6 @@ function CustomerOrder() {
     }
   }
 
-  // Efeito para enviar o pedido
-  useEffect(() => {
-    async function sendOrder() {
-      const response = await api.get("/admin/product");
-      const dados = response.data;
-      setCli(dados);
-    }
-    sendOrder();
-  }, []);
-
   const handleCheck = async (e, rowData) => {
     e.preventDefault();
     setLoading(true);
@@ -282,9 +308,10 @@ function CustomerOrder() {
       setLoading(false);
       setDisabled(true);
 
-      // await handleCardOrder(rowData.id);
+      await handleCardOrder(rowData.id);
       // await handleCardOrder(rowData.id);
       setShowModalOrder(false);
+      setShowModalOrderAuth(false);
 
       toast.current.show({
         severity: "success",
@@ -311,6 +338,8 @@ function CustomerOrder() {
         detail: "Informe um nome e uma data para o pedido!",
         life: 3000,
       });
+
+      setLoadingPage(false);
     } else {
       const orderData = {
         name: orderName.toString(),
@@ -351,11 +380,12 @@ function CustomerOrder() {
 
         // console.log(orderItem);
         await api.post("/admin/order/createOrderItem", orderItem);
-        setLoadingPage(false);
         showSuccess();
         setOrderName("");
         setExpectedDate("");
         setOrders([]);
+        getOrders();
+        setLoadingPage(false);
 
         setAbaAtiva(origin === true ? "default-tab-2" : "default-tab-4");
       } catch (error) {
@@ -601,7 +631,9 @@ function CustomerOrder() {
                                       <Link
                                         className="product bg-gray-100"
                                         data-bs-target="#"
-                                        onClick={() => handleCardOrder(item.id)}
+                                        onClick={() =>
+                                          handleCardOrderAuth(item.id)
+                                        }
                                       >
                                         <div className="text">
                                           <div className="text-end">
@@ -639,6 +671,18 @@ function CustomerOrder() {
                 setShowModalOrder={setShowModalOrder}
                 tableData={tableData}
                 setTableData={setTableData}
+                disabled={disabled}
+                handleCheck={handleCheck}
+                loading={loading}
+                columns={columns}
+              />
+              {/* end modal to show orders auth*/}
+              {/* modal to show orders auth */}
+              <OrderAuthModal
+                showModalOrderAuth={showModalOrderAuth}
+                setShowModalOrderAuth={setShowModalOrderAuth}
+                tableData={tableDataAuth}
+                setTableData={setTableDataAuth}
                 disabled={disabled}
                 handleCheck={handleCheck}
                 loading={loading}
@@ -717,7 +761,9 @@ function CustomerOrder() {
                           <div className="text">
                             {order.newQuantity ? "Qtd á ser adicionada" : ""}
                           </div>
-                          <div className="price">{order.newQuantity}</div>
+                          <div className="price">
+                            {order.newQuantity ? order.newQuantity : ""}
+                          </div>
                         </div>
                         <div className="total">
                           <div className="text">Produto</div>

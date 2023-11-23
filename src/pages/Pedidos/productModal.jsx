@@ -22,7 +22,7 @@ const ProductModal = ({
       style={{ width: "35vw" }}
     >
       <div className="row">
-        <div className={`${!origin ? "col-lg-6" : "col-lg-12"}`}>
+        <div className={`${!origin ? "col-lg-12 pb-3" : "col-lg-12"}`}>
           <p className="m-auto pb-2">Qual a quantidade atual em estoque?</p>
           <InputText
             type="number"
@@ -32,7 +32,7 @@ const ProductModal = ({
           />
         </div>
         {!origin && (
-          <div className={`${!origin ? "col-lg-6" : "col-lg-12"}`}>
+          <div className={`${!origin ? "col-lg-12" : "col-lg-12"}`}>
             <p className="m-auto pb-2">Quantidade a Ser Adicionada:</p>
             <InputText
               type="number"

@@ -27,6 +27,7 @@ function CustomerOrder() {
   const [origin, setOrigin] = useState(null);
 
   const [loadingPage, setLoadingPage] = useState(true);
+  const [abaAtiva, setAbaAtiva] = useState("default-tab-1");
 
   const [quantity, setQuantity] = useState("");
 
@@ -270,8 +271,8 @@ function CustomerOrder() {
   const handleCheck = async (e, rowData) => {
     e.preventDefault();
     setLoading(true);
-    console.log("rowData: ", rowData);
-    console.log("id: ", rowData.id);
+    // console.log("rowData: ", rowData);
+    // console.log("id: ", rowData.id);
 
     try {
       await api.post(`/admin/order/updateProduct/${rowData.id}`, {
@@ -282,9 +283,15 @@ function CustomerOrder() {
       setDisabled(true);
 
       // await handleCardOrder(rowData.id);
-      await handleCardOrder(rowData.id);
+      // await handleCardOrder(rowData.id);
+      setShowModalOrder(false);
 
-      showSuccess();
+      toast.current.show({
+        severity: "success",
+        summary: "Sucesso!",
+        detail: "O status do pedido foi atualizado!",
+        life: 3000,
+      });
     } catch (error) {
       showError();
       setLoading(false);
@@ -349,6 +356,8 @@ function CustomerOrder() {
         setOrderName("");
         setExpectedDate("");
         setOrders([]);
+
+        setAbaAtiva(origin === true ? "default-tab-2" : "default-tab-4");
       } catch (error) {
         setLoadingPage(false);
         toast.current.show({
@@ -382,7 +391,9 @@ function CustomerOrder() {
                       <a
                         href="#default-tab-1"
                         data-bs-toggle="tab"
-                        className="nav-link active"
+                        className={`nav-link  ${
+                          abaAtiva === "default-tab-1" ? "active" : ""
+                        }`}
                       >
                         <span className="d-sm-none">Produtos Prefeitura</span>
                         <span className="d-sm-block d-none">
@@ -395,7 +406,9 @@ function CustomerOrder() {
                       <a
                         href="#default-tab-2"
                         data-bs-toggle="tab"
-                        className="nav-link"
+                        className={`nav-link  ${
+                          abaAtiva === "default-tab-2" ? "active" : ""
+                        }`}
                       >
                         <span className="d-sm-none">Pedidos Prefeitura</span>
                         <span className="d-sm-block d-none">
@@ -407,7 +420,9 @@ function CustomerOrder() {
                       <a
                         href="#default-tab-3"
                         data-bs-toggle="tab"
-                        className="nav-link"
+                        className={`nav-link  ${
+                          abaAtiva === "default-tab-3" ? "active" : ""
+                        }`}
                       >
                         <span className="d-sm-none">Produtos Autorizados</span>
                         <span className="d-sm-block d-none">
@@ -420,7 +435,9 @@ function CustomerOrder() {
                       <a
                         href="#default-tab-4"
                         data-bs-toggle="tab"
-                        className="nav-link"
+                        className={`nav-link  ${
+                          abaAtiva === "default-tab-4" ? "active" : ""
+                        }`}
                       >
                         <span className="d-sm-none">Pedidos Autorizados</span>
                         <span className="d-sm-block d-none">
@@ -432,7 +449,9 @@ function CustomerOrder() {
                   </ul>
                   <div className="tab-content panel rounded-0 p-3 m-0">
                     <div
-                      className="tab-pane fade active show"
+                      className={`tab-pane fade  ${
+                        abaAtiva === "default-tab-1" ? "active show" : ""
+                      }`}
                       id="default-tab-1"
                     >
                       <div className="invoice-header">
@@ -474,7 +493,12 @@ function CustomerOrder() {
                         </div>
                       </div>
                     </div>
-                    <div className="tab-pane fade" id="default-tab-2">
+                    <div
+                      className={`tab-pane fade  ${
+                        abaAtiva === "default-tab-2" ? "active show" : ""
+                      }`}
+                      id="default-tab-2"
+                    >
                       <div className="invoice-header">
                         <div className="invoice-from">
                           <div className="d-flex row">
@@ -515,7 +539,12 @@ function CustomerOrder() {
                         </div>
                       </div>
                     </div>
-                    <div className="tab-pane fade" id="default-tab-3">
+                    <div
+                      className={`tab-pane fade  ${
+                        abaAtiva === "default-tab-3" ? "active show" : ""
+                      }`}
+                      id="default-tab-3"
+                    >
                       <div className="invoice-header">
                         <div className="invoice-from">
                           <div className="d-flex row">
@@ -555,7 +584,12 @@ function CustomerOrder() {
                         </div>
                       </div>
                     </div>
-                    <div className="tab-pane fade" id="default-tab-4">
+                    <div
+                      className={`tab-pane fade  ${
+                        abaAtiva === "default-tab-4" ? "active show" : ""
+                      }`}
+                      id="default-tab-4"
+                    >
                       <div className="invoice-header">
                         <div className="invoice-from">
                           <div className="d-flex row">

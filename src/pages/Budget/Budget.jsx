@@ -118,11 +118,11 @@ function Budget() {
 
       return;
     } else {
-      setShowDialog(false);
-      setActiveIndex(0);
+      // setShowDialog(false);
+      // setActiveIndex(0);
 
-      setDisabledPanel(false);
-      setDisabledProducts(true);
+      // setDisabledPanel(false);
+      // setDisabledProducts(true);
 
       toast.current.show({
         severity: "success",
@@ -345,7 +345,7 @@ function Budget() {
                     <Input
                       name="name"
                       control={control}
-                      label="Nome do Orçamento"
+                      label="Descrição do Orçamento"
                     />
                   </div>
                 </div>

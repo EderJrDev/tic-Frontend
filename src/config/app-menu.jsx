@@ -16,12 +16,12 @@ const Menu = [
   {
     path: "pedidos",
     icon: "fa fa-shopping-cart",
-    title: "Pedidos",
+    title: "Entrada e Saída",
   },
   {
     path: "budget",
     icon: "fa fa-file",
-    title: "Orçamento",
+    title: "Orçamentos",
   },
 ].filter(Boolean); // Remove entradas falsas (quando isAdmin for false)
 

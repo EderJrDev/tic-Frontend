@@ -140,7 +140,7 @@ function User() {
               header="Editar"
               body={(rowData) => (
                 <button
-                  className="btn btn-info btn-btn-sm"
+                  className="btn btn-warning btn-btn-sm"
                   onClick={(e) => handleEditar(e, rowData)}
                 >
                   <i className="bi bi-pencil-square"></i>

@@ -51,7 +51,7 @@ function Products() {
     { field: "quantity", header: "Quantidade" },
     { field: "measure", header: "Unidade de medida" },
     { field: "purchase_allowed", header: "Compra Permitida" },
-    { field: "originCityHall", header: "Vem da Prefeitura" },
+    { field: "originCityHall", header: "Fornecido pela Prefeitura" },
   ];
 
   const origin = [
@@ -191,7 +191,7 @@ function Products() {
               header="Editar"
               body={(rowData) => (
                 <button
-                  className="btn btn-info btn-btn-sm"
+                  className="btn btn-warning btn-btn-sm"
                   onClick={() => handleEditar(rowData)}
                 >
                   <i className="bi bi-pencil-square"></i>
@@ -304,14 +304,14 @@ function Products() {
 
                 <div className="col-lg-4 mt-3">
                   <div className="d-flex flex-column m-1">
-                    <label>Vem da Prefeitura</label>
+                    <label>Fornecido pela Prefeitura?</label>
                     <Dropdown
                       value={originCityHall}
                       required
                       options={origin}
                       onChange={(e) => setOriginCityHall(e.value)}
                       className="p-inputtext-sm w-100"
-                      placeholder={"Produto vem da Prefeitura?"}
+                      placeholder={"Fornecido pela Prefeitura?"}
                     />
                   </div>
                 </div>
@@ -408,13 +408,13 @@ function Products() {
                 </div>
                 <div className="col-lg-4">
                   <div className="d-flex flex-column m-1">
-                    <label>Vem da Prefeitura</label>
+                    <label>Fornecido pela Prefeitura?</label>
                     <Dropdown
                       value={originCityHall}
                       required
                       onChange={(e) => setOriginCityHall(e.value)}
                       options={origin}
-                      placeholder={"Selecione a Unidade de Medida"}
+                      placeholder={"Selecione se ele é fornecido pela prefeitura"}
                       className="p-inputtext-sm w-100"
                     />
                   </div>

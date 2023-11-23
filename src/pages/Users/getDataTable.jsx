@@ -10,7 +10,7 @@ export async function getTable() {
       if (value === true) {
         return <span className="badge bg-success">Sim</span>;
       } else {
-        return <span className="badge bg-danger">Não</span>;
+        return <span className="badge bg-info">Não</span>;
       }
     };
 

@@ -591,7 +591,7 @@ function CustomerOrder() {
           <div className="pos-sidebar-nav">
             <ul className="nav nav-tabs nav-fill">
               <li className="nav-item">
-                <h5 className="pt-3">Novo Pedido</h5>
+                <h5 className="pt-3">Nova Entrada ou Saída</h5>
               </li>
             </ul>
           </div>
@@ -603,7 +603,7 @@ function CustomerOrder() {
             <div className="tab-pane fade h-100 show active" id="newOrderTab">
               <div className="pos-table">
                 <div className="text-center">
-                  <p>Selecione um item para adicionar ao pedido.</p>
+                  <p>Selecione um item para movimentar o estoque.</p>
                 </div>
                 <div className="col-md-12">
                   <div className="pt-3">
@@ -614,7 +614,7 @@ function CustomerOrder() {
                         className="w-100"
                         onChange={(e) => setOrderName(e.target.value)}
                       />
-                      <label htmlFor="pedido">Nome do Pedido</label>
+                      <label htmlFor="pedido">Descrição do Pedido</label>
                     </span>
                   </div>
                 </div>

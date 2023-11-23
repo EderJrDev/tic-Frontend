@@ -9,9 +9,14 @@ export async function getTable() {
 
     const validit = (value) => {
       if (value === true) {
-        return <span className="badge bg-success">Sim</span>;
+        return <span className="badge bg-success">
+            Sim
+          </span>;
       } else {
-        return <span className="badge bg-danger">Não</span>;
+        return <span className="badge bg-info">
+            Não
+            
+          </span>;
       }
     };
 

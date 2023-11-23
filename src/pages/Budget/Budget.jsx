@@ -18,6 +18,7 @@ import ExportTable from "../../components/button/ExportTable";
 import { Panel, PanelBody, PanelHeader } from "../../components/panel/panel";
 
 import { saveAs } from "file-saver";
+import Loader from "../../components/loader/loader";
 
 function Budget() {
   const {
@@ -35,6 +36,8 @@ function Budget() {
 
   const [disabledPanel, setDisabledPanel] = useState(false);
   const [disabledProducts, setDisabledProducts] = useState(true);
+
+  const [loading, setLoading] = useState(true);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [budget_products, setProducts] = useState([]);
@@ -183,7 +186,6 @@ function Budget() {
   };
 
   const saveProducts = async () => {
-    
     const newProduct = {
       descricao,
       unidade: parseInt(unidade),
@@ -260,6 +262,7 @@ function Budget() {
   };
 
   const budgetDownload = async (e, rowData) => {
+    setLoading(true);
     console.log(rowData);
     try {
       const response = await api.get(
@@ -275,6 +278,8 @@ function Budget() {
       // Usa o file-saver para realizar o download do Blob como um arquivo PDF
       saveAs(blob, `budget_${rowData.id}.pdf`);
 
+      setTimeout(() => setLoading(false), 500);
+
       toast.current.show({
         severity: "success",
         summary: "Sucesso!",
@@ -283,7 +288,9 @@ function Budget() {
       });
     } catch (error) {
       showError();
-      console.error("Erro ao fazer o download do PDF", error);
+      setTimeout(() => setLoading(false), 500);
+
+      // console.error("Erro ao fazer o download do PDF", error);
       // Lide com o erro de acordo com suas necessidades
     }
   };
@@ -294,6 +301,7 @@ function Budget() {
       setTableData(response.data);
     };
     getBudget();
+    setTimeout(() => setLoading(false), 500);
   }, [showDialog]);
 
   return (
@@ -601,56 +609,60 @@ function Budget() {
         </TabView>
       </Dialog>
       <div className="row">
-        <div className="col-xl-12">
-          <Panel>
-            <PanelHeader className="bg-cyan-700 text-white">
-              Últimos Orçamentos
-            </PanelHeader>
-            <PanelBody>
-              <ExportTable
-                tableData={tableData}
-                exportColumns={exportColumns}
-                globalFilterValue={globalFilterValue}
-                onGlobalFilterChange={(e) =>
-                  setGlobalFilterValue(e.target.value)
-                }
-              />
-              <DataTable
-                stripedRows
-                showGridlines
-                value={tableData}
-                paginator
-                rows={5}
-                sortMode="multiple"
-                selectionMode="single"
-                globalFilter={globalFilterValue}
-                rowsPerPageOptions={[5, 25, 50]}
-                tableStyle={{ minWidth: "1rem", fontSize: "0.8rem" }}
-                emptyMessage="Nenhuma informação encontrada."
-              >
-                {columns.map((col) => (
-                  <Column
-                    sortable
-                    key={col.field}
-                    field={col.field}
-                    header={col.header}
-                  />
-                ))}
-                <Column
-                  header="Baixar Orçamento"
-                  body={(rowData) => (
-                    <button
-                      className="btn btn-success btn-btn-sm"
-                      onClick={(e) => budgetDownload(e, rowData)}
-                    >
-                      <i className="bi bi-download"></i>
-                    </button>
-                  )}
+        {loading ? (
+          <Loader />
+        ) : (
+          <div className="col-xl-12">
+            <Panel>
+              <PanelHeader className="bg-cyan-700 text-white">
+                Últimos Orçamentos
+              </PanelHeader>
+              <PanelBody>
+                <ExportTable
+                  tableData={tableData}
+                  exportColumns={exportColumns}
+                  globalFilterValue={globalFilterValue}
+                  onGlobalFilterChange={(e) =>
+                    setGlobalFilterValue(e.target.value)
+                  }
                 />
-              </DataTable>
-            </PanelBody>
-          </Panel>
-        </div>
+                <DataTable
+                  stripedRows
+                  showGridlines
+                  value={tableData}
+                  paginator
+                  rows={5}
+                  sortMode="multiple"
+                  selectionMode="single"
+                  globalFilter={globalFilterValue}
+                  rowsPerPageOptions={[5, 25, 50]}
+                  tableStyle={{ minWidth: "1rem", fontSize: "0.8rem" }}
+                  emptyMessage="Nenhuma informação encontrada."
+                >
+                  {columns.map((col) => (
+                    <Column
+                      sortable
+                      key={col.field}
+                      field={col.field}
+                      header={col.header}
+                    />
+                  ))}
+                  <Column
+                    header="Baixar Orçamento"
+                    body={(rowData) => (
+                      <button
+                        className="btn btn-success btn-btn-sm"
+                        onClick={(e) => budgetDownload(e, rowData)}
+                      >
+                        <i className="bi bi-download"></i>
+                      </button>
+                    )}
+                  />
+                </DataTable>
+              </PanelBody>
+            </Panel>
+          </div>
+        )}
       </div>
       {/* end modal  */}
     </div>

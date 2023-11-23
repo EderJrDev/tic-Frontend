@@ -1,856 +1,89 @@
-import React from "react";
-import { addLocale } from 'primereact/api';
-import { AppSettings } from "./config/app-settings.js";
-import { slideToggle } from "./composables/slideToggle.js";
+import React, { useState, useEffect } from "react";
 
 import Header from "./components/header/header.jsx";
+import Loader from "./components/loader/loader.jsx";
 import Sidebar from "./components/sidebar/sidebar.jsx";
-import TopMenu from "./components/top-menu/top-menu.jsx";
 import Content from "./components/content/content.jsx";
 import ThemePanel from "./components/theme-panel/theme-panel.jsx";
-import SidebarRight from "./components/sidebar-right/sidebar-right.jsx";
 
-import "primereact/resources/themes/lara-light-indigo/theme.css";
-import "primereact/resources/primereact.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import { AppSettings } from "./config/app-settings.js";
+import { addLocale } from "primereact/api";
+import { slideToggle } from "./composables/slideToggle.js";
 
-import "primereact/resources/themes/lara-light-indigo/theme.css";
-import "primereact/resources/primereact.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+const App = () => {
+  const [appTheme, setAppTheme] = useState("");
+  const [appDarkMode, setAppDarkMode] = useState(false);
+  const [appHeaderNone, setAppHeaderNone] = useState(false);
+  const [appHeaderFixed, setAppHeaderFixed] = useState(true);
+  const [appHeaderInverse, setAppHeaderInverse] = useState(false);
+  const [hasScroll, setHasScroll] = useState(false);
+  const [appSidebarNone, setAppSidebarNone] = useState(false);
+  const [appSidebarWide, setAppSidebarWide] = useState(false);
+  const [appSidebarLight, setAppSidebarLight] = useState(false);
+  const [appSidebarMinify, setAppSidebarMinify] = useState(false);
+  const [appSidebarMobileToggled, setAppSidebarMobileToggled] = useState(false);
+  const [appSidebarTransparent, setAppSidebarTransparent] = useState(false);
+  const [appSidebarSearch, setAppSidebarSearch] = useState(false);
+  const [appSidebarFixed, setAppSidebarFixed] = useState(true);
+  const [appContentNone, setAppContentNone] = useState(false);
+  const [appContentClass, setAppContentClass] = useState("");
+  const [appTopMenu, setAppTopMenu] = useState(false);
+  const [appTopMenuMobileToggled, setAppTopMenuMobileToggled] = useState(false);
+  const [appSidebarEndToggled, setAppSidebarEndToggled] = useState(false);
+  const [appSidebarEndMobileToggled, setAppSidebarEndMobileToggled] =
+    useState(false);
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
+  const [loading, setLoading] = useState(true);
 
-    this.toggleAppSidebarMinify = (e) => {
-      e.preventDefault();
-      this.setState((state) => ({
-        appSidebarMinify: !this.state.appSidebarMinify,
-      }));
-      if (localStorage) {
-        localStorage.appSidebarMinify = !this.state.appSidebarMinify;
-      }
-    };
-    this.toggleAppSidebarMobile = (e) => {
-      e.preventDefault();
-      this.setState((state) => ({
-        appSidebarMobileToggled: !this.state.appSidebarMobileToggled,
-      }));
-    };
-    this.handleSetAppSidebarNone = (value) => {
-      this.setState((state) => ({
-        appSidebarNone: value,
-      }));
-    };
-    this.handleSetAppSidebarMinified = (value) => {
-      this.setState((state) => ({
-        appSidebarMinify: value,
-      }));
-    };
-    this.handleSetAppSidebarWide = (value) => {
-      this.setState((state) => ({
-        appSidebarWide: value,
-      }));
-    };
-    this.handleSetAppSidebarLight = (value) => {
-      this.setState((state) => ({
-        appSidebarLight: value,
-      }));
-    };
-    this.handleSetAppSidebarTransparent = (value) => {
-      this.setState((state) => ({
-        appSidebarTransparent: value,
-      }));
-    };
-    this.handleSetAppSidebarSearch = (value) => {
-      this.setState((state) => ({
-        appSidebarSearch: value,
-      }));
-    };
-    this.handleSetAppSidebarFixed = (value) => {
-      if (value === true && !this.state.appHeaderFixed) {
-        alert(
-          "Default Header with Fixed Sidebar option is not supported. Proceed with Fixed Header with Fixed Sidebar."
-        );
-        this.setState((state) => ({
-          appHeaderFixed: true,
-        }));
-        if (localStorage) {
-          localStorage.appHeaderFixed = true;
-        }
-      }
-      this.setState((state) => ({
-        appSidebarFixed: value,
-      }));
-      if (localStorage) {
-        localStorage.appSidebarFixed = value;
-      }
-    };
-    this.handleSetAppSidebarGrid = (value) => {
-      this.setState((state) => ({
-        appSidebarGrid: value,
-      }));
-      if (localStorage) {
-        localStorage.appSidebarGrid = value;
-      }
-    };
-    this.toggleAppSidebarEnd = (e) => {
-      e.preventDefault();
-      this.setState((state) => ({
-        appSidebarEndToggled: !this.state.appSidebarEndToggled,
-      }));
-    };
-    this.toggleAppSidebarEndMobile = (e) => {
-      e.preventDefault();
-      this.setState((state) => ({
-        appSidebarEndMobileToggled: !this.state.appSidebarEndMobileToggled,
-      }));
-    };
-    this.handleSetAppSidebarEnd = (value) => {
-      this.setState((state) => ({
-        appSidebarEnd: value,
-      }));
-    };
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 700);
+  }, []);
 
-    this.handleSetAppContentNone = (value) => {
-      this.setState((state) => ({
-        appContentNone: value,
-      }));
-    };
-    this.handleSetAppContentClass = (value) => {
-      this.setState((state) => ({
-        appContentClass: value,
-      }));
-    };
-    this.handleSetAppContentFullHeight = (value) => {
-      this.setState((state) => ({
-        appContentFullHeight: value,
-      }));
-    };
-
-    this.handleSetAppHeaderNone = (value) => {
-      this.setState((state) => ({
-        appHeaderNone: value,
-      }));
-    };
-    this.handleSetAppHeaderFixed = (value) => {
-      if (value === false && this.state.appSidebarFixed) {
-        this.setState((state) => ({
-          appSidebarFixed: false,
-        }));
-        if (localStorage) {
-          localStorage.appSidebarFixed = false;
-        }
-      }
-      this.setState((state) => ({
-        appHeaderFixed: value,
-      }));
-      if (localStorage) {
-        localStorage.appHeaderFixed = value;
-      }
-    };
-    this.handleSetAppHeaderInverse = (value) => {
-      this.setState((state) => ({
-        appHeaderInverse: value,
-      }));
-      if (localStorage) {
-        localStorage.appHeaderInverse = value;
-      }
-    };
-    this.handleSetAppHeaderMegaMenu = (value) => {
-      this.setState((state) => ({
-        appHeaderMegaMenu: value,
-      }));
-    };
-    this.handleSetAppHeaderLanguageBar = (value) => {
-      this.setState((state) => ({
-        appHeaderLanguageBar: value,
-      }));
-    };
-
-    this.handleSetAppTopMenu = (value) => {
-      this.setState((state) => ({
-        appTopMenu: value,
-      }));
-    };
-    this.toggleAppTopMenuMobile = (e) => {
-      e.preventDefault();
-
-      slideToggle(document.querySelector(".app-top-menu"));
-    };
-    this.handleSetAppSidebarTwo = (value) => {
-      this.setState((state) => ({
-        appSidebarTwo: value,
-      }));
-      this.setState((state) => ({
-        appSidebarEndToggled: value,
-      }));
-    };
-    this.handleSetAppBoxedLayout = (value) => {
-      if (value === true) {
-        document.body.classList.add("boxed-layout");
-      } else {
-        document.body.classList.remove("boxed-layout");
-      }
-    };
-    this.handleSetAppDarkMode = (value) => {
-      if (value === true) {
-        document.body.classList.add("dark-mode");
-      } else {
-        document.body.classList.remove("dark-mode");
-      }
-      this.setState((state) => ({ appDarkMode: value }));
-      this.handleSetColor();
-      if (localStorage) {
-        localStorage.appDarkMode = value;
-      }
-    };
-    this.handleSetAppGradientEnabled = (value) => {
-      this.setState((state) => ({
-        appGradientEnabled: value,
-      }));
-      if (localStorage) {
-        localStorage.appGradientEnabled = value;
-      }
-    };
-    this.handleSetFont = () => {
-      this.setState((state) => ({
-        font: {
-          family: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-body-font-family")
-            .trim(),
-          size: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-body-font-size")
-            .trim(),
-          weight: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-body-font-family")
-            .trim(),
-        },
-      }));
-    };
-    this.handleSetColor = () => {
-      this.setState((state) => ({
-        color: {
-          componentColor: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--app-component-color")
-            .trim(),
-          componentBg: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--app-component-bg")
-            .trim(),
-          dark: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-dark")
-            .trim(),
-          light: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-light")
-            .trim(),
-          blue: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-blue")
-            .trim(),
-          indigo: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-indigo")
-            .trim(),
-          purple: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-purple")
-            .trim(),
-          pink: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-pink")
-            .trim(),
-          red: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-red")
-            .trim(),
-          orange: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-orange")
-            .trim(),
-          yellow: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-yellow")
-            .trim(),
-          green: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-green")
-            .trim(),
-          success: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-success")
-            .trim(),
-          teal: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-teal")
-            .trim(),
-          cyan: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-cyan")
-            .trim(),
-          white: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-white")
-            .trim(),
-          gray: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray")
-            .trim(),
-          lime: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-lime")
-            .trim(),
-          gray100: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-100")
-            .trim(),
-          gray200: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-200")
-            .trim(),
-          gray300: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-300")
-            .trim(),
-          gray400: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-400")
-            .trim(),
-          gray500: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-500")
-            .trim(),
-          gray600: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-600")
-            .trim(),
-          gray700: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-700")
-            .trim(),
-          gray800: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-800")
-            .trim(),
-          gray900: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-900")
-            .trim(),
-          black: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-black")
-            .trim(),
-          componentColorRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--app-component-color-rgb")
-            .trim(),
-          componentBgRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--app-component-bg-rgb")
-            .trim(),
-          darkRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-dark-rgb")
-            .trim(),
-          lightRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-light-rgb")
-            .trim(),
-          blueRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-blue-rgb")
-            .trim(),
-          indigoRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-indigo-rgb")
-            .trim(),
-          purpleRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-purple-rgb")
-            .trim(),
-          pinkRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-pink-rgb")
-            .trim(),
-          redRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-red-rgb")
-            .trim(),
-          orangeRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-orange-rgb")
-            .trim(),
-          yellowRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-yellow-rgb")
-            .trim(),
-          greenRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-green-rgb")
-            .trim(),
-          successRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-success-rgb")
-            .trim(),
-          tealRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-teal-rgb")
-            .trim(),
-          cyanRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-cyan-rgb")
-            .trim(),
-          whiteRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-white-rgb")
-            .trim(),
-          grayRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-rgb")
-            .trim(),
-          limeRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-lime-rgb")
-            .trim(),
-          gray100Rgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-100-rgb")
-            .trim(),
-          gray200Rgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-200-rgb")
-            .trim(),
-          gray300Rgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-300-rgb")
-            .trim(),
-          gray400Rgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-400-rgb")
-            .trim(),
-          gray500Rgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-500-rgb")
-            .trim(),
-          gray600Rgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-600-rgb")
-            .trim(),
-          gray700Rgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-700-rgb")
-            .trim(),
-          gray800Rgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-800-rgb")
-            .trim(),
-          gray900Rgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-gray-900-rgb")
-            .trim(),
-          blackRgb: window
-            .getComputedStyle(document.body)
-            .getPropertyValue("--bs-black-rgb")
-            .trim(),
-        },
-      }));
-    };
-    this.handleSetAppTheme = (value) => {
-      var newTheme = "theme-" + value;
-      for (var x = 0; x < document.body.classList.length; x++) {
-        if (
-          document.body.classList[x].indexOf("theme-") > -1 &&
-          document.body.classList[x] !== newTheme
-        ) {
-          document.body.classList.remove(document.body.classList[x]);
-        }
-      }
-      document.body.classList.add(newTheme);
-
-      if (localStorage && value) {
-        localStorage.appTheme = value;
-      }
-    };
-
-    this.state = {
-      appTheme: "",
-      appDarkMode: false,
-      appGradientEnabled: false,
-
-      appHeaderNone: false,
-      appHeaderFixed: true,
-      appHeaderInverse: false,
-      appHeaderMegaMenu: false,
-      appHeaderLanguageBar: false,
-      hasScroll: false,
-      handleSetAppHeaderNone: this.handleSetAppHeaderNone,
-      handleSetAppHeaderInverse: this.handleSetAppHeaderInverse,
-      handleSetAppHeaderLanguageBar: this.handleSetAppHeaderLanguageBar,
-      handleSetAppHeaderMegaMenu: this.handleSetAppHeaderMegaMenu,
-      handleSetAppHeaderFixed: this.handleSetAppHeaderFixed,
-
-      appSidebarNone: false,
-      appSidebarWide: false,
-      appSidebarLight: false,
-      appSidebarMinify: false,
-      appSidebarMobileToggled: false,
-      appSidebarTransparent: false,
-      appSidebarSearch: false,
-      appSidebarFixed: true,
-      appSidebarGrid: false,
-      handleSetAppSidebarNone: this.handleSetAppSidebarNone,
-      handleSetAppSidebarWide: this.handleSetAppSidebarWide,
-      handleSetAppSidebarLight: this.handleSetAppSidebarLight,
-      handleSetAppSidebarMinified: this.handleSetAppSidebarMinified,
-      handleSetAppSidebarTransparent: this.handleSetAppSidebarTransparent,
-      handleSetAppSidebarSearch: this.handleSetAppSidebarSearch,
-      handleSetAppSidebarFixed: this.handleSetAppSidebarFixed,
-      handleSetAppSidebarGrid: this.handleSetAppSidebarGrid,
-      toggleAppSidebarMinify: this.toggleAppSidebarMinify,
-      toggleAppSidebarMobile: this.toggleAppSidebarMobile,
-
-      appContentNone: false,
-      appContentClass: "",
-      appContentFullHeight: false,
-      handleSetAppContentNone: this.handleSetAppContentNone,
-      handleSetAppContentClass: this.handleSetAppContentClass,
-      handleSetAppContentFullHeight: this.handleSetAppContentFullHeight,
-
-      appTopMenu: false,
-      appTopMenuMobileToggled: false,
-      toggleAppTopMenuMobile: this.toggleAppTopMenuMobile,
-      handleSetAppTopMenu: this.handleSetAppTopMenu,
-
-      appSidebarTwo: false,
-      handleSetAppSidebarTwo: this.handleSetAppSidebarTwo,
-
-      appSidebarEnd: false,
-      appSidebarEndToggled: false,
-      appSidebarEndMobileToggled: false,
-      toggleAppSidebarEnd: this.toggleAppSidebarEnd,
-      toggleAppSidebarEndMobile: this.toggleAppSidebarEndMobile,
-      handleSetAppSidebarEnd: this.handleSetAppSidebarEnd,
-
-      handleSetAppBoxedLayout: this.handleSetAppBoxedLayout,
-      handleSetAppDarkMode: this.handleSetAppDarkMode,
-      handleSetAppGradientEnabled: this.handleSetAppGradientEnabled,
-      handleSetAppTheme: this.handleSetAppTheme,
-
-      handleSetColor: this.handleSetColor,
-
-      font: {
-        family: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-body-font-family")
-          .trim(),
-        size: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-body-font-size")
-          .trim(),
-        weight: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-body-font-family")
-          .trim(),
-      },
-      color: {
-        componentColor: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--app-component-color")
-          .trim(),
-        componentBg: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--app-component-bg")
-          .trim(),
-        dark: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-dark")
-          .trim(),
-        light: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-light")
-          .trim(),
-        blue: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-blue")
-          .trim(),
-        indigo: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-indigo")
-          .trim(),
-        purple: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-purple")
-          .trim(),
-        pink: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-pink")
-          .trim(),
-        red: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-red")
-          .trim(),
-        orange: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-orange")
-          .trim(),
-        yellow: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-yellow")
-          .trim(),
-        green: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-green")
-          .trim(),
-        success: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-success")
-          .trim(),
-        teal: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-teal")
-          .trim(),
-        cyan: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-cyan")
-          .trim(),
-        white: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-white")
-          .trim(),
-        gray: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray")
-          .trim(),
-        lime: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-lime")
-          .trim(),
-        gray100: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-100")
-          .trim(),
-        gray200: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-200")
-          .trim(),
-        gray300: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-300")
-          .trim(),
-        gray400: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-400")
-          .trim(),
-        gray500: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-500")
-          .trim(),
-        gray600: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-600")
-          .trim(),
-        gray700: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-700")
-          .trim(),
-        gray800: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-800")
-          .trim(),
-        gray900: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-900")
-          .trim(),
-        black: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-black")
-          .trim(),
-        componentColorRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--app-component-color-rgb")
-          .trim(),
-        componentBgRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--app-component-bg-rgb")
-          .trim(),
-        darkRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-dark-rgb")
-          .trim(),
-        lightRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-light-rgb")
-          .trim(),
-        blueRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-blue-rgb")
-          .trim(),
-        indigoRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-indigo-rgb")
-          .trim(),
-        purpleRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-purple-rgb")
-          .trim(),
-        pinkRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-pink-rgb")
-          .trim(),
-        redRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-red-rgb")
-          .trim(),
-        orangeRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-orange-rgb")
-          .trim(),
-        yellowRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-yellow-rgb")
-          .trim(),
-        greenRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-green-rgb")
-          .trim(),
-        successRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-success-rgb")
-          .trim(),
-        tealRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-teal-rgb")
-          .trim(),
-        cyanRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-cyan-rgb")
-          .trim(),
-        whiteRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-white-rgb")
-          .trim(),
-        grayRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-rgb")
-          .trim(),
-        limeRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-lime-rgb")
-          .trim(),
-        gray100Rgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-100-rgb")
-          .trim(),
-        gray200Rgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-200-rgb")
-          .trim(),
-        gray300Rgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-300-rgb")
-          .trim(),
-        gray400Rgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-400-rgb")
-          .trim(),
-        gray500Rgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-500-rgb")
-          .trim(),
-        gray600Rgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-600-rgb")
-          .trim(),
-        gray700Rgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-700-rgb")
-          .trim(),
-        gray800Rgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-800-rgb")
-          .trim(),
-        gray900Rgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-gray-900-rgb")
-          .trim(),
-        blackRgb: window
-          .getComputedStyle(document.body)
-          .getPropertyValue("--bs-black-rgb")
-          .trim(),
-      },
-    };
-  }
-
-  componentDidMount() {
-    this.handleSetColor();
-    this.handleSetFont();
-    this.handleSetAppTheme(this.state.appTheme);
-    if (this.state.appDarkMode) {
-      this.handleSetAppDarkMode(true);
+  useEffect(() => {
+    if (appDarkMode) {
+      handleSetAppDarkMode(true);
     }
-    window.addEventListener("scroll", this.handleScroll);
+    window.addEventListener("scroll", handleScroll);
 
     if (localStorage) {
-      if (typeof localStorage.appTheme !== "undefined") {
+      if (localStorage.appTheme !== undefined) {
         document.body.classList.add("theme-" + localStorage.appTheme);
       }
-      if (typeof localStorage.appDarkMode !== "undefined") {
-        this.handleSetAppDarkMode(
+      if (localStorage.appDarkMode !== undefined) {
+        handleSetAppDarkMode(
           localStorage.appDarkMode === "true" ? true : false
         );
       }
-      if (typeof localStorage.appHeaderInverse !== "undefined") {
-        this.handleSetAppHeaderInverse(
+      if (localStorage.appHeaderInverse !== undefined) {
+        handleSetAppHeaderInverse(
           localStorage.appHeaderInverse === "true" ? true : false
         );
       }
-      if (typeof localStorage.appGradientEnabled !== "undefined") {
-        this.handleSetAppGradientEnabled(
-          localStorage.appDarkMode === "true" ? true : false
-        );
-      }
-      if (typeof localStorage.appSidebarGrid !== "undefined") {
-        this.handleSetAppSidebarGrid(
-          localStorage.appSidebarGrid === "true" ? true : false
-        );
-      }
-      if (typeof localStorage.appSidebarMinify !== "undefined") {
-        this.handleSetAppSidebarMinified(
+      if (localStorage.appSidebarMinify !== undefined) {
+        handleSetAppSidebarMinified(
           localStorage.appSidebarMinify === "true" ? true : false
         );
       }
-      if (typeof localStorage.appSidebarFixed !== "undefined") {
-        this.handleSetAppSidebarFixed(
+      if (localStorage.appSidebarFixed !== undefined) {
+        handleSetAppSidebarFixed(
           localStorage.appSidebarFixed === "true" ? true : false
         );
       }
-      if (typeof localStorage.appHeaderFixed !== "undefined") {
-        this.handleSetAppHeaderFixed(
-          localStorage.appHeaderFixed === "true" ? true : false
-        );
-      }
+      handleSetAppHeaderFixed(
+        localStorage.appHeaderFixed === "true" ? true : false
+      );
     }
-  }
 
-  componentWillUnmount() {
-    window.removeEventListener("scroll", this.handleScroll);
-  }
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [appDarkMode]);
 
-  handleScroll = () => {
+  const handleScroll = () => {
     if (window.scrollY > 0) {
-      this.setState((state) => ({
-        hasScroll: true,
-      }));
+      setHasScroll(true);
     } else {
-      this.setState((state) => ({
-        hasScroll: false,
-      }));
+      setHasScroll(false);
     }
     var elm = document.getElementsByClassName("nvtooltip");
     for (var i = 0; i < elm.length; i++) {
@@ -858,97 +91,215 @@ class App extends React.Component {
     }
   };
 
-  render() {
-    addLocale("pt", {
-      firstDayOfWeek: 1,
-      dateFormat: "dd/mm/yy",
-      dayNames: [
-        "Domingo",
-        "Segunda-feira",
-        "Terça-feira",
-        "Quarta-feira",
-        "Quinta-feira",
-        "Sexta-feira",
-        "Sábado",
-      ],
-      dayNamesShort: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
-      dayNamesMin: ["D", "S", "T", "Q", "Q", "S", "S"],
-      monthNames: [
-        "Janeiro",
-        "Fevereiro",
-        "Março",
-        "Abril",
-        "Maio",
-        "Junho",
-        "Julho",
-        "Agosto",
-        "Setembro",
-        "Outubro",
-        "Novembro",
-        "Dezembro",
-      ],
-      monthNamesShort: [
-        "Jan",
-        "Fev",
-        "Mar",
-        "Abr",
-        "Mai",
-        "Jun",
-        "Jul",
-        "Ago",
-        "Set",
-        "Out",
-        "Nov",
-        "Dez",
-      ],
-      today: "Hoje",
-      clear: "Limpar",
-      //...
-    });
+  const toggleAppSidebarMinify = (e) => {
+    e.preventDefault();
+    setAppSidebarMinify(!appSidebarMinify);
+    if (localStorage) {
+      localStorage.appSidebarMinify = !appSidebarMinify;
+    }
+  };
 
-    return (
-      <AppSettings.Provider value={this.state}>
-        <div
-          className={
-            "app " +
-            (this.state.appGradientEnabled ? "app-gradient-enabled " : "") +
-            (this.state.appHeaderNone ? "app-without-header " : "") +
-            (this.state.appHeaderFixed && !this.state.appHeaderNone
-              ? "app-header-fixed "
-              : "") +
-            (this.state.appSidebarFixed ? "app-sidebar-fixed " : "") +
-            (this.state.appSidebarNone ? "app-without-sidebar " : "") +
-            (this.state.appSidebarEnd ? "app-with-end-sidebar " : "") +
-            (this.state.appSidebarWide ? "app-with-wide-sidebar " : "") +
-            (this.state.appSidebarLight ? "app-with-light-sidebar " : "") +
-            (this.state.appSidebarMinify ? "app-sidebar-minified " : "") +
-            (this.state.appSidebarMobileToggled
-              ? "app-sidebar-mobile-toggled "
-              : "") +
-            (this.state.appTopMenu ? "app-with-top-menu " : "") +
-            (this.state.appContentFullHeight
-              ? "app-content-full-height "
-              : "") +
-            (this.state.appSidebarTwo ? "app-with-two-sidebar " : "") +
-            (this.state.appSidebarEndToggled
-              ? "app-sidebar-end-toggled "
-              : "") +
-            (this.state.appSidebarEndMobileToggled
-              ? "app-sidebar-end-mobile-toggled "
-              : "") +
-            (this.state.hasScroll ? "has-scroll " : "")
-          }
-        >
-          {!this.state.appHeaderNone && <Header />}
-          {!this.state.appSidebarNone && <Sidebar />}
-          {this.state.appSidebarTwo && <SidebarRight />}
-          {this.state.appTopMenu && <TopMenu />}
-          {!this.state.appContentNone && <Content />}
-          <ThemePanel />
-        </div>
-      </AppSettings.Provider>
-    );
-  }
-}
+  const toggleAppSidebarMobile = (e) => {
+    e.preventDefault();
+    setAppSidebarMobileToggled(!appSidebarMobileToggled);
+  };
+
+  const handleSetAppSidebarNone = (value) => {
+    setAppSidebarNone(value);
+  };
+
+  const handleSetAppSidebarMinified = (value) => {
+    setAppSidebarMinify(value);
+  };
+
+  const handleSetAppSidebarFixed = (value) => {
+    if (value === true && !appHeaderFixed) {
+      alert(
+        "Default Header with Fixed Sidebar option is not supported. Proceed with Fixed Header with Fixed Sidebar."
+      );
+      setAppHeaderFixed(true);
+      if (localStorage) {
+        localStorage.appHeaderFixed = true;
+      }
+    }
+    setAppSidebarFixed(value);
+    if (localStorage) {
+      localStorage.appSidebarFixed = value;
+    }
+  };
+
+  const toggleAppSidebarEndMobile = (e) => {
+    e.preventDefault();
+    setAppSidebarEndMobileToggled(!appSidebarEndMobileToggled);
+  };
+
+  const handleSetAppContentNone = (value) => {
+    setAppContentNone(value);
+  };
+
+  const handleSetAppContentClass = (value) => {
+    setAppContentClass(value);
+  };
+
+  const handleSetAppHeaderNone = (value) => {
+    setAppHeaderNone(value);
+  };
+
+  const handleSetAppHeaderFixed = (value) => {
+    if (value === false && appSidebarFixed) {
+      // alert(
+      //   "Default Header with Fixed Sidebar option is not supported. Proceed with Default Header with Default Sidebar."
+      // );
+      setAppSidebarFixed(false);
+      if (localStorage) {
+        localStorage.appSidebarFixed = false;
+      }
+    }
+    setAppHeaderFixed(value);
+    if (localStorage) {
+      localStorage.appHeaderFixed = value;
+    }
+  };
+
+  const handleSetAppHeaderInverse = (value) => {
+    setAppHeaderInverse(value);
+    if (localStorage) {
+      localStorage.appHeaderInverse = value;
+    }
+  };
+
+  const toggleAppTopMenuMobile = (e) => {
+    e.preventDefault();
+    slideToggle(document.querySelector(".app-top-menu"));
+  };
+
+  const handleSetAppBoxedLayout = (value) => {
+    if (value === true) {
+      document.body.classList.add("boxed-layout");
+    } else {
+      document.body.classList.remove("boxed-layout");
+    }
+  };
+
+  const handleSetAppDarkMode = (value) => {
+    if (value === true) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+    setAppDarkMode(value);
+    if (localStorage) {
+      localStorage.appDarkMode = value;
+    }
+  };
+
+  //traduzindo componentes do prime react para Portuguese
+  addLocale("pt", {
+    firstDayOfWeek: 1,
+    dateFormat: "dd/mm/yy",
+    dayNames: [
+      "Domingo",
+      "Segunda-feira",
+      "Terça-feira",
+      "Quarta-feira",
+      "Quinta-feira",
+      "Sexta-feira",
+      "Sábado",
+    ],
+    dayNamesShort: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+    dayNamesMin: ["D", "S", "T", "Q", "Q", "S", "S"],
+    monthNames: [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro",
+    ],
+    monthNamesShort: [
+      "Jan",
+      "Fev",
+      "Mar",
+      "Abr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Set",
+      "Out",
+      "Nov",
+      "Dez",
+    ],
+    today: "Hoje",
+    clear: "Limpar",
+    //...
+  });
+
+  return loading ? (
+    <Loader />
+  ) : (
+    <AppSettings.Provider
+      value={{
+        appTheme,
+        appDarkMode,
+        appHeaderNone,
+        appHeaderFixed,
+        appHeaderInverse,
+        hasScroll,
+        handleSetAppHeaderNone,
+        handleSetAppHeaderInverse,
+        handleSetAppHeaderFixed,
+        appSidebarNone,
+        appSidebarWide,
+        appSidebarLight,
+        appSidebarMinify,
+        appSidebarMobileToggled,
+        appSidebarTransparent,
+        appSidebarSearch,
+        appSidebarFixed,
+        handleSetAppSidebarNone,
+        handleSetAppSidebarMinified,
+        handleSetAppSidebarFixed,
+        toggleAppSidebarMinify,
+        toggleAppSidebarMobile,
+        appContentNone,
+        appContentClass,
+        handleSetAppContentNone,
+        handleSetAppContentClass,
+        appTopMenu,
+        appTopMenuMobileToggled,
+        toggleAppTopMenuMobile,
+        appSidebarEndToggled,
+        appSidebarEndMobileToggled,
+        toggleAppSidebarEndMobile,
+        handleSetAppBoxedLayout,
+        handleSetAppDarkMode,
+      }}
+    >
+      <div
+        className={`app ${appHeaderNone ? "app-without-header" : ""} ${
+          appHeaderFixed && !appHeaderNone ? "app-header-fixed" : ""
+        } ${appSidebarFixed ? "app-sidebar-fixed" : ""} ${
+          appSidebarNone ? "app-without-sidebar" : ""
+        } ${appSidebarMinify ? "app-sidebar-minified" : ""} ${
+          appSidebarMobileToggled ? "app-sidebar-mobile-toggled" : ""
+        } ${
+          appSidebarEndMobileToggled ? "app-sidebar-end-mobile-toggled" : ""
+        } ${hasScroll ? "has-scroll" : ""}`}
+      >
+        {!appHeaderNone && <Header />}
+        {!appSidebarNone && <Sidebar />}
+        {!appContentNone && <Content />}
+        <ThemePanel />
+      </div>
+    </AppSettings.Provider>
+  );
+};
 
 export default App;

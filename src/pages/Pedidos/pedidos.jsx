@@ -10,6 +10,8 @@ import { InputText } from "primereact/inputtext";
 
 import OrderModal from "./orderModal";
 import ProductModal from "./productModal";
+import Loader from "../../components/loader/loader";
+import { formatDate } from "../../utils/formatDate";
 
 function CustomerOrder() {
   // State
@@ -23,6 +25,8 @@ function CustomerOrder() {
   const [orderItems, setOrderItems] = useState({});
   const [disabled, setDisabled] = useState(false);
   const [origin, setOrigin] = useState(null);
+
+  const [loadingPage, setLoadingPage] = useState(true);
 
   const [quantity, setQuantity] = useState("");
 
@@ -166,22 +170,39 @@ function CustomerOrder() {
 
   // Efeito para buscar a lista de produtos
   async function getCategory() {
-    const response = await api.get("/admin/product");
-    const dados = response.data;
-    // console.log(dados);
+    try {
+      const response = await api.get("/admin/product");
+      const dados = response.data;
 
-    const filterProducts = dados.filter(
-      (product) => product.originCityHall === false
-    );
-    setProductsCityHall(filterProducts);
+      const filterProducts = dados.filter(
+        (product) => product.originCityHall === false
+      );
 
-    const filter = dados.filter((product) => product.originCityHall === true);
-    // console.log(filter);
-    setCli(filter);
+      const filter = dados.filter((product) => product.originCityHall === true);
+
+      // Atualiza o estado interno antes de definir o estado final
+      setProductsCityHall(filterProducts);
+      setCli(filter);
+    } catch (error) {
+      // Lidar com erros, se necessário
+      console.error("Erro ao obter categoria:", error);
+    }
   }
   useEffect(() => {
-    getCategory();
-    getOrders();
+    async function fetchData() {
+      try {
+        await getCategory();
+        await getOrders();
+        // setLoadingPage(false);
+        setTimeout(() => setLoadingPage(false), 500);
+      } catch (error) {
+        // Lidar com erros, se necessário
+        console.error("Erro ao buscar dados:", error);
+        setLoadingPage(false); // Certifique-se de desativar o carregamento em caso de erro
+      }
+    }
+
+    fetchData();
   }, [order]);
 
   const validitStatus = (status) => {
@@ -200,9 +221,18 @@ function CustomerOrder() {
 
       // console.log(dados);
 
+      const fromPrefeitura = await api.get("/admin/order/prefeitura");
+      const prefeitura = fromPrefeitura.data;
+
+      const notPrefeitura = await api.get("/admin/order/not/prefeitura");
+      const Notprefeitura = notPrefeitura.data;
+
+      // setCli(prefeitura);
+      // console.log(prefeitura);
+
       // console.log(dados);
-      setOrderAuth(dados);
-      setOrder(dados); // Armazena os orders
+      setOrderAuth(Notprefeitura);
+      setOrder(prefeitura); // Armazena os orders
 
       // console.log(dados);
 
@@ -251,6 +281,9 @@ function CustomerOrder() {
       setLoading(false);
       setDisabled(true);
 
+      // await handleCardOrder(rowData.id);
+      await handleCardOrder(rowData.id);
+
       showSuccess();
     } catch (error) {
       showError();
@@ -261,6 +294,7 @@ function CustomerOrder() {
 
   // Função para lidar com o envio do formulário
   async function handleSubmit(event) {
+    setLoadingPage(true);
     event.preventDefault();
 
     if (!orderName || !expectedDate) {
@@ -308,14 +342,15 @@ function CustomerOrder() {
           ],
         };
 
-        console.log(orderItem);
+        // console.log(orderItem);
         await api.post("/admin/order/createOrderItem", orderItem);
-
+        setLoadingPage(false);
         showSuccess();
         setOrderName("");
         setExpectedDate("");
         setOrders([]);
       } catch (error) {
+        setLoadingPage(false);
         toast.current.show({
           severity: "error",
           summary: "Falha!",
@@ -323,7 +358,7 @@ function CustomerOrder() {
           life: 3000,
         });
 
-        console.error("Failed to submit order:", error);
+        // console.error("Failed to submit order:", error);
       }
     }
   }
@@ -331,301 +366,354 @@ function CustomerOrder() {
   return (
     <div className="vh-100">
       <Toast ref={toast} />
-      <div
-        className={`pos pos-customer ${"pos-mobile-sidebar-toggled"}`}
-        id="pos-customer"
-      >
-        <div className="pos-content">
-          <PerfectScrollbar className="pos-content-container">
-            <div className="product-row">
-              <div className="col-lg-12">
-                <ul className="nav nav-tabs">
-                  <li className="nav-item">
-                    <a
-                      href="#default-tab-1"
-                      data-bs-toggle="tab"
-                      className="nav-link active"
-                    >
-                      <span className="d-sm-none">Produtos Prefeitura</span>
-                      <span className="d-sm-block d-none">
-                        Produtos Prefeitura
-                      </span>
-                    </a>
-                  </li>
+      {loadingPage ? (
+        <Loader />
+      ) : (
+        <div
+          className={`pos pos-customer ${"pos-mobile-sidebar-toggled"}`}
+          id="pos-customer"
+        >
+          <div className="pos-content">
+            <PerfectScrollbar className="pos-content-container">
+              <div className="product-row">
+                <div className="col-lg-12">
+                  <ul className="nav nav-tabs">
+                    <li className="nav-item">
+                      <a
+                        href="#default-tab-1"
+                        data-bs-toggle="tab"
+                        className="nav-link active"
+                      >
+                        <span className="d-sm-none">Produtos Prefeitura</span>
+                        <span className="d-sm-block d-none">
+                          Produtos Prefeitura
+                        </span>
+                      </a>
+                    </li>
 
-                  <li className="nav-item">
-                    <a
-                      href="#default-tab-2"
-                      data-bs-toggle="tab"
-                      className="nav-link"
+                    <li className="nav-item">
+                      <a
+                        href="#default-tab-2"
+                        data-bs-toggle="tab"
+                        className="nav-link"
+                      >
+                        <span className="d-sm-none">Pedidos Prefeitura</span>
+                        <span className="d-sm-block d-none">
+                          Pedidos Prefeitura
+                        </span>
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a
+                        href="#default-tab-3"
+                        data-bs-toggle="tab"
+                        className="nav-link"
+                      >
+                        <span className="d-sm-none">Produtos Autorizados</span>
+                        <span className="d-sm-block d-none">
+                          {" "}
+                          Produtos Autorizados
+                        </span>
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a
+                        href="#default-tab-4"
+                        data-bs-toggle="tab"
+                        className="nav-link"
+                      >
+                        <span className="d-sm-none">Pedidos Autorizados</span>
+                        <span className="d-sm-block d-none">
+                          {" "}
+                          Pedidos Autorizados
+                        </span>
+                      </a>
+                    </li>
+                  </ul>
+                  <div className="tab-content panel rounded-0 p-3 m-0">
+                    <div
+                      className="tab-pane fade active show"
+                      id="default-tab-1"
                     >
-                      <span className="d-sm-none">Pedidos Prefeitura</span>
-                      <span className="d-sm-block d-none">
-                        Pedidos Prefeitura
-                      </span>
-                    </a>
-                  </li>
-                  <li className="nav-item">
-                    <a
-                      href="#default-tab-3"
-                      data-bs-toggle="tab"
-                      className="nav-link"
-                    >
-                      <span className="d-sm-none">Produtos Autorizados</span>
-                      <span className="d-sm-block d-none">
-                        {" "}
-                        Produtos Autorizados
-                      </span>
-                    </a>
-                  </li>
-                  <li className="nav-item">
-                    <a
-                      href="#default-tab-4"
-                      data-bs-toggle="tab"
-                      className="nav-link"
-                    >
-                      <span className="d-sm-none">Pedidos Autorizados</span>
-                      <span className="d-sm-block d-none">
-                        {" "}
-                        Pedidos Autorizados
-                      </span>
-                    </a>
-                  </li>
-                </ul>
-                <div className="tab-content panel rounded-0 p-3 m-0">
-                  <div className="tab-pane fade active show" id="default-tab-1">
-                    <div className="invoice-header">
-                      <div className="invoice-from">
-                        <div className="d-flex row">
-                          {cli.map((item) => (
-                            <div className="col-lg-4 pb-3" key={item.id}>
-                              <div className="container" data-type="meat">
-                                <Link
-                                  className="product bg-gray-100"
-                                  data-bs-target="#"
-                                  onClick={() => handleCardClick(item)}
-                                >
-                                  <div className="text">
-                                    <div className="title">{item.name}</div>
-                                    <div className="desc">
-                                      Categoria: {item.location}
-                                    </div>
-                                    <div className="price">
-                                      Quantidade: {item.quantity}
-                                    </div>
-                                  </div>
-                                </Link>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="tab-pane fade" id="default-tab-2">
-                    <div className="invoice-header">
-                      <div className="invoice-from">
-                        <div className="d-flex row">
-                          {order &&
-                            order.map((item) => (
-                              <>
-                                <div key={item.id} className="col-lg-3 pb-3">
-                                  <div className="container">
-                                    <Link
-                                      className="product bg-gray-100"
-                                      data-bs-target="#"
-                                      onClick={() => handleCardOrder(item.id)}
-                                    >
-                                      <div className="text">
-                                        <div className="title">
-                                          {item.name}{" "}
-                                          <i class="fa-solid fa-arrow-right"></i>
+                      <div className="invoice-header">
+                        <div className="invoice-from">
+                          <div className="d-flex row">
+                            {cli.map((item) => (
+                              <div key={item.id} className="col-lg-4 pb-3">
+                                <div className="container">
+                                  <Link
+                                    className="product bg-gray-100"
+                                    data-bs-target="#"
+                                    onClick={() => handleCardClick(item)}
+                                  >
+                                    <div className="text">
+                                      <div className="text-end">
+                                        <h1 className="text-blue">
+                                          <i class="fa-solid fa-cart-shopping"></i>
+                                        </h1>
+                                      </div>
+                                      <h2 className="text-blue">
+                                        {item.name}{" "}
+                                      </h2>
+                                      <div>
+                                        <div className="fw-bolder d-flex pt-3">
+                                          <div className="desc">
+                                            Categoria: {item.location}
+                                          </div>
+                                          <div className="price">
+                                            Quantidade: {item.quantity}
+                                          </div>
                                         </div>
                                       </div>
-                                    </Link>
-                                  </div>
+                                    </div>
+                                  </Link>
                                 </div>
-                              </>
+                              </div>
                             ))}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="tab-pane fade" id="default-tab-3">
-                    <div className="invoice-header">
-                      <div className="invoice-from">
-                        <div className="d-flex row">
-                          {productsCityHall.map((item) => (
-                            <div className="col-lg-4 pb-3" key={item.id}>
-                              <div className="container" data-type="meat">
-                                <Link
-                                  className="product bg-gray-100"
-                                  data-bs-target="#"
-                                  onClick={() => handleCardClick(item)}
-                                >
-                                  <div className="text">
-                                    <div className="title">{item.name}</div>
-                                    <div className="desc">
-                                      Categoria: {item.location}
-                                    </div>
-                                    <div className="price">
-                                      Quantidade: {item.quantity}
+                    <div className="tab-pane fade" id="default-tab-2">
+                      <div className="invoice-header">
+                        <div className="invoice-from">
+                          <div className="d-flex row">
+                            {order &&
+                              order.map((item) => (
+                                <>
+                                  <div key={item.id} className="col-lg-4 pb-3">
+                                    <div className="container">
+                                      <Link
+                                        className="product bg-gray-100"
+                                        data-bs-target="#"
+                                        onClick={() => handleCardOrder(item.id)}
+                                      >
+                                        <div className="text">
+                                          <div className="text-end">
+                                            <h1 className="text-blue">
+                                              <i className="fa-solid fa-copy"></i>
+                                            </h1>
+                                          </div>
+                                          <h2 className="text-blue">
+                                            {item.name}{" "}
+                                          </h2>
+                                          <div>
+                                            <div className="fw-bolder">
+                                              Pedido realizado em:{" "}
+                                              <span className="bolder">
+                                                {formatDate(item.created_at)}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </Link>
                                     </div>
                                   </div>
-                                </Link>
-                              </div>
-                            </div>
-                          ))}
+                                </>
+                              ))}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="tab-pane fade" id="default-tab-4">
-                    <div className="invoice-header">
-                      <div className="invoice-from">
-                        <div className="d-flex row">
-                          {orderAuth &&
-                            orderAuth.map((item) => (
-                              <>
-                                <div key={item.id} className="col-lg-3 pb-3">
-                                  <div className="container">
-                                    <Link
-                                      className="product bg-gray-100"
-                                      data-bs-target="#"
-                                      onClick={() => handleCardOrder(item.id)}
-                                    >
-                                      <div className="text">
-                                        <div className="title">
-                                          {item.name}{" "}
-                                          <i class="fa-solid fa-arrow-right"></i>
+                    <div className="tab-pane fade" id="default-tab-3">
+                      <div className="invoice-header">
+                        <div className="invoice-from">
+                          <div className="d-flex row">
+                            {productsCityHall.map((item) => (
+                              <div key={item.id} className="col-lg-4 pb-3">
+                                <div className="container">
+                                  <Link
+                                    className="product bg-gray-100"
+                                    data-bs-target="#"
+                                    onClick={() => handleCardClick(item)}
+                                  >
+                                    <div className="text">
+                                      <div className="text-end">
+                                        <h1 className="text-blue">
+                                          <i class="fa-solid fa-cart-shopping"></i>
+                                        </h1>
+                                      </div>
+                                      <h2 className="text-blue">
+                                        {item.name}{" "}
+                                      </h2>
+                                      <div>
+                                        <div className="fw-bolder d-flex pt-3">
+                                          <div className="desc">
+                                            Categoria: {item.location}
+                                          </div>
+                                          <div className="price">
+                                            Quantidade: {item.quantity}
+                                          </div>
                                         </div>
                                       </div>
-                                    </Link>
-                                  </div>
+                                    </div>
+                                  </Link>
                                 </div>
-                              </>
+                              </div>
                             ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="tab-pane fade" id="default-tab-4">
+                      <div className="invoice-header">
+                        <div className="invoice-from">
+                          <div className="d-flex row">
+                            {orderAuth &&
+                              orderAuth.map((item) => (
+                                <>
+                                  <div key={item.id} className="col-lg-4 pb-3">
+                                    <div className="container">
+                                      <Link
+                                        className="product bg-gray-100"
+                                        data-bs-target="#"
+                                        onClick={() => handleCardOrder(item.id)}
+                                      >
+                                        <div className="text">
+                                          <div className="text-end">
+                                            <h1 className="text-blue">
+                                              <i className="fa-solid fa-copy"></i>
+                                            </h1>
+                                          </div>
+                                          <h2 className="text-blue">
+                                            {item.name}{" "}
+                                          </h2>
+                                          <div>
+                                            <div className="fw-bolder">
+                                              Pedido realizado em:{" "}
+                                              <span className="bolder">
+                                                {formatDate(item.created_at)}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </Link>
+                                    </div>
+                                  </div>
+                                </>
+                              ))}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            {/* modal to show orders */}
-            <OrderModal
-              showModalOrder={showModalOrder}
-              setShowModalOrder={setShowModalOrder}
-              tableData={tableData}
-              setTableData={setTableData}
-              disabled={disabled}
-              handleCheck={handleCheck}
-              loading={loading}
-              columns={columns}
-            />
-            {/* end modal to show orders */}
-            {/* modal novo Pedido  */}
-            <ProductModal
-              quantity={quantity}
-              origin={origin}
-              setQuantity={setQuantity}
-              showModal={showModal}
-              setShowModal={setShowModal}
-              quantityToAdd={quantityToAdd}
-              setQuantityToAdd={setQuantityToAdd}
-              selectedProduct={selectedProduct}
-              updateProduct={updateProduct}
-              updateProductQuantity={updateProductQuantity}
-            />
-            {/* end modal novo Pedido  */}
-          </PerfectScrollbar>
-        </div>
-        <div className="pos-sidebar" id="pos-sidebar">
-          <div className="pos-sidebar-nav">
-            <ul className="nav nav-tabs nav-fill">
-              <li className="nav-item">
-                <h5 className="pt-3">Nova Entrada ou Saída</h5>
-              </li>
-            </ul>
+              {/* modal to show orders */}
+              <OrderModal
+                showModalOrder={showModalOrder}
+                setShowModalOrder={setShowModalOrder}
+                tableData={tableData}
+                setTableData={setTableData}
+                disabled={disabled}
+                handleCheck={handleCheck}
+                loading={loading}
+                columns={columns}
+              />
+              {/* end modal to show orders */}
+              {/* modal novo Pedido  */}
+              <ProductModal
+                quantity={quantity}
+                origin={origin}
+                setQuantity={setQuantity}
+                showModal={showModal}
+                setShowModal={setShowModal}
+                quantityToAdd={quantityToAdd}
+                setQuantityToAdd={setQuantityToAdd}
+                selectedProduct={selectedProduct}
+                updateProduct={updateProduct}
+                updateProductQuantity={updateProductQuantity}
+              />
+              {/* end modal novo Pedido  */}
+            </PerfectScrollbar>
           </div>
-          <div
-            className="pos-sidebar-body tab-content"
-            data-scrollbar="true"
-            data-height="100%"
-          >
-            <div className="tab-pane fade h-100 show active" id="newOrderTab">
-              <div className="pos-table">
-                <div className="text-center">
-                  <p>Selecione um item para movimentar o estoque.</p>
-                </div>
-                <div className="col-md-12">
-                  <div className="pt-3">
-                    <span className="p-float-label">
-                      <InputText
-                        id="pedido"
-                        value={orderName}
-                        className="w-100"
-                        onChange={(e) => setOrderName(e.target.value)}
-                      />
-                      <label htmlFor="pedido">Descrição do Pedido</label>
-                    </span>
+          <div className="pos-sidebar" id="pos-sidebar">
+            <div className="pos-sidebar-nav">
+              <ul className="nav nav-tabs nav-fill">
+                <li className="nav-item">
+                  <h5 className="pt-3">Novo Pedido</h5>
+                </li>
+              </ul>
+            </div>
+            <div
+              className="pos-sidebar-body tab-content"
+              data-scrollbar="true"
+              data-height="100%"
+            >
+              <div className="tab-pane fade h-100 show active" id="newOrderTab">
+                <div className="pos-table">
+                  <div className="text-center">
+                    <p>Selecione um item para adicionar ao pedido.</p>
                   </div>
-                </div>
-                <div className="col-md-12 py-2">
-                  <label htmlFor="orderName">Data Esperada</label>
-                  <Calendar
-                    showIcon
-                    locale="pt"
-                    className="w-100"
-                    placeholder="dd/mm/aaaa"
-                    value={expectedDate}
-                    onChange={(e) => setExpectedDate(e.value)}
-                  />
-                </div>
-                {orders.map((order, i) => (
-                  <div
-                    className="row pos-table-row justify-content-between"
-                    key={i}
-                  >
-                    <div className="pos-sidebar-footer">
-                      <div className="subtotal">
-                        <div className="text">Em Estoque</div>
-                        <div className="price">{order.quantityInStock}</div>
-                      </div>
-                      <div className="taxes">
-                        <div className="text">
-                          {order.newQuantity ? "Qtd á ser adicionada" : ""}
+                  <div className="col-md-12">
+                    <div className="pt-3">
+                      <span className="p-float-label">
+                        <InputText
+                          id="pedido"
+                          value={orderName}
+                          className="w-100"
+                          onChange={(e) => setOrderName(e.target.value)}
+                        />
+                        <label htmlFor="pedido">Nome do Pedido</label>
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-md-12 py-2">
+                    <label htmlFor="orderName">Data Esperada</label>
+                    <Calendar
+                      showIcon
+                      locale="pt"
+                      className="w-100"
+                      placeholder="dd/mm/aaaa"
+                      value={expectedDate}
+                      onChange={(e) => setExpectedDate(e.value)}
+                    />
+                  </div>
+                  {orders.map((order, i) => (
+                    <div
+                      className="row pos-table-row justify-content-between"
+                      key={i}
+                    >
+                      <div className="pos-sidebar-footer">
+                        <div className="subtotal">
+                          <div className="text">Em Estoque</div>
+                          <div className="price">{order.quantityInStock}</div>
                         </div>
-                        <div className="price">{order.newQuantity}</div>
+                        <div className="taxes">
+                          <div className="text">
+                            {order.newQuantity ? "Qtd á ser adicionada" : ""}
+                          </div>
+                          <div className="price">{order.newQuantity}</div>
+                        </div>
+                        <div className="total">
+                          <div className="text">Produto</div>
+                          <div className="price">{order.product}</div>
+                        </div>
                       </div>
-                      <div className="total">
-                        <div className="text">Produto</div>
-                        <div className="price">{order.product}</div>
-                      </div>
+                      <div className="title d-none">{order.id}</div>
                     </div>
-                    <div className="title d-none">{order.id}</div>
-                  </div>
-                ))}
-              </div>
-              <hr />
-              {orders.length > 0 && (
-                <div className="w-100">
-                  <div className="w-100 text-center">
-                    <div className="btn-row w-100">
-                      <form onSubmit={handleSubmit}>
-                        <button type="submit" className="btn btn-success p-4">
-                          <i className="fa fa-check fa-fw fa-lg"></i> Finalizar
-                          Pedido
-                        </button>
-                      </form>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-              )}
+                <hr />
+                {orders.length > 0 && (
+                  <div className="w-100">
+                    <div className="w-100 text-center">
+                      <div className="btn-row w-100">
+                        <form onSubmit={handleSubmit}>
+                          <button type="submit" className="btn btn-success p-4">
+                            <i className="fa fa-check fa-fw fa-lg"></i>{" "}
+                            Finalizar Pedido
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

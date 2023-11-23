@@ -74,7 +74,7 @@ function Dashboard() {
         />
       </div>
       <div className="row">
-        <div className="col-xl-6">
+        <div className="col-xl-12">
           <Panel>
             <PanelHeader className="bg-cyan-700 text-white">
               Produtos Acabando
@@ -90,44 +90,6 @@ function Dashboard() {
                 stripedRows
                 showGridlines
                 value={tableData}
-                paginator
-                rows={5}
-                sortMode="multiple"
-                selectionMode="single"
-                globalFilter={globalFilterValue}
-                rowsPerPageOptions={[5, 25, 50]}
-                tableStyle={{ minWidth: "1rem", fontSize: "0.8rem" }}
-                emptyMessage="Nenhuma informação encontrada."
-              >
-                {columns.map((col, i) => (
-                  <Column
-                    sortable
-                    key={col.field}
-                    field={col.field}
-                    header={col.header}
-                    filterMatchMode={FilterMatchMode.CONTAINS}
-                  />
-                ))}
-              </DataTable>
-            </PanelBody>
-          </Panel>
-        </div>
-        <div className="col-xl-6">
-          <Panel>
-            <PanelHeader className="bg-cyan-700 text-white">
-              Pedidos em Andamento
-            </PanelHeader>
-            <PanelBody>
-              <ExportTable
-                tableData={tableData}
-                exportColumns={exportColumns}
-                globalFilterValue={globalFilterValue}
-                onGlobalFilterChange={onGlobalFilterChange}
-              />
-              <DataTable
-                stripedRows
-                showGridlines
-                value={pedidos}
                 paginator
                 rows={5}
                 sortMode="multiple"

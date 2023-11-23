@@ -22,7 +22,7 @@ const ProductModal = ({
       style={{ width: "35vw" }}
     >
       <div className="row">
-        <div className="col-lg-6">
+        <div className={`${!origin ? "col-lg-6" : "col-lg-12"}`}>
           <p className="m-auto pb-2">Qual a quantidade atual em estoque?</p>
           <InputText
             type="number"
@@ -32,7 +32,7 @@ const ProductModal = ({
           />
         </div>
         {!origin && (
-          <div className="col-lg-6">
+          <div className={`${!origin ? "col-lg-6" : "col-lg-12"}`}>
             <p className="m-auto pb-2">Quantidade a Ser Adicionada:</p>
             <InputText
               type="number"
@@ -50,7 +50,7 @@ const ProductModal = ({
                 className="btn btn-info btn-btn-sm"
                 onClick={updateProduct}
               >
-                <i className="bi bi-check-circle-fill"></i> Atualizarssss
+                <i className="bi bi-check-circle-fill"></i> Atualizar
               </button>
             ) : (
               <button

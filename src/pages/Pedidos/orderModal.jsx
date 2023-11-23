@@ -10,7 +10,6 @@ const OrderModal = ({
   showModalOrder,
   setShowModalOrder,
   tableData,
-  setTableData,
   handleCheck,
   loading,
   columns,
@@ -39,10 +38,8 @@ const OrderModal = ({
   };
 
   const handleCellEditComplete = async (options) => {
-    const { rowData, value, field } = options;
+    const { rowData, value } = options;
 
-    // Verifica se a edição da célula não foi cancelada
-    rowData[field] = "pref" + value; // Sua expressão
     console.log(rowData.id);
     console.log(value);
 
@@ -97,14 +94,20 @@ const OrderModal = ({
             <Column
               header="Atualizar Status"
               body={(rowData) => (
-                <div className="text-center">
-                  <InputSwitch
-                    checked={
-                      rowData.status.props.children === "Chegou" ? true : false
-                    }
-                    disabled={disabled}
-                    onChange={(e) => handleCheck(e, rowData)}
-                  />
+                <div className="text-start">
+                  {rowData.status.props.children === "Chegou" ? (
+                    <p> O Pedido chegou!</p>
+                  ) : (
+                    <InputSwitch
+                      checked={
+                        rowData.status.props.children === "Chegou"
+                          ? true
+                          : false
+                      }
+                      disabled={disabled}
+                      onChange={(e) => handleCheck(e, rowData)}
+                    />
+                  )}
                 </div>
               )}
             />

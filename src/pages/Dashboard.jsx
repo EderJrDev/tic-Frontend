@@ -8,9 +8,9 @@ import { FilterMatchMode } from "primereact/api";
 import { Card } from "../components/card/card.jsx";
 import { InfoCards } from "./Dashboard/InfoCards.jsx";
 import { LastOrders } from "./Dashboard/LastOrders.jsx";
-import { Panel, PanelHeader, PanelBody } from "../components/panel/panel.jsx";
 
 import ExportTable from "../components/button/ExportTable.jsx";
+import { Panel, PanelHeader, PanelBody } from "../components/panel/panel.jsx";
 
 function Dashboard() {
   const [order, SetOrder] = useState();

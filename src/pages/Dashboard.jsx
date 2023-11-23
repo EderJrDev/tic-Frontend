@@ -28,6 +28,7 @@ function Dashboard() {
   const columns = [
     { field: "produto", header: "Produto" },
     { field: "quantidade", header: "Quantidade" },
+    { field: "localizacao", header: "Localização" },
   ];
 
   const exportColumns = columns.map((col) => ({
@@ -63,12 +64,14 @@ function Dashboard() {
         <Card
           title="Pedidos"
           content={order}
+          footer="Solicitados"
           style={"widget widget-stats bg-indigo"}
           icon={<i className="fa fa-archive fa-fw"></i>}
         />
         <Card
           title="Categorias"
           content={category}
+          footer="Disponíveis"
           style="widget widget-stats bg-green"
           icon={<i className="fa fa-comment-alt fa-fw"></i>}
         />

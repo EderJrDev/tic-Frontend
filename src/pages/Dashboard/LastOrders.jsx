@@ -15,6 +15,7 @@ export async function LastOrders(setTableData, setPedidos) {
     const data = dados.map((dado) => ({
       produto: dado.name,
       quantidade: dado.quantity,
+      localizacao: dado.location,
     }));
     setTableData(data);
     // console.log(data);

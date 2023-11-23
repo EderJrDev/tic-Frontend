@@ -10,8 +10,8 @@ import { deleteUser } from "./Users/deleteUser.jsx";
 import { updatedUser } from "./Users/updatedUser.jsx";
 import { ReactNotifications } from "react-notifications-component";
 import { Panel, PanelHeader, PanelBody } from "../components/panel/panel.jsx";
-import updateTableData from "./Users/updatedTable.jsx";
 import Loader from "../components/loader/loader.jsx";
+import updateTableData from "./Users/updatedTable.jsx";
 
 function User() {
   //Atributos do user
@@ -159,17 +159,19 @@ function User() {
                       </button>
                     )}
                   />
-                  <Column
-                    header="Deletar"
-                    body={(rowData) => (
-                      <button
-                        className="btn btn-danger btn-btn-sm"
-                        onClick={(e) => deleteUser(e, rowData, setTableData)}
-                      >
-                        <i className="bi bi-trash"></i>
-                      </button>
-                    )}
-                  />
+                  {tableData.length > 1 && (
+                    <Column
+                      header="Deletar"
+                      body={(rowData) => (
+                        <button
+                          className="btn btn-danger btn-btn-sm"
+                          onClick={(e) => deleteUser(e, rowData, setTableData)}
+                        >
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      )}
+                    />
+                  )}
                 </DataTable>
 
                 <form action="put">

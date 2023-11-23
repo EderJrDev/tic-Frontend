@@ -170,7 +170,7 @@ function Products() {
           </div>
           <ReactNotifications />
           <Panel>
-            <PanelHeader className="bg-teal-700 text-white">
+            <PanelHeader className="bg-cyan-700  text-white">
               Produtos
             </PanelHeader>
             <PanelBody>

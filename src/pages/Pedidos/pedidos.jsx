@@ -440,9 +440,9 @@ function CustomerOrder() {
                           abaAtiva === "default-tab-2" ? "active" : ""
                         }`}
                       >
-                        <span className="d-sm-none">Pedidos Prefeitura</span>
+                        <span className="d-sm-none">Entradas Prefeitura</span>
                         <span className="d-sm-block d-none">
-                          Pedidos Prefeitura
+                          Entradas Prefeitura
                         </span>
                       </a>
                     </li>
@@ -469,10 +469,10 @@ function CustomerOrder() {
                           abaAtiva === "default-tab-4" ? "active" : ""
                         }`}
                       >
-                        <span className="d-sm-none">Pedidos Autorizados</span>
+                        <span className="d-sm-none">Entradas Autorizadas</span>
                         <span className="d-sm-block d-none">
                           {" "}
-                          Pedidos Autorizados
+                          Entradas Autorizadas
                         </span>
                       </a>
                     </li>
@@ -709,7 +709,7 @@ function CustomerOrder() {
             <div className="pos-sidebar-nav">
               <ul className="nav nav-tabs nav-fill">
                 <li className="nav-item">
-                  <h5 className="pt-3">Novo Pedido</h5>
+                  <h5 className="pt-3">Nova Entrada</h5>
                 </li>
               </ul>
             </div>
@@ -721,7 +721,7 @@ function CustomerOrder() {
               <div className="tab-pane fade h-100 show active" id="newOrderTab">
                 <div className="pos-table">
                   <div className="text-center">
-                    <p>Selecione um item para adicionar ao pedido.</p>
+                    <p>Selecione um item para dar entrada.</p>
                   </div>
                   <div className="col-md-12">
                     <div className="pt-3">
@@ -732,7 +732,7 @@ function CustomerOrder() {
                           className="w-100"
                           onChange={(e) => setOrderName(e.target.value)}
                         />
-                        <label htmlFor="pedido">Nome do Pedido</label>
+                        <label htmlFor="pedido">Descrição da Entrada</label>
                       </span>
                     </div>
                   </div>
@@ -782,7 +782,7 @@ function CustomerOrder() {
                         <form onSubmit={handleSubmit}>
                           <button type="submit" className="btn btn-success p-4">
                             <i className="fa fa-check fa-fw fa-lg"></i>{" "}
-                            Finalizar Pedido
+                            Finalizar Entrada
                           </button>
                         </form>
                       </div>

@@ -69,7 +69,7 @@ function Budget() {
     toast.current.show({
       severity: "success",
       summary: "Sucesso!",
-      detail: "O Pedido foi criado com exito.",
+      detail: "O Orçamento foi criado com exito.",
       life: 3000,
     });
   };

@@ -16,7 +16,7 @@ const Menu = [
   {
     path: "pedidos",
     icon: "fa fa-shopping-cart",
-    title: "Entrada e Saída",
+    title: "Entrada",
   },
   {
     path: "budget",

@@ -17,7 +17,8 @@ import MaskInput from "../../components/Inputs/MaskInput";
 import ExportTable from "../../components/button/ExportTable";
 import { Panel, PanelBody, PanelHeader } from "../../components/panel/panel";
 
-import { saveAs } from "file-saver";
+import html2pdf from 'html2pdf.js';
+import { saveAs } from 'file-saver';
 import Loader from "../../components/loader/loader";
 
 function Budget() {
@@ -266,17 +267,37 @@ function Budget() {
     console.log(rowData);
     try {
       const response = await api.get(
-        `/admin/budget/print_budget/${rowData.id}`,
-        {
-          responseType: "blob", // Indica que a resposta é um blob (Binary Large Object)
-        }
+        `/admin/budget/print_budget/${rowData.id}`
       );
+      console.log(response.data);
+     
+    
+      const htmlContent = response.data;
 
-      // Cria um Blob a partir dos dados recebidos
-      const blob = new Blob([response.data], { type: "application/pdf" });
-
-      // Usa o file-saver para realizar o download do Blob como um arquivo PDF
-      saveAs(blob, `budget_${rowData.id}.pdf`);
+      // Cria um elemento div e coloca o conteúdo HTML nele
+      const container = document.createElement('div');
+      container.innerHTML = htmlContent;
+      
+      // Define as opções para o pdf
+      const opt = {
+        margin:       1,
+        filename:     `budget_${rowData.id}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      
+      // Converte o HTML em PDF
+      html2pdf().from(container).set(opt).save().then(() => {
+        setTimeout(() => setLoading(false), 500);
+      
+        toast.current.show({
+          severity: "success",
+          summary: "Sucesso!",
+          detail: "Orçamento foi baixado com exito.",
+          life: 3000,
+        });
+      });
 
       setTimeout(() => setLoading(false), 500);
 

@@ -1,8 +1,6 @@
 import React from "react";
 import * as ReactDOM from "react-dom/client";
-import { createRoot } from "react-dom/client";
-import { BrowserRouter, RouterProvider, useRoutes } from "react-router-dom";
-import AppRoute from "./config/app-route.jsx";
+import {  RouterProvider } from "react-router-dom";
 
 // bootstrap
 import "bootstrap";

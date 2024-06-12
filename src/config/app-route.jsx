@@ -27,8 +27,10 @@ const IsUserLoggedIn = ({ children }) => {
 
     if (token) {
       setIsUserLoggedIn(true);
+    } else {
+      navigate("/error");
     }
-  }, []);
+  }, [isUserLoggedIn, navigate]);
 
   if (isUserLoggedIn) {
     return children; // Renderiza o conteúdo protegido se o usuário estiver logado

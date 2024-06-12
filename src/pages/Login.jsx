@@ -178,9 +178,10 @@ import { useContext } from "react";
 import { useForm } from "react-hook-form";
 
 const Login = () => {
-  const context = useContext(AppSettings);
   const navigate = useNavigate();
+  const context = useContext(AppSettings);
 
+  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -198,8 +199,9 @@ const Login = () => {
   const { register, handleSubmit, reset } = useForm();
 
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
-      console.log(data);
+      // console.log(data);
       const response = await api.post("/admin/user/auth", data);
       const token = response.data.token;
       const isAdmin = response.data.isAdmin;
@@ -217,6 +219,8 @@ const Login = () => {
     } catch (e) {
       setIsModalOpen(true);
       reset({ password: "", email: "" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -267,12 +271,12 @@ const Login = () => {
               </div>
 
               <div className="mb-20px">
-                <button
-                  type="submit"
+                <Button
+                  loading={loading}
+                  label="Entrar"
                   className="btn btn-blue d-block w-100 h-45px btn-lg"
-                >
-                  Entrar
-                </button>
+                  type="submit"
+                />
               </div>
             </form>
           </div>
